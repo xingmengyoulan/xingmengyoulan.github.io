@@ -21,12 +21,12 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/pace/1.2.4/themes/blue/pace-theme-minimal.css">
   <script src="https://cdnjs.cloudflare.com/ajax/libs/pace/1.2.4/pace.min.js" integrity="sha256-gqd7YTjg/BtfqWSwsJOvndl0Bxc8gFImLEkXQT8+qj0=" crossorigin="anonymous"></script>
 
-<script class="next-config" data-name="main" type="application/json">{"hostname":"xingmengyoulan.github.ioe","root":"/","images":"/images","scheme":"Gemini","darkmode":false,"version":"8.13.0","exturl":false,"sidebar":{"position":"left","display":"always","padding":18,"offset":12,"b2t":false,"scrollpercent":true},"copycode":{"enable":true,"style":"mac"},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":true,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":true,"motion":{"enable":true,"async":true,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false}}</script><script src="/js/config.js"></script>
+<script class="next-config" data-name="main" type="application/json">{"hostname":"xingmengyoulan.github.io","root":"/","images":"/images","scheme":"Gemini","darkmode":false,"version":"8.13.0","exturl":false,"sidebar":{"position":"left","display":"always","padding":18,"offset":12,"b2t":false,"scrollpercent":true},"copycode":{"enable":true,"style":"mac"},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":true,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":true,"motion":{"enable":true,"async":true,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false}}</script><script src="/js/config.js"></script>
 
     <meta name="description" content="表空间：字面上理解就是表存储的物理空间，其实包括数据库的表、索引、序列等。 可以将表空间创建在服务器的不同分区，这样做的好处有： 一、如果初始化集群所在分区已经用光，可以方便的其他分区上创建表空间已达到扩容的目的。 二、对于频繁访问的数据可以存储在性能较高、较快的磁盘分区上，而不常用的数据存储在便宜的较慢的磁盘分区上。">
 <meta property="og:type" content="article">
 <meta property="og:title" content="postgresql 表空间创建、删除">
-<meta property="og:url" content="https://xingmengyoulan.github.ioe/2018/05/31/pg-tablespace/index.html">
+<meta property="og:url" content="https://xingmengyoulan.github.io/2018/05/31/pg-tablespace/index.html">
 <meta property="og:site_name" content="雪兰度">
 <meta property="og:description" content="表空间：字面上理解就是表存储的物理空间，其实包括数据库的表、索引、序列等。 可以将表空间创建在服务器的不同分区，这样做的好处有： 一、如果初始化集群所在分区已经用光，可以方便的其他分区上创建表空间已达到扩容的目的。 二、对于频繁访问的数据可以存储在性能较高、较快的磁盘分区上，而不常用的数据存储在便宜的较慢的磁盘分区上。">
 <meta property="og:locale" content="zh_CN">
@@ -37,11 +37,11 @@
 <meta name="twitter:card" content="summary">
 
 
-<link rel="canonical" href="https://xingmengyoulan.github.ioe/2018/05/31/pg-tablespace/">
+<link rel="canonical" href="https://xingmengyoulan.github.io/2018/05/31/pg-tablespace/">
 
 
 
-<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://xingmengyoulan.github.ioe/2018/05/31/pg-tablespace/","path":"2018/05/31/pg-tablespace/","title":"postgresql 表空间创建、删除"}</script>
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://xingmengyoulan.github.io/2018/05/31/pg-tablespace/","path":"2018/05/31/pg-tablespace/","title":"postgresql 表空间创建、删除"}</script>
 
 <script class="next-config" data-name="calendar" type="application/json">""</script>
 <title>postgresql 表空间创建、删除 | 雪兰度</title>
@@ -221,7 +221,7 @@
   
 
   <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="https://xingmengyoulan.github.ioe/2018/05/31/pg-tablespace/">
+    <link itemprop="mainEntityOfPage" href="https://xingmengyoulan.github.io/2018/05/31/pg-tablespace/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/header.jpg">
