@@ -1,0 +1,476 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222"><meta name="generator" content="Hexo 6.3.0">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/knowledge-base/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/knowledge-base/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/knowledge-base/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/knowledge-base/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/knowledge-base/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css" integrity="sha256-AbA177XfpSnFEvgpYu1jMygiLabzPCJCRIBtR5jGc0k=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fancybox/3.5.7/jquery.fancybox.min.css" integrity="sha256-Vzbj7sDDS/woiFS3uNKo8eIuni59rjyNGtXfstRzStA=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/pace/1.2.4/themes/blue/pace-theme-minimal.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pace/1.2.4/pace.min.js" integrity="sha256-gqd7YTjg/BtfqWSwsJOvndl0Bxc8gFImLEkXQT8+qj0=" crossorigin="anonymous"></script>
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"zhd_snow.gitee.io","root":"/knowledge-base/","images":"/knowledge-base/images","scheme":"Gemini","darkmode":false,"version":"8.13.0","exturl":false,"sidebar":{"position":"left","display":"always","padding":18,"offset":12,"b2t":false,"scrollpercent":true},"copycode":{"enable":true,"style":"mac"},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":true,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":true,"motion":{"enable":true,"async":true,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/knowledge-base/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false}}</script><script src="/knowledge-base/js/config.js"></script>
+
+    <meta name="description" content="记录dokcer学习路程">
+<meta property="og:type" content="article">
+<meta property="og:title" content="docker 详解">
+<meta property="og:url" content="https://zhd_snow.gitee.io/knowledge-base/2019/08/23/docker/index.html">
+<meta property="og:site_name" content="雪兰度">
+<meta property="og:description" content="记录dokcer学习路程">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://img-blog.csdn.net/20180918143102223?watermark/2/text/aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L20wXzM3ODg2NDI5/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70">
+<meta property="og:image" content="https://img-blog.csdn.net/20180918143114273?watermark/2/text/aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L20wXzM3ODg2NDI5/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70">
+<meta property="article:published_time" content="2019-08-23T15:27:43.000Z">
+<meta property="article:modified_time" content="2022-09-17T07:37:52.500Z">
+<meta property="article:author" content="ZHD">
+<meta property="article:tag" content="docker">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://img-blog.csdn.net/20180918143102223?watermark/2/text/aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L20wXzM3ODg2NDI5/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70">
+
+
+<link rel="canonical" href="https://zhd_snow.gitee.io/knowledge-base/2019/08/23/docker/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://zhd_snow.gitee.io/knowledge-base/2019/08/23/docker/","path":"2019/08/23/docker/","title":"docker 详解"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>docker 详解 | 雪兰度</title>
+  
+
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/knowledge-base/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/knowledge-base/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">雪兰度</p>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">ZHD's Notes</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/knowledge-base/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-about"><a href="/knowledge-base/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a></li><li class="menu-item menu-item-tags"><a href="/knowledge-base/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签<span class="badge">14</span></a></li><li class="menu-item menu-item-categories"><a href="/knowledge-base/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类<span class="badge">15</span></a></li><li class="menu-item menu-item-archives"><a href="/knowledge-base/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档<span class="badge">33</span></a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup"><div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off" maxlength="80"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close" role="button">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div class="search-result-container no-result">
+  <div class="search-result-icon">
+    <i class="fa fa-spinner fa-pulse fa-5x"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#docker%E7%A6%BB%E7%BA%BF%E5%AE%89%E8%A3%85"><span class="nav-number">1.</span> <span class="nav-text">docker离线安装</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#docker%E5%88%9B%E5%BB%BA%E6%9C%AC%E5%9C%B0%E6%BA%90"><span class="nav-number">2.</span> <span class="nav-text">docker创建本地源</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%86%85%E7%BD%91%E7%8E%AF%E5%A2%83%E5%88%9B%E5%BB%BAdocker%E4%BB%93%E5%BA%93"><span class="nav-number">3.</span> <span class="nav-text">内网环境创建docker仓库</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Docker%E5%AE%B9%E5%99%A8%E5%92%8C%E9%95%9C%E5%83%8F%E7%9A%84%E5%AF%BC%E5%85%A5%E3%80%81%E5%AF%BC%E5%87%BA"><span class="nav-number">4.</span> <span class="nav-text">Docker容器和镜像的导入、导出</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#docker-run-%E5%91%BD%E4%BB%A4%E8%A7%A3%E9%87%8A"><span class="nav-number">5.</span> <span class="nav-text">docker run 命令解释</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%88%A0%E9%99%A4%E6%89%80%E6%9C%89%E5%B7%B2%E7%BB%8F%E5%81%9C%E6%AD%A2%E7%9A%84%E5%AE%B9%E5%99%A8"><span class="nav-number">6.</span> <span class="nav-text">删除所有已经停止的容器</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#docker%E5%AE%B9%E5%99%A8%E5%B0%81%E8%A3%85%E5%BA%94%E7%94%A8%E7%9A%84%E5%A5%BD%E5%A4%84"><span class="nav-number">6.1.</span> <span class="nav-text">docker容器封装应用的好处</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#docker%E5%AE%B9%E5%99%A8%E5%B0%81%E8%A3%85%E5%BA%94%E7%94%A8%E7%A8%8B%E5%BA%8F%E7%9A%84%E7%BC%BA%E7%82%B9"><span class="nav-number">6.2.</span> <span class="nav-text">docker容器封装应用程序的缺点</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#kubernetes-%E4%BC%98%E5%8A%BF"><span class="nav-number">6.3.</span> <span class="nav-text">kubernetes 优势</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#1-kubernetes-%E5%BF%AB%E9%80%9F%E5%85%A5%E9%97%A8"><span class="nav-number">6.4.</span> <span class="nav-text">1. kubernetes 快速入门</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#1-2-%E6%A0%B8%E5%BF%83%E7%BB%84%E4%BB%B6"><span class="nav-number">6.4.1.</span> <span class="nav-text">1.2 核心组件</span></a></li></ol></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%BF%AE%E6%94%B9docker%E5%AE%B9%E5%99%A8%E7%AB%AF%E5%8F%A3%E6%98%A0%E5%B0%84%E7%9A%84%E6%96%B9%E6%B3%95"><span class="nav-number"></span> <span class="nav-text">修改docker容器端口映射的方法</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#%E6%96%B9%E6%B3%95%E4%B8%80"><span class="nav-number">0.0.0.1.</span> <span class="nav-text">方法一</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#%E6%96%B9%E6%B3%95%E4%BA%8C"><span class="nav-number">0.0.0.2.</span> <span class="nav-text">方法二</span></a></li></ol></li></ol></li></ol></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="ZHD"
+      src="/knowledge-base/images/header.jpg">
+  <p class="site-author-name" itemprop="name">ZHD</p>
+  <div class="site-description" itemprop="description">盛年不重来，一日难再晨;及时当勉励，岁月不待人。</div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/knowledge-base/archives/">
+          <span class="site-state-item-count">33</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/knowledge-base/categories/">
+        <span class="site-state-item-count">15</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/knowledge-base/tags/">
+        <span class="site-state-item-count">14</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author site-overview-item animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/xingmengyoulan" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;xingmengyoulan" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:xingmengyoulan@163.com" title="E-Mail → mailto:xingmengyoulan@163.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+
+
+
+        </div>
+      </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://zhd_snow.gitee.io/knowledge-base/2019/08/23/docker/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/knowledge-base/images/header.jpg">
+      <meta itemprop="name" content="ZHD">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="雪兰度">
+      <meta itemprop="description" content="盛年不重来，一日难再晨;及时当勉励，岁月不待人。">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="docker 详解 | 雪兰度">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          docker 详解
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2019-08-23 23:27:43" itemprop="dateCreated datePublished" datetime="2019-08-23T23:27:43+08:00">2019-08-23</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新于</span>
+      <time title="修改时间：2022-09-17 15:37:52" itemprop="dateModified" datetime="2022-09-17T15:37:52+08:00">2022-09-17</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/knowledge-base/categories/docker/" itemprop="url" rel="index"><span itemprop="name">docker</span></a>
+        </span>
+    </span>
+
+  
+    <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv">
+      <span class="post-meta-item-icon">
+        <i class="far fa-eye"></i>
+      </span>
+      <span class="post-meta-item-text">阅读次数：</span>
+      <span id="busuanzi_value_page_pv"></span>
+    </span>
+    <span class="post-meta-break"></span>
+    <span class="post-meta-item" title="本文字数">
+      <span class="post-meta-item-icon">
+        <i class="far fa-file-word"></i>
+      </span>
+      <span class="post-meta-item-text">本文字数：</span>
+      <span>8.8k</span>
+    </span>
+    <span class="post-meta-item" title="阅读时长">
+      <span class="post-meta-item-icon">
+        <i class="far fa-clock"></i>
+      </span>
+      <span class="post-meta-item-text">阅读时长 &asymp;</span>
+      <span>8 分钟</span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <div class="note primary"><p>记录dokcer学习路程</p>
+</div>
+<span id="more"></span>
+
+<h2 id="docker离线安装"><a href="#docker离线安装" class="headerlink" title="docker离线安装"></a>docker离线安装</h2><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">1. 下载docker安装包</span><br><span class="line">docker安装包下载地址：https://download.docker.com/linux/centos/7/x86_64/stable/Packages/</span><br><span class="line">选择对应的安装包</span><br><span class="line">需要下载</span><br><span class="line">selinux包：docker-ce-selinux-17.03.2.ce-1.el7.centos.noarch.rpm  -- 这个可以不用</span><br><span class="line">docker包：docker-ce-17.03.2.ce-1.el7.centos.x86_64.rpm</span><br><span class="line">拷贝到linx环境</span><br><span class="line">先安装selinux包：rpm -ivh docker-ce-selinux-17.03.2.ce-1.el7.centos.noarch.rpm </span><br><span class="line">然后安装docker包：rpm -ivh docker-ce-17.03.2.ce-1.el7.centos.x86_64.rpm</span><br><span class="line">2. 启动docker</span><br><span class="line">systemctl daemon-reload</span><br><span class="line">systemctl restart docker.service</span><br></pre></td></tr></table></figure>
+
+<h2 id="docker创建本地源"><a href="#docker创建本地源" class="headerlink" title="docker创建本地源"></a>docker创建本地源</h2><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br></pre></td><td class="code"><pre><span class="line">1.拉取镜像仓库</span><br><span class="line">docker  pull  registry </span><br><span class="line">2.查看所有镜像</span><br><span class="line"> docker images</span><br><span class="line">3.启动镜像服务器registry</span><br><span class="line">首先在在主机上新建一个目录，供存储镜像</span><br><span class="line">cd /usr/local/</span><br><span class="line">mkdir docker_registry </span><br><span class="line">启动镜像</span><br><span class="line">docker run -d -p 5000:5000 --name=brillianceregistry --restart=always --privileged=true  -v /usr/local/docker_registry:/var/lib/registry  docker.io/registry</span><br><span class="line">解释：</span><br><span class="line">  -p 5000:5000 端口</span><br><span class="line">  --name=jackspeedregistry 运行的容器名称</span><br><span class="line">  --restart=always 自动重启</span><br><span class="line">   --privileged=true centos7中的安全模块selinux把权限禁止了，加上这行是给容器增加执行权限</span><br><span class="line">  -v /usr/local/docker_registry:/var/lib/registry 把主机的/usr/local/docker_registry 目录挂载到registry容器的/var/lib/registry目录下，假如有删除容器操作，我们的镜像也不会被删除</span><br><span class="line">  docker.io/registry  镜像名称</span><br><span class="line">查看启动的容器</span><br><span class="line"></span><br><span class="line">已经启动的镜像</span><br><span class="line">4.从公有仓库拉取一个镜像下来，然后push到私有仓库中进行测试，当前用nginx镜像做测试</span><br><span class="line">docker pull  nginx  --- 这是需要联网的</span><br><span class="line">docker images </span><br><span class="line"></span><br><span class="line">5.给docker注册https协议，支持https访问</span><br><span class="line"></span><br><span class="line">vim /etc/docker/daemon.json</span><br><span class="line">如果daemon文件不存在，vim会自己创建一个，假如一下代码，</span><br><span class="line">  &#123;</span><br><span class="line">  &quot;insecure-registries&quot;:[&quot;主机的IP地址或者域名:5000&quot;],</span><br><span class="line">   &quot;registry-mirrors&quot;: [&quot;https://registry.docker-cn.com&quot;]</span><br><span class="line">  &#125;</span><br><span class="line">注释：</span><br><span class="line">  insecure-registries-----&gt;开放注册https协议</span><br><span class="line">  registry-mirrors-----&gt;仓库源</span><br><span class="line"></span><br><span class="line">6.新建一个tag，把docker.io/nginx名称变成域名或者IP/镜像名称</span><br><span class="line"></span><br><span class="line">docker tag docker.io/nginx ip或者域名:5000/nginx</span><br><span class="line">推送到本地仓库</span><br><span class="line"></span><br><span class="line">docker push ip或者域名:5000/nginx</span><br><span class="line"></span><br><span class="line">docker pull 报错Get https://xxx.xxx.xxx.xxx:5000/v1/_ping: http: server gave HTTP response</span><br><span class="line">解决方法：</span><br><span class="line">    运行命令：</span><br><span class="line">        echo &#x27;&#123; &quot;insecure-registries&quot;:[&quot;xxx.xxx.xxx.xxx:5000&quot;] &#125;&#x27; &gt; /etc/docker/daemon.json</span><br><span class="line">        systemctl restart docker</span><br><span class="line"></span><br><span class="line">上传完成</span><br><span class="line">7.进入刚才新建的nginx仓库目录得到</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">8.删除刚刚tag的镜像 （11.*******:5000/nginx刚才创建的镜像的tag）</span><br><span class="line"></span><br><span class="line">docker rmi 111.*******:5000/nginx</span><br><span class="line">docker rmi  nginx </span><br><span class="line">docker images</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">实验环境</span><br><span class="line"></span><br><span class="line">192.168.80.200 #不能上外网的docker仓库，centos7系统</span><br><span class="line"></span><br><span class="line">192.168.80.100 #能上外网的Linux服务器，centos7系统</span><br><span class="line"></span><br><span class="line">利用yum仓库安装docker服务</span><br><span class="line"></span><br><span class="line">把docker的rpm包导入内网yum仓库中（docker软件包docker-ce，container-selinux）</span><br><span class="line"></span><br><span class="line">（下载地址：http://rpmfind.net/linux/rpm2html/search.php）</span><br><span class="line"></span><br><span class="line">配置好本地yum仓库源（具体配置可看：http://vcvcv.blog.51cto.com/11324936/1934834）</span><br><span class="line"></span><br><span class="line">安装docker服务</span><br><span class="line"></span><br><span class="line">yum install docker-ce</span><br><span class="line"></span><br><span class="line">启动docker服务</span><br><span class="line"></span><br><span class="line">systemctl docker start</span><br><span class="line"></span><br><span class="line">以上就安装好了内网docker服务</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<h2 id="内网环境创建docker仓库"><a href="#内网环境创建docker仓库" class="headerlink" title="内网环境创建docker仓库"></a>内网环境创建docker仓库</h2><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br></pre></td><td class="code"><pre><span class="line">部署docker镜像仓库</span><br><span class="line"></span><br><span class="line">在192.168.80.100上，安装docker服务，拉取镜像</span><br><span class="line"></span><br><span class="line">docker pull registry</span><br><span class="line">导出镜像</span><br><span class="line"></span><br><span class="line">docker save c2a449c9f834 &gt; /root/docker-registry-p_w_picpath.tar</span><br><span class="line">将导出的镜像包发送到目的主机</span><br><span class="line"></span><br><span class="line">scp /root/docker-registry-p_w_picpath.tar root@192.168.80.200:/root/</span><br><span class="line">登录到目的主机，加载镜像</span><br><span class="line"></span><br><span class="line">docker load -i /root/docker-registry-p_w_picpath.tar</span><br><span class="line">加载好镜像后，运行docker registry容器</span><br><span class="line"></span><br><span class="line">mkdir /registry    #创建本地挂载目录</span><br><span class="line">docker run -d -p 5000:5000 -v /registry:/tmp/registry localregistry  #把本地的目录mount到容器/tmp/registry目录下</span><br><span class="line">接下来查看本地docker仓库的容器是否运行</span><br><span class="line"></span><br><span class="line">docker ps</span><br><span class="line">以上docker本地仓库就配置完毕</span><br><span class="line"></span><br><span class="line">接下来介绍下docker仓库的镜像上传（隔绝外网的情况下）</span><br><span class="line"></span><br><span class="line">在192.168.80.100上，安装docker服务</span><br><span class="line"></span><br><span class="line">docker pull ubuntu:lastest #默认会去docker.io拉取镜像源</span><br><span class="line">把拉取下来的镜像源改名为docker仓库的ip/端口:版本号</span><br><span class="line"></span><br><span class="line">docker tag ubuntu:lastest 192.168.80.200:5000/ubuntu:lastest</span><br><span class="line">最后上传镜像</span><br><span class="line"></span><br><span class="line">docker push 192.168.80.200:5000/ubuntu:lastest #这样镜像就能上传到本地docker仓库</span><br><span class="line">以上docker本地仓库的镜像上传就完成了</span><br><span class="line"></span><br><span class="line">docker服务和镜像rpm包地址：http://pan.baidu.com/s/1kVOJgR9</span><br></pre></td></tr></table></figure>
+
+<h2 id="Docker容器和镜像的导入、导出"><a href="#Docker容器和镜像的导入、导出" class="headerlink" title="Docker容器和镜像的导入、导出"></a>Docker容器和镜像的导入、导出</h2><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br></pre></td><td class="code"><pre><span class="line">一、镜像导出 save</span><br><span class="line"></span><br><span class="line">查看镜像</span><br><span class="line"></span><br><span class="line">docker images</span><br><span class="line">导出镜像</span><br><span class="line"></span><br><span class="line">docker save -o test.tar image_name</span><br><span class="line">或者</span><br><span class="line">docker save image_name &gt; /test.tar</span><br><span class="line"></span><br><span class="line">二、容器导出 export</span><br><span class="line"></span><br><span class="line">导出容器，命令格式为：</span><br><span class="line"></span><br><span class="line">docker export [-o|--output[=&quot;&quot;]] CONTATINER</span><br><span class="line">或</span><br><span class="line">docker export 容器id/name &gt;文件名.tar</span><br><span class="line"></span><br><span class="line">例如：</span><br><span class="line">docker export -o test.img test</span><br><span class="line">test.img : 这里可以导出tar文件 ， 也可以导出二进制镜像文件img</span><br><span class="line">test : 需要导出的容器名， 通过docker ps查看</span><br><span class="line"></span><br><span class="line">三、导入压缩包（包括压缩的镜像和容器）</span><br><span class="line"></span><br><span class="line">1.import</span><br><span class="line">docker import [-c|--change[=[]]] [-m|--message[=MESSAGE]] file|URL|-[REPOSITORY[:YAG]]</span><br><span class="line"></span><br><span class="line">例如：</span><br><span class="line">docker import test.img test</span><br><span class="line">test : 为镜像名</span><br><span class="line"></span><br><span class="line">2.load</span><br><span class="line">docker load --input /test.tar</span><br><span class="line"></span><br><span class="line">区别：</span><br><span class="line">docker save保存的是镜像（image），docker export保存的是容器（container）；</span><br><span class="line">docker load用来载入镜像包，docker import用来载入容器包，但两者都会恢复为镜像；</span><br><span class="line">docker load不能对载入的镜像重命名，而docker import可以为镜像指定新名称。</span><br><span class="line"></span><br><span class="line">Docker load 之后镜像名字为none问题解决</span><br><span class="line">这个问题是根本在于这个镜像压缩包在打包的时候导致</span><br><span class="line"></span><br><span class="line">例如，以下打包方式将会导致解压的出来的镜像没有名字</span><br><span class="line">docker save -o redis.tar 7864316753</span><br><span class="line">因此，推荐使用镜像的名字进行打包，例如：</span><br><span class="line">docker save -o redis:5.0.2</span><br><span class="line">此方式打包的镜像，解压出来就有镜像名称了</span><br><span class="line"></span><br><span class="line">进一步出现这样错误的原因是在docker load 的时候会将同名image覆盖，并将原有镜像重命名，也就出现了上图所示问题。</span><br><span class="line">另外，附上重命名镜像的方法：</span><br><span class="line">docker tage [镜像id] [新镜像名称]:[新镜像标签]  </span><br><span class="line">docker tag elf…4b reg.emphant.com：5000/python-env：2.7.13</span><br></pre></td></tr></table></figure>
+
+<h2 id="docker-run-命令解释"><a href="#docker-run-命令解释" class="headerlink" title="docker run 命令解释"></a>docker run 命令解释</h2><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br></pre></td><td class="code"><pre><span class="line">Docker run 命令</span><br><span class="line"> Docker 命令大全Docker 命令大全</span><br><span class="line">docker run ：创建一个新的容器并运行一个命令</span><br><span class="line">语法</span><br><span class="line">docker run [OPTIONS] IMAGE [COMMAND] [ARG...]</span><br><span class="line">OPTIONS说明：</span><br><span class="line">-a stdin: 指定标准输入输出内容类型，可选 STDIN/STDOUT/STDERR 三项；</span><br><span class="line">-d: 后台运行容器，并返回容器ID；</span><br><span class="line">-i: 以交互模式运行容器，通常与 -t 同时使用；</span><br><span class="line">-P: 随机端口映射，容器内部端口随机映射到主机的端口</span><br><span class="line">-p: 指定端口映射，格式为：主机(宿主)端口:容器端口</span><br><span class="line">-t: 为容器重新分配一个伪输入终端，通常与 -i 同时使用；</span><br><span class="line">--name=&quot;nginx-lb&quot;: 为容器指定一个名称；</span><br><span class="line">--dns 8.8.8.8: 指定容器使用的DNS服务器，默认和宿主一致；</span><br><span class="line">--dns-search example.com: 指定容器DNS搜索域名，默认和宿主一致；</span><br><span class="line">-h &quot;mars&quot;: 指定容器的hostname；</span><br><span class="line">-e username=&quot;ritchie&quot;: 设置环境变量；</span><br><span class="line">--env-file=[]: 从指定文件读入环境变量；</span><br><span class="line">--cpuset=&quot;0-2&quot; or --cpuset=&quot;0,1,2&quot;: 绑定容器到指定CPU运行；</span><br><span class="line">-m :设置容器使用内存最大值；</span><br><span class="line">--net=&quot;bridge&quot;: 指定容器的网络连接类型，支持 bridge/host/none/container: 四种类型；</span><br><span class="line">--link=[]: 添加链接到另一个容器；</span><br><span class="line">--expose=[]: 开放一个端口或一组端口；</span><br><span class="line">--volume , -v: 绑定一个卷</span><br><span class="line">实例</span><br><span class="line">使用docker镜像nginx:latest以后台模式启动一个容器,并将容器命名为mynginx。</span><br><span class="line">docker run --name mynginx -d nginx:latest</span><br><span class="line">使用镜像nginx:latest以后台模式启动一个容器,并将容器的80端口映射到主机随机端口。</span><br><span class="line">docker run -P -d nginx:latest</span><br><span class="line">使用镜像 nginx:latest，以后台模式启动一个容器,将容器的 80 端口映射到主机的 80 端口,主机的目录 /data 映射到容器的 /data。</span><br><span class="line">docker run -p 80:80 -v /data:/data -d nginx:latest</span><br><span class="line">绑定容器的 8080 端口，并将其映射到本地主机 127.0.0.1 的 80 端口上。</span><br><span class="line">$ docker run -p 127.0.0.1:80:8080/tcp ubuntu bash</span><br><span class="line">使用镜像nginx:latest以交互模式启动一个容器,在容器内执行/bin/bash命令。</span><br><span class="line">runoob@runoob:~$ docker run -it nginx:latest /bin/bash</span><br><span class="line">root@b8573233d675:/# </span><br></pre></td></tr></table></figure>
+
+
+
+<h2 id="删除所有已经停止的容器"><a href="#删除所有已经停止的容器" class="headerlink" title="删除所有已经停止的容器"></a>删除所有已经停止的容器</h2><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">杀死所有正在运行的容器</span><br><span class="line">docker kill $(docker ps -a -q)</span><br><span class="line">删除所有已经停止的容器 docker rmi 并不能定制容器</span><br><span class="line">docker rm $(docker ps -a -q)</span><br><span class="line">删除所有未打 dangling 标签的镜像</span><br><span class="line">docker rmi $(docker images -q -f dangling=true)</span><br><span class="line">删除所有镜像</span><br><span class="line">docker rmi $(docker images -q)</span><br><span class="line">强制删除镜像名称中包含“doss-api”的镜像</span><br><span class="line">docker rmi --force $(docker images | grep doss-api | awk &#x27;&#123;print $3&#125;&#x27;)</span><br><span class="line">删除所有未使用数据</span><br><span class="line">docker system prune  </span><br><span class="line">只删除未使用的volumes </span><br><span class="line">docker volume prune</span><br></pre></td></tr></table></figure>
+
+<h3 id="docker容器封装应用的好处"><a href="#docker容器封装应用的好处" class="headerlink" title="docker容器封装应用的好处"></a>docker容器封装应用的好处</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">1.Docker引擎统一基础设别环境 --- docker环境</span><br><span class="line">硬件的配置</span><br><span class="line">操作系统的版本</span><br><span class="line">运行时环境</span><br><span class="line">2.Docker引擎统一程序打包方式 --- docker镜像</span><br><span class="line">java程序</span><br><span class="line">python进程</span><br><span class="line">nodejs程序</span><br><span class="line">...</span><br><span class="line">3.Docker引擎统一程序部署（运行）方式 --- docker容器</span><br><span class="line">java -- jar ---&gt; docker run</span><br><span class="line">python manage.py runserver </span><br><span class="line">npm run dev </span><br><span class="line">...</span><br></pre></td></tr></table></figure>
+
+<h3 id="docker容器封装应用程序的缺点"><a href="#docker容器封装应用程序的缺点" class="headerlink" title="docker容器封装应用程序的缺点"></a>docker容器封装应用程序的缺点</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">单机使用，无法有效集群</span><br><span class="line">随着容器数量的上升，管理成本攀升</span><br><span class="line">没有有效的容灾、自愈机制</span><br><span class="line">没有预设编排末班，无法实现快速、大规模容器调度</span><br><span class="line">没有统一的配置管理中心工具</span><br><span class="line">没有容器生命周期的管理工具</span><br><span class="line">没哟图形化运维管理工具</span><br><span class="line"></span><br><span class="line">基于Docker容器引擎的开源容器编排工具：Kubernetes(k8s)</span><br></pre></td></tr></table></figure>
+
+<h3 id="kubernetes-优势"><a href="#kubernetes-优势" class="headerlink" title="kubernetes 优势"></a>kubernetes 优势</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">自动装箱，水平扩展，自我修复</span><br><span class="line">服务发现和负载均衡</span><br><span class="line">自动发布（默认滚动发布模式）和回滚</span><br><span class="line">集中化配置管理和秘钥管理</span><br><span class="line">存储编排</span><br><span class="line">任务处理运行</span><br></pre></td></tr></table></figure>
+
+<h3 id="1-kubernetes-快速入门"><a href="#1-kubernetes-快速入门" class="headerlink" title="1. kubernetes 快速入门"></a>1. kubernetes 快速入门</h3><p>####1.1四组基本概念<br> Pod&#x2F;Pod控制器</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">Pod</span><br><span class="line">Pod 是k8s里能够被运行的最小的逻辑单元（原子单元）</span><br><span class="line">1个Pod里面可以运行多个容器，它们共享UTS+NET+IPC名称空间</span><br><span class="line">可以把Pod理解成豌豆荚，而同一个Pod内的每个容器是一颗颗豌豆</span><br><span class="line">Pod 控制器</span><br><span class="line">Pod控制器是Pod启动的一种模板，用来保证在k8s里启动的Pod应始终按照人们的运行预期（副本数，生命周期，健康检查）</span><br><span class="line">k8s内提供了众多的Pod控制器，常见的有以下集中：</span><br><span class="line"> Deloyment --- 常用</span><br><span class="line"> Deamonset --- 常用</span><br><span class="line"> Replicaset</span><br><span class="line"> Statefulset</span><br><span class="line"> Job</span><br><span class="line"> Cronjob</span><br></pre></td></tr></table></figure>
+
+<p> Name&#x2F;Namespace</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">Name:</span><br><span class="line"> 1、由于k8s内部，使用“资源”来定义每一个逻辑概念（功能）每种“资源”，都应该有自己的“名称”</span><br><span class="line"> 2、“资源” 有api版本（apiversion)类别（kind)元数据（metadata)定义清单（spec)状态（status）等配置信息</span><br><span class="line"> 3、“名称” 通常定义在“资源”的“元数据”信息里</span><br><span class="line">Namespace:</span><br><span class="line"> 1、随着项目增多，人员增加，集群规模的扩大，需要一种能够隔离k8s内各种“资源”的方法，这是名称空间</span><br><span class="line"> 2、名称空间可以理解为k8s内部的虚拟集群组</span><br><span class="line"> 3、不同名称空间内的“资源”，名称可以相同，相同名称空间内的同种“资源”，“名称” 不能相同</span><br><span class="line"> 4、合理的使用k8s的名称空间，使得集群管理员能够更好的对交付到k8s里的服务进行分类管理和浏览</span><br><span class="line"> 5、k8s里默认存在的名称空间有：default,kube-system,kube-public</span><br><span class="line"> 6、查询k8s里特定“资源”要带上相应的名称空间</span><br></pre></td></tr></table></figure>
+
+<p>Label&#x2F;Label选择器</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">Label </span><br><span class="line">  1、标签是k8s特色的管理方式，便于分类管理资源对象</span><br><span class="line">  2、一个标签可以对应多个资源，一个资源可以有多个标签，它们是多对多的关系。</span><br><span class="line">  3、一个资源拥有多个标签，可以实现不同维度的管理。</span><br><span class="line">  4、标签的组成是： key=value</span><br><span class="line">  5、与标签类似的，还是一种“注释” （annotations）</span><br><span class="line">Label选择器</span><br><span class="line">  1、给资源打上标签后，可以使用标签选择器过滤指定的标签</span><br><span class="line">  2、标签选择器目前有两个：基于等值关系（等于，不等于）和基于集合关系（属于、不属于、存在）</span><br><span class="line">  3、许多资源支持内嵌标签选择器字段</span><br><span class="line">     matchLabels</span><br><span class="line">     matchExpresssion</span><br></pre></td></tr></table></figure>
+
+<p>Service&#x2F;Ingress</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">Service:</span><br><span class="line">	1、在k8s的世界里，虽然每个Pod都会被分配一个单独的IP地址，但是这个IP地址会随着Pod的销毁而消失</span><br><span class="line">	2、Service(服务）就是用来解决这个问题的核心概念</span><br><span class="line">	3、一个Service可以看做一组提供相同服务的Pod的对外访问接口</span><br><span class="line">	4、Service作用于哪些Pod是通过标签选择器来定义的</span><br><span class="line">Ingress </span><br><span class="line">  1、Ingress是k8s集群里工作在OSI网络参考模型下，第7层的应用，对外暴露的接口</span><br><span class="line">  2、service只能进行L4流量调度，表现形式为ip+port</span><br><span class="line">  3、Ingress可以调度不同业务域，不同URL访问路径的业务流量</span><br></pre></td></tr></table></figure>
+
+<h4 id="1-2-核心组件"><a href="#1-2-核心组件" class="headerlink" title="1.2 核心组件"></a>1.2 核心组件</h4><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">配置存储中心 ---&gt; etcd服务</span><br><span class="line">主控（master）节点</span><br><span class="line">   kube-apiserver服务</span><br><span class="line">   kube-contoller-manager服务</span><br><span class="line">   kube-scheduler服务</span><br><span class="line">运算（node)节点</span><br><span class="line">   kube-kubelet服务</span><br><span class="line">   kube-proxy服务</span><br><span class="line">cli客户端</span><br><span class="line">   kubectl</span><br><span class="line">核心附件</span><br><span class="line">   CNI网络插件 -&gt; flannel/calico</span><br><span class="line">   服务发现用插件 -&gt; coredns</span><br><span class="line">   服务暴露用插件 -&gt; traefik</span><br><span class="line">   GUI管理插件    -&gt; Dashboard</span><br></pre></td></tr></table></figure>
+
+<h1 id="修改docker容器端口映射的方法"><a href="#修改docker容器端口映射的方法" class="headerlink" title="修改docker容器端口映射的方法"></a>修改docker容器端口映射的方法</h1><h5 id="方法一"><a href="#方法一" class="headerlink" title="方法一"></a>方法一</h5><ul>
+<li>1、停止容器(docker stop d00254ce3af7)</li>
+<li>2、停止docker服务(systemctl stop docker)</li>
+<li>3、修改这个容器的hostconfig.json文件中的端口（原帖有人提到，如果config.v2.json里面也记录了端口，也要修改）</li>
+</ul>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">cd /var/lib/docker/containers/d00254ce3af7*     #这里是CONTAINER ID</span><br><span class="line"></span><br><span class="line">vim hostconfig.json</span><br><span class="line">如果之前没有端口映射, 应该有这样的一段:</span><br><span class="line">&quot;PortBindings&quot;:&#123;&#125;</span><br><span class="line"></span><br><span class="line">增加一个映射, 这样写:</span><br><span class="line">&quot;PortBindings&quot;:&#123;&quot;8080/tcp&quot;:[&#123;&quot;HostIp&quot;:&quot;&quot;,&quot;HostPort&quot;:&quot;60000&quot;&#125;]&#125;</span><br><span class="line">前一个数字是容器端口, 后一个是宿主机端口。将宿主机的60000端口映射到容器的8080端口</span><br><span class="line">而修改现有端口映射更简单, 把端口号改掉就行。</span><br><span class="line">12345678910</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>4、启动docker服务(systemctl start docker)</li>
+<li>5、启动容器(docker start d00254ce3af7)</li>
+</ul>
+<p><strong>hostconfig.json文件</strong><br><img src="https://img-blog.csdn.net/20180918143102223?watermark/2/text/aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L20wXzM3ODg2NDI5/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70" alt="img"></p>
+<p><strong>config.v2.json文件</strong><br><img src="https://img-blog.csdn.net/20180918143114273?watermark/2/text/aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L20wXzM3ODg2NDI5/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70" alt="img"></p>
+<h5 id="方法二"><a href="#方法二" class="headerlink" title="方法二"></a>方法二</h5><p>1、获得容器IP<br>将container_name 换成实际环境中的容器名</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">docker inspect `container_name` | grep IPAddress</span><br><span class="line">1</span><br></pre></td></tr></table></figure>
+
+<p>2、iptable转发端口<br>将宿主机的60000端口映射到容器的8080端口</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">iptables -t nat -A  DOCKER -p tcp --dport 60000 -j DNAT --to-destination 172.17.0.2:8080</span><br></pre></td></tr></table></figure>
+
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/knowledge-base/tags/docker/" rel="tag"># docker</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/knowledge-base/2019/08/23/docker_install/" rel="prev" title="docker 安装和设置">
+                  <i class="fa fa-chevron-left"></i> docker 安装和设置
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/knowledge-base/2019/08/26/react-lifecycle/" rel="next" title="React 组件生命周期">
+                  React 组件生命周期 <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  &copy; 
+  <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">ZHD</span>
+</div>
+<div class="wordcount">
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-chart-line"></i>
+    </span>
+    <span title="站点总字数">220k</span>
+  </span>
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+    <span title="站点阅读时长">3:20</span>
+  </span>
+</div>
+<div class="busuanzi-count">
+    <span class="post-meta-item" id="busuanzi_container_site_uv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div><script color="0,0,255" opacity="0.5" zIndex="-1" count="99" src="https://lib.baomitu.com/canvas-nest.js/1.0.1/canvas-nest.js"></script>
+
+
+    </div>
+  </footer>
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.1/jquery.min.js" integrity="sha256-o88AwQnZB+VDvE9tvIXrMQaPlFFSUTR+nldQm1LuPXQ=" crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/fancybox/3.5.7/jquery.fancybox.min.js" integrity="sha256-yt2kYMy0w8AbtF89WXb2P1rfjcP/HTHLT7097U8Y5b8=" crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pangu/4.0.7/pangu.min.js" integrity="sha256-j+yj56cdEY2CwkVtGyz18fNybFGpMGJ8JxG3GSyO2+I=" crossorigin="anonymous"></script>
+<script src="/knowledge-base/js/comments.js"></script><script src="/knowledge-base/js/utils.js"></script><script src="/knowledge-base/js/motion.js"></script><script src="/knowledge-base/js/next-boot.js"></script>
+
+  
+<script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-generator-searchdb/1.4.0/search.js" integrity="sha256-vXZMYLEqsROAXkEw93GGIvaB2ab+QW6w3+1ahD9nXXA=" crossorigin="anonymous"></script>
+<script src="/knowledge-base/js/third-party/search/local-search.js"></script>
+
+
+
+  <script src="/knowledge-base/js/third-party/fancybox.js"></script>
+
+  <script src="/knowledge-base/js/third-party/pace.js"></script>
+
+  
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+
+
+
+<script src="/knowledge-base/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"pluginModelPath":"assets/","model":{"jsonPath":"/knowledge-base/live2dw/assets/shizuku.model.json"},"display":{"position":"left","width":200,"height":400},"mobile":{"show":false},"rect":"opacity:0.7","log":false,"pluginJsPath":"lib/","pluginRootPath":"live2dw/","tagMode":false});</script></body>
+</html>

@@ -1,0 +1,572 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222"><meta name="generator" content="Hexo 6.3.0">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/knowledge-base/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/knowledge-base/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/knowledge-base/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/knowledge-base/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/knowledge-base/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css" integrity="sha256-AbA177XfpSnFEvgpYu1jMygiLabzPCJCRIBtR5jGc0k=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fancybox/3.5.7/jquery.fancybox.min.css" integrity="sha256-Vzbj7sDDS/woiFS3uNKo8eIuni59rjyNGtXfstRzStA=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/pace/1.2.4/themes/blue/pace-theme-minimal.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pace/1.2.4/pace.min.js" integrity="sha256-gqd7YTjg/BtfqWSwsJOvndl0Bxc8gFImLEkXQT8+qj0=" crossorigin="anonymous"></script>
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"zhd_snow.gitee.io","root":"/knowledge-base/","images":"/knowledge-base/images","scheme":"Gemini","darkmode":false,"version":"8.13.0","exturl":false,"sidebar":{"position":"left","display":"always","padding":18,"offset":12,"b2t":false,"scrollpercent":true},"copycode":{"enable":true,"style":"mac"},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":true,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":true,"motion":{"enable":true,"async":true,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/knowledge-base/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false}}</script><script src="/knowledge-base/js/config.js"></script>
+
+    <meta name="description" content="记录docker 安装和设置">
+<meta property="og:type" content="article">
+<meta property="og:title" content="docker 安装和设置">
+<meta property="og:url" content="https://zhd_snow.gitee.io/knowledge-base/2019/08/23/docker_install/index.html">
+<meta property="og:site_name" content="雪兰度">
+<meta property="og:description" content="记录docker 安装和设置">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://common.cnblogs.com/images/copycode.gif">
+<meta property="og:image" content="https://images2017.cnblogs.com/blog/485196/201801/485196-20180117110412474-1975160813.png">
+<meta property="og:image" content="https://zhd_snow.gitee.io/knowledge-base/docker-info.png">
+<meta property="og:image" content="https://zhd_snow.gitee.io/knowledge-base/du-docker.png">
+<meta property="og:image" content="https://img2018.cnblogs.com/blog/1244297/201907/1244297-20190730170416919-244362191.png">
+<meta property="og:image" content="https://img2018.cnblogs.com/blog/1244297/201907/1244297-20190730170837131-976985934.png">
+<meta property="article:published_time" content="2019-08-23T15:27:43.000Z">
+<meta property="article:modified_time" content="2022-09-17T07:37:52.462Z">
+<meta property="article:author" content="ZHD">
+<meta property="article:tag" content="docker">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://common.cnblogs.com/images/copycode.gif">
+
+
+<link rel="canonical" href="https://zhd_snow.gitee.io/knowledge-base/2019/08/23/docker_install/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://zhd_snow.gitee.io/knowledge-base/2019/08/23/docker_install/","path":"2019/08/23/docker_install/","title":"docker 安装和设置"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>docker 安装和设置 | 雪兰度</title>
+  
+
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/knowledge-base/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/knowledge-base/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">雪兰度</p>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">ZHD's Notes</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/knowledge-base/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-about"><a href="/knowledge-base/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a></li><li class="menu-item menu-item-tags"><a href="/knowledge-base/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签<span class="badge">14</span></a></li><li class="menu-item menu-item-categories"><a href="/knowledge-base/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类<span class="badge">15</span></a></li><li class="menu-item menu-item-archives"><a href="/knowledge-base/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档<span class="badge">33</span></a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup"><div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off" maxlength="80"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close" role="button">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div class="search-result-container no-result">
+  <div class="search-result-icon">
+    <i class="fa fa-spinner fa-pulse fa-5x"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#linux%E4%B8%8B-docker-%E7%A6%BB%E7%BA%BF%E5%AE%89%E8%A3%85"><span class="nav-number">1.</span> <span class="nav-text">linux下 docker 离线安装</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%8A%8A%E5%9C%A8%E4%BD%BF%E7%94%A8%E7%9A%84Linux%E7%B3%BB%E7%BB%9F%E5%81%9A%E6%88%90docker%E9%95%9C%E5%83%8F"><span class="nav-number">1.1.</span> <span class="nav-text">把在使用的Linux系统做成docker镜像</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%88%B6%E4%BD%9C%E8%87%AA%E5%B7%B1%E7%9A%84%E7%B3%BB%E7%BB%9F%E7%9A%84%E9%95%9C%E5%83%8F"><span class="nav-number">1.1.1.</span> <span class="nav-text">制作自己的系统的镜像</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BF%AE%E6%94%B9%E8%BF%90%E8%A1%8C%E4%B8%AD%E7%9A%84docker%E5%AE%B9%E5%99%A8%E7%9A%84%E7%AB%AF%E5%8F%A3%E6%98%A0%E5%B0%84%E5%92%8C%E6%8C%82%E8%BD%BD%E7%9B%AE%E5%BD%95"><span class="nav-number">1.2.</span> <span class="nav-text">修改运行中的docker容器的端口映射和挂载目录</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%96%B9%E6%B3%95%E4%B8%80%EF%BC%9A%E5%88%A0%E9%99%A4%E5%8E%9F%E6%9C%89%E5%AE%B9%E5%99%A8%EF%BC%8C%E9%87%8D%E6%96%B0%E5%BB%BA%E6%96%B0%E5%AE%B9%E5%99%A8"><span class="nav-number">1.2.1.</span> <span class="nav-text">方法一：删除原有容器，重新建新容器</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%96%B9%E6%B3%95%E4%BA%8C%EF%BC%9A%E4%BF%AE%E6%94%B9%E5%AE%B9%E5%99%A8%E9%85%8D%E7%BD%AE%E6%96%87%E4%BB%B6%EF%BC%8C%E9%87%8D%E5%90%AFdocker%E6%9C%8D%E5%8A%A1"><span class="nav-number">1.2.2.</span> <span class="nav-text">方法二：修改容器配置文件，重启docker服务</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Docker-%E4%BF%AE%E6%94%B9%E9%BB%98%E8%AE%A4%E5%AD%98%E5%82%A8%E8%B7%AF%E5%BE%84%E7%9A%84%E4%B8%80%E4%B8%AA%E6%96%B9%E6%B3%95"><span class="nav-number">1.3.</span> <span class="nav-text">Docker 修改默认存储路径的一个方法</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#linux%E4%BF%AE%E6%94%B9%E7%94%A8%E6%88%B7%E4%B8%BB%E7%9B%AE%E5%BD%95%E7%9A%84%E6%96%B9%E6%B3%95"><span class="nav-number">1.4.</span> <span class="nav-text">linux修改用户主目录的方法</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%BF%AE%E6%94%B9%E7%9B%AE%E5%BD%95%E4%B9%8B%E5%90%8Eshell%E5%87%BA%E7%8E%B0bash-4-2%E6%83%B3%E8%B1%A1"><span class="nav-number">1.4.1.</span> <span class="nav-text">修改目录之后shell出现bash-4.2想象</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#docker%E8%BF%9C%E7%A8%8B%E4%BB%93%E5%BA%93%E9%95%9C%E5%83%8F%E5%88%A0%E9%99%A4"><span class="nav-number">1.5.</span> <span class="nav-text">docker远程仓库镜像删除</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#docker-%E7%A7%81%E6%9C%89%E4%BB%93%E5%BA%93-%E5%88%A0%E9%99%A4%E9%95%9C%E5%83%8F"><span class="nav-number">2.</span> <span class="nav-text">docker 私有仓库 删除镜像</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="ZHD"
+      src="/knowledge-base/images/header.jpg">
+  <p class="site-author-name" itemprop="name">ZHD</p>
+  <div class="site-description" itemprop="description">盛年不重来，一日难再晨;及时当勉励，岁月不待人。</div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/knowledge-base/archives/">
+          <span class="site-state-item-count">33</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/knowledge-base/categories/">
+        <span class="site-state-item-count">15</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/knowledge-base/tags/">
+        <span class="site-state-item-count">14</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author site-overview-item animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/xingmengyoulan" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;xingmengyoulan" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:xingmengyoulan@163.com" title="E-Mail → mailto:xingmengyoulan@163.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+
+
+
+        </div>
+      </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://zhd_snow.gitee.io/knowledge-base/2019/08/23/docker_install/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/knowledge-base/images/header.jpg">
+      <meta itemprop="name" content="ZHD">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="雪兰度">
+      <meta itemprop="description" content="盛年不重来，一日难再晨;及时当勉励，岁月不待人。">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="docker 安装和设置 | 雪兰度">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          docker 安装和设置
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2019-08-23 23:27:43" itemprop="dateCreated datePublished" datetime="2019-08-23T23:27:43+08:00">2019-08-23</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新于</span>
+      <time title="修改时间：2022-09-17 15:37:52" itemprop="dateModified" datetime="2022-09-17T15:37:52+08:00">2022-09-17</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/knowledge-base/categories/docker/" itemprop="url" rel="index"><span itemprop="name">docker</span></a>
+        </span>
+    </span>
+
+  
+    <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv">
+      <span class="post-meta-item-icon">
+        <i class="far fa-eye"></i>
+      </span>
+      <span class="post-meta-item-text">阅读次数：</span>
+      <span id="busuanzi_value_page_pv"></span>
+    </span>
+    <span class="post-meta-break"></span>
+    <span class="post-meta-item" title="本文字数">
+      <span class="post-meta-item-icon">
+        <i class="far fa-file-word"></i>
+      </span>
+      <span class="post-meta-item-text">本文字数：</span>
+      <span>15k</span>
+    </span>
+    <span class="post-meta-item" title="阅读时长">
+      <span class="post-meta-item-icon">
+        <i class="far fa-clock"></i>
+      </span>
+      <span class="post-meta-item-text">阅读时长 &asymp;</span>
+      <span>14 分钟</span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <div class="note primary"><p>记录docker 安装和设置</p>
+</div>
+<span id="more"></span>
+
+<h1 id="linux下-docker-离线安装"><a href="#linux下-docker-离线安装" class="headerlink" title="linux下 docker 离线安装"></a>linux下 docker 离线安装</h1><p><strong>一、基础环境</strong><br>1、操作系统：CentOS 7.3<br>2、Docker版本：<a target="_blank" rel="noopener" href="https://download.docker.com/linux/static/stable/x86_64/">18.06.1 官方下载地址（打不开可能需要梯子）</a><br>3、百度云Docker 18.06.1地址：<a target="_blank" rel="noopener" href="https://pan.baidu.com/s/1YdN9z72QutPkHBfLq06H1A">https://pan.baidu.com/s/1YdN9z72QutPkHBfLq06H1A</a> 密码：dvvh<br>4、官方参考文档：<a target="_blank" rel="noopener" href="https://docs.docker.com/install/linux/docker-ce/binaries/#install-static-binaries">https://docs.docker.com/install/linux/docker-ce/binaries/#install-static-binaries</a></p>
+<p><strong>二、Docker安装</strong></p>
+<p>1、下载</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">wget https://download.docker.com/linux/static/stable/x86_64/docker-18.06.1-ce.tgz</span><br></pre></td></tr></table></figure>
+
+<p>2、解压</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">tar -xvf docker-20.10.3_arm.tgz</span><br></pre></td></tr></table></figure>
+
+<p>3、将解压出来的docker文件内容移动到 &#x2F;usr&#x2F;bin&#x2F; 目录下</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">cp docker/* /usr/bin/</span><br></pre></td></tr></table></figure>
+
+<p>4、将docker注册为service</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br></pre></td><td class="code"><pre><span class="line">vim /etc/systemd/system/docker.service</span><br><span class="line"></span><br><span class="line">[Unit]</span><br><span class="line">Description=Docker Application Container Engine</span><br><span class="line">Documentation=https://docs.docker.com</span><br><span class="line">After=network-online.target firewalld.service</span><br><span class="line">Wants=network-online.target</span><br><span class="line">  </span><br><span class="line">[Service]</span><br><span class="line">Type=notify</span><br><span class="line"># the default is not to use systemd for cgroups because the delegate issues still</span><br><span class="line"># exists and systemd currently does not support the cgroup feature set required</span><br><span class="line"># for containers run by docker</span><br><span class="line">ExecStart=/usr/bin/dockerd</span><br><span class="line">ExecReload=/bin/kill -s HUP $MAINPID</span><br><span class="line"># Having non-zero Limit*s causes performance problems due to accounting overhead</span><br><span class="line"># in the kernel. We recommend using cgroups to do container-local accounting.</span><br><span class="line">LimitNOFILE=infinity</span><br><span class="line">LimitNPROC=infinity</span><br><span class="line">LimitCORE=infinity</span><br><span class="line"># Uncomment TasksMax if your systemd version supports it.</span><br><span class="line"># Only systemd 226 and above support this version.</span><br><span class="line">#TasksMax=infinity</span><br><span class="line">TimeoutStartSec=0</span><br><span class="line"># set delegate yes so that systemd does not reset the cgroups of docker containers</span><br><span class="line">Delegate=yes</span><br><span class="line"># kill only the docker process, not all processes in the cgroup</span><br><span class="line">KillMode=process</span><br><span class="line"># restart the docker process if it exits prematurely</span><br><span class="line">Restart=on-failure</span><br><span class="line">StartLimitBurst=3</span><br><span class="line">StartLimitInterval=60s</span><br><span class="line">  </span><br><span class="line">[Install]</span><br><span class="line">WantedBy=multi-user.target</span><br></pre></td></tr></table></figure>
+
+<p>5、启动</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">chmod +x /etc/systemd/system/docker.service #添加文件权限并启动docker </span><br><span class="line">systemctl daemon-reload         #重新加载配置文件</span><br><span class="line">systemctl start docker     #启动Docker</span><br><span class="line">systemctl enable docker.service     #设置开机自启</span><br><span class="line">普通用户使用docker</span><br><span class="line">groupadd docker //建立 Docker 用户组</span><br><span class="line">usermod -G docker appbbfb</span><br></pre></td></tr></table></figure>
+
+<p>6、验证</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">systemctl status docker     #查看Docker状态 docker -v      #查看Docker版本</span><br></pre></td></tr></table></figure>
+
+<p>7.<em>[可选]</em> 为 Docker 建立用户组</p>
+<p>docker 命令与 Docker 引擎通讯之间通过 UnixSocket ，但是能够有权限访问 UnixSocket 的用户只有 root 和 docker 用户组的用户才能够进行访问，所以我们需要建立一个 docker 用户组，并且将需要访问 docker 的用户添加到这一个用户组当中来。</p>
+<ol>
+<li>建立 Docker 用户组</li>
+</ol>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo groupadd docker</span><br></pre></td></tr></table></figure>
+
+<p>2.添加当前用户到 docker 组</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo usermod -aG docker $USER</span><br></pre></td></tr></table></figure>
+
+<ol start="3">
+<li>重启docker 服务</li>
+</ol>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">systemctl restart docker</span><br></pre></td></tr></table></figure>
+
+<h2 id="把在使用的Linux系统做成docker镜像"><a href="#把在使用的Linux系统做成docker镜像" class="headerlink" title="把在使用的Linux系统做成docker镜像"></a>把在使用的Linux系统做成docker镜像</h2><p>1.选定制作成镜像的系统</p>
+<p>2.系统进行格式转化并压缩，执行如下命令，生成一个镜像的centos7-base.tar的文件<br>   tar –numeric-owner –exclude&#x3D;&#x2F;proc –exclude&#x3D;&#x2F;sys -cvf centos7-base.tar &#x2F;    </p>
+<p>​     或者</p>
+<p>tar -cvpf &#x2F;home&#x2F;buildrpm.tar –directory&#x3D;&#x2F; –exclude&#x3D;proc –exclude&#x3D;sys –exclude&#x3D;dev –exclude&#x3D;run &#x2F;</p>
+<p>3.docker import 导入   把镜像文件centos7-base.tar放到装有docker的系统上<br>  docker import      centos7-base.tar         自定义images名字<br>4.docker images 查看后使用即可<br>  docker run -it  –name    images名字        &#x2F;bin&#x2F;bash</p>
+<h3 id="制作自己的系统的镜像"><a href="#制作自己的系统的镜像" class="headerlink" title="制作自己的系统的镜像"></a>制作自己的系统的镜像</h3><p>试验如下：在centos7机器上做centos镜像</p>
+<p>直接参考这个脚本</p>
+<p><a target="_blank" rel="noopener" href="https://raw.githubusercontent.com/docker/docker/master/contrib/mkimage-yum.sh">https://raw.githubusercontent.com/docker/docker/master/contrib/mkimage-yum.sh</a></p>
+<p>.&#x2F;mkimage-yum.sh -y &#x2F;etc&#x2F;yum.conf centos7</p>
+<p>执行如上脚本，成功后，就可以看到镜像了【docker images】,概要说明一下，主要是如下几步：</p>
+<p>1．tmp目录下建立临时目录和文件系统</p>
+<p>2．使用yum安装相关的软件包</p>
+<p>3．软件包安装和信息定制</p>
+<p>4．tar打包</p>
+<p>5．清理</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br><span class="line">136</span><br><span class="line">137</span><br><span class="line">138</span><br><span class="line">139</span><br><span class="line">140</span><br><span class="line">141</span><br><span class="line">142</span><br><span class="line">143</span><br><span class="line">144</span><br><span class="line">145</span><br><span class="line">146</span><br><span class="line">147</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">#</span><span class="language-bash">!/usr/bin/env bash</span></span><br><span class="line"><span class="meta prompt_">#</span><span class="language-bash"></span></span><br><span class="line"><span class="language-bash"><span class="comment"># Create a base CentOS Docker image.</span></span></span><br><span class="line"><span class="meta prompt_">#</span><span class="language-bash"></span></span><br><span class="line"><span class="language-bash"><span class="comment"># This script is useful on systems with yum installed (e.g., building</span></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">a CentOS image on CentOS).  See contrib/mkimage-rinse.sh <span class="keyword">for</span> a way</span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">to build CentOS images on other systems.</span></span><br><span class="line"></span><br><span class="line">set -e</span><br><span class="line"></span><br><span class="line">usage() &#123;</span><br><span class="line">	cat &lt;&lt; EOOPTS</span><br><span class="line"><span class="meta prompt_">$</span><span class="language-bash">(<span class="built_in">basename</span> <span class="variable">$0</span>) [OPTIONS] &lt;name&gt;</span></span><br><span class="line">OPTIONS:</span><br><span class="line">  -p &quot;&lt;packages&gt;&quot;  The list of packages to install in the container.</span><br><span class="line">                   The default is blank. Can use multiple times.</span><br><span class="line">  -g &quot;&lt;groups&gt;&quot;    The groups of packages to install in the container.</span><br><span class="line">                   The default is &quot;Core&quot;. Can use multiple times.</span><br><span class="line">  -y &lt;yumconf&gt;     The path to the yum config to install packages from. The</span><br><span class="line">                   default is /etc/yum.conf for Centos/RHEL and /etc/dnf/dnf.conf for Fedora</span><br><span class="line">  -t &lt;tag&gt;         Specify Tag information.</span><br><span class="line">                   default is reffered at /etc/&#123;redhat,system&#125;-release</span><br><span class="line">EOOPTS</span><br><span class="line">	exit 1</span><br><span class="line">&#125;</span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">option defaults</span></span><br><span class="line">yum_config=/etc/yum.conf</span><br><span class="line">if [ -f /etc/dnf/dnf.conf ] &amp;&amp; command -v dnf &amp;&gt; /dev/null; then</span><br><span class="line">	yum_config=/etc/dnf/dnf.conf</span><br><span class="line">	alias yum=dnf</span><br><span class="line">fi</span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash"><span class="keyword">for</span> names with spaces, use double quotes (<span class="string">&quot;) as install_groups=(&#x27;Core&#x27; &#x27;&quot;</span>Compute Node<span class="string">&quot;&#x27;)</span></span></span><br><span class="line">install_groups=()</span><br><span class="line">install_packages=()</span><br><span class="line">version=</span><br><span class="line">while getopts &quot;:y:p:g:t:h&quot; opt; do</span><br><span class="line">	case $opt in</span><br><span class="line">		y)</span><br><span class="line">			yum_config=$OPTARG</span><br><span class="line">			;;</span><br><span class="line">		h)</span><br><span class="line">			usage</span><br><span class="line">			;;</span><br><span class="line">		p)</span><br><span class="line">			install_packages+=(&quot;$OPTARG&quot;)</span><br><span class="line">			;;</span><br><span class="line">		g)</span><br><span class="line">			install_groups+=(&quot;$OPTARG&quot;)</span><br><span class="line">			;;</span><br><span class="line">		t)</span><br><span class="line">			version=&quot;$OPTARG&quot;</span><br><span class="line">			;;</span><br><span class="line">		\?)</span><br><span class="line">			echo &quot;Invalid option: -$OPTARG&quot;</span><br><span class="line">			usage</span><br><span class="line">			;;</span><br><span class="line">	esac</span><br><span class="line">done</span><br><span class="line">shift $((OPTIND - 1))</span><br><span class="line">name=$1</span><br><span class="line"></span><br><span class="line">if [[ -z $name ]]; then</span><br><span class="line">	usage</span><br><span class="line">fi</span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash"><span class="string">default to Core group if not specified otherwise</span></span></span><br><span class="line">if [ $&#123;#install_groups[*]&#125; -eq 0 ]; then</span><br><span class="line">	install_groups=(&#x27;Core&#x27;)</span><br><span class="line">fi</span><br><span class="line"></span><br><span class="line">target=$(mktemp -d --tmpdir $(basename $0).XXXXXX)</span><br><span class="line"></span><br><span class="line">set -x</span><br><span class="line"></span><br><span class="line">mkdir -m 755 &quot;$target&quot;/dev</span><br><span class="line">mknod -m 600 &quot;$target&quot;/dev/console c 5 1</span><br><span class="line">mknod -m 600 &quot;$target&quot;/dev/initctl p</span><br><span class="line">mknod -m 666 &quot;$target&quot;/dev/full c 1 7</span><br><span class="line">mknod -m 666 &quot;$target&quot;/dev/null c 1 3</span><br><span class="line">mknod -m 666 &quot;$target&quot;/dev/ptmx c 5 2</span><br><span class="line">mknod -m 666 &quot;$target&quot;/dev/random c 1 8</span><br><span class="line">mknod -m 666 &quot;$target&quot;/dev/tty c 5 0</span><br><span class="line">mknod -m 666 &quot;$target&quot;/dev/tty0 c 4 0</span><br><span class="line">mknod -m 666 &quot;$target&quot;/dev/urandom c 1 9</span><br><span class="line">mknod -m 666 &quot;$target&quot;/dev/zero c 1 5</span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash"><span class="string">amazon linux yum will fail without vars set</span></span></span><br><span class="line">if [ -d /etc/yum/vars ]; then</span><br><span class="line">	mkdir -p -m 755 &quot;$target&quot;/etc/yum</span><br><span class="line">	cp -a /etc/yum/vars &quot;$target&quot;/etc/yum/</span><br><span class="line">fi</span><br><span class="line"></span><br><span class="line">if [[ -n &quot;$install_groups&quot; ]]; then</span><br><span class="line">	yum -c &quot;$yum_config&quot; --installroot=&quot;$target&quot; --releasever=/ --setopt=tsflags=nodocs \</span><br><span class="line">		--setopt=group_package_types=mandatory -y groupinstall &quot;$&#123;install_groups[@]&#125;&quot;</span><br><span class="line">fi</span><br><span class="line"></span><br><span class="line">if [[ -n &quot;$install_packages&quot; ]]; then</span><br><span class="line">	yum -c &quot;$yum_config&quot; --installroot=&quot;$target&quot; --releasever=/ --setopt=tsflags=nodocs \</span><br><span class="line">		--setopt=group_package_types=mandatory -y install &quot;$&#123;install_packages[@]&#125;&quot;</span><br><span class="line">fi</span><br><span class="line"></span><br><span class="line">yum -c &quot;$yum_config&quot; --installroot=&quot;$target&quot; -y clean all</span><br><span class="line"></span><br><span class="line">cat &gt; &quot;$target&quot;/etc/sysconfig/network &lt;&lt; EOF</span><br><span class="line">NETWORKING=yes</span><br><span class="line">HOSTNAME=localhost.localdomain</span><br><span class="line">EOF</span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash"><span class="string">effectively: febootstrap-minimize --keep-zoneinfo --keep-rpmdb --keep-services &quot;</span><span class="variable">$target</span><span class="string">&quot;.</span></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash"><span class="string"> locales</span></span></span><br><span class="line">rm -rf &quot;$target&quot;/usr/&#123;&#123;lib,share&#125;/locale,&#123;lib,lib64&#125;/gconv,bin/localedef,sbin/build-locale-archive&#125;</span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash"><span class="string"> docs and man pages</span></span></span><br><span class="line">rm -rf &quot;$target&quot;/usr/share/&#123;man,doc,info,gnome/help&#125;</span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash"><span class="string"> cracklib</span></span></span><br><span class="line">rm -rf &quot;$target&quot;/usr/share/cracklib</span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash"><span class="string"> i18n</span></span></span><br><span class="line">rm -rf &quot;$target&quot;/usr/share/i18n</span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash"><span class="string"> yum cache</span></span></span><br><span class="line">rm -rf &quot;$target&quot;/var/cache/yum</span><br><span class="line">mkdir -p --mode=0755 &quot;$target&quot;/var/cache/yum</span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash"><span class="string"> sln</span></span></span><br><span class="line">rm -rf &quot;$target&quot;/sbin/sln</span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash"><span class="string"> ldconfig</span></span></span><br><span class="line">rm -rf &quot;$target&quot;/etc/ld.so.cache &quot;$target&quot;/var/cache/ldconfig</span><br><span class="line">mkdir -p --mode=0755 &quot;$target&quot;/var/cache/ldconfig</span><br><span class="line"></span><br><span class="line">if [ -z &quot;$version&quot; ]; then</span><br><span class="line">	for file in &quot;$target&quot;/etc/&#123;redhat,system&#125;-release; do</span><br><span class="line">		if [ -r &quot;$file&quot; ]; then</span><br><span class="line">			version=&quot;$(sed &#x27;s/^[^0-9\]*\([0-9.]\+\).*$/\1/&#x27; &quot;$file&quot;)&quot;</span><br><span class="line">			break</span><br><span class="line">		fi</span><br><span class="line">	done</span><br><span class="line">fi</span><br><span class="line"></span><br><span class="line">if [ -z &quot;$version&quot; ]; then</span><br><span class="line">	echo &gt;&amp;2 &quot;warning: cannot autodetect OS version, using &#x27;$name&#x27; as tag&quot;</span><br><span class="line">	version=$name</span><br><span class="line">fi</span><br><span class="line"></span><br><span class="line">tar --numeric-owner -c -C &quot;$target&quot; . | docker import - $name:$version</span><br><span class="line"></span><br><span class="line">docker run -i -t --rm $name:$version /bin/bash -c &#x27;echo success&#x27;</span><br><span class="line"></span><br><span class="line">rm -rf &quot;$target&quot;</span><br></pre></td></tr></table></figure>
+
+<p>docker run -d  -p 1000:22 –name&#x3D;ax7-test ax7:7.3.1512  &#x2F;usr&#x2F;sbin&#x2F;init</p>
+<p>docker exec -it ax7 bash</p>
+<h2 id="修改运行中的docker容器的端口映射和挂载目录"><a href="#修改运行中的docker容器的端口映射和挂载目录" class="headerlink" title="修改运行中的docker容器的端口映射和挂载目录"></a>修改运行中的docker容器的端口映射和挂载目录</h2><p>在docker run创建并运行容器的时候，可以通过-p指定端口映射规则。但是，我们经常会遇到刚开始忘记设置端口映射或者设置错了需要修改。当docker start运行容器后并没有提供一个-p选项或设置，让你修改指定端口映射规则。那么这种情况我们该怎么处理呢？今天Docker君教你如何修改运行中的docker容器的端口映射？</p>
+<h3 id="方法一：删除原有容器，重新建新容器"><a href="#方法一：删除原有容器，重新建新容器" class="headerlink" title="方法一：删除原有容器，重新建新容器"></a>方法一：删除原有容器，重新建新容器</h3><p>这个解决方案最为简单，把原来的容器删掉，重新建一个。当然这次不要忘记加上端口映射。</p>
+<p>优缺点：优点是简单快捷，在测试环境使用较多。缺点是如果是数据库镜像，那重新建一个又要重新配置一次，就比较麻烦了。</p>
+<h3 id="方法二：修改容器配置文件，重启docker服务"><a href="#方法二：修改容器配置文件，重启docker服务" class="headerlink" title="方法二：修改容器配置文件，重启docker服务"></a>方法二：修改容器配置文件，重启docker服务</h3><p>容器的配置文件路径：</p>
+<ol>
+<li><code>/var/lib/docker/containers/[hash_of_the_container]/hostconfig.json</code></li>
+</ol>
+<p>  其中的hashofthecontainer是docker镜像的hash值，可以通过docker ps或者docker inspect containername查看。（CONTAINER ID就可以看出来）</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">[root@ecs-5286 ~]# docker ps</span><br><span class="line">CONTAINER ID        IMAGE                     COMMAND             CREATED             STATUS                  PORTS                                                                  NAMES</span><br><span class="line">f8511e56585f        gitlab/gitlab-ce:latest   &quot;/assets/wrapper&quot;   8 months ago        Up 16 hours (healthy)   0.0.0.0:10022-&gt;22/tcp, 0.0.0.0:8080-&gt;80/tcp, 0.0.0.0:10443-&gt;443/tcp   gitlab-ce</span><br><span class="line">[root@ecs-5286 ~]# </span><br><span class="line">[root@ecs-5286 ~]# </span><br><span class="line">[root@ecs-5286 ~]# cat /var/lib/docker/containers/f8511e56585fdd68d4bb5ad57250d829bac52626d722305a43dec1e5cf18406c/hostconfig.json </span><br><span class="line">&#123;&quot;Binds&quot;:[&quot;/srv/gitlab/logs:/var/log/gitlab&quot;,&quot;/srv/gitlab/data:/var/opt/gitlab&quot;,&quot;/srv/gitlab/config:/etc/gitlab&quot;],&quot;ContainerIDFile&quot;:&quot;&quot;,&quot;LogConfig&quot;:&#123;&quot;Type&quot;:&quot;journald&quot;,&quot;Config&quot;:&#123;&#125;&#125;,&quot;NetworkMode&quot;:&quot;default&quot;,&quot;PortBindings&quot;:&#123;&quot;22/tcp&quot;:[&#123;&quot;HostIp&quot;:&quot;&quot;,&quot;HostPort&quot;:&quot;10022&quot;&#125;],&quot;443/tcp&quot;:[&#123;&quot;HostIp&quot;:&quot;&quot;,&quot;HostPort&quot;:&quot;10443&quot;&#125;],&quot;80/tcp&quot;:[&#123;&quot;HostIp&quot;:&quot;&quot;,&quot;HostPort&quot;:&quot;10080&quot;&#125;]&#125;,&quot;RestartPolicy&quot;:&#123;&quot;Name&quot;:&quot;always&quot;,&quot;MaximumRetryCount&quot;:0&#125;,&quot;AutoRemove&quot;:false,&quot;VolumeDriver&quot;:&quot;&quot;,&quot;VolumesFrom&quot;:null,&quot;CapAdd&quot;:null,&quot;CapDrop&quot;:null,&quot;Dns&quot;:[],&quot;DnsOptions&quot;:[],&quot;DnsSearch&quot;:[],&quot;ExtraHosts&quot;:null,&quot;GroupAdd&quot;:null,&quot;IpcMode&quot;:&quot;&quot;,&quot;Cgroup&quot;:&quot;&quot;,&quot;Links&quot;:[],&quot;OomScoreAdj&quot;:0,&quot;PidMode&quot;:&quot;&quot;,&quot;Privileged&quot;:false,&quot;PublishAllPorts&quot;:false,&quot;ReadonlyRootfs&quot;:false,&quot;SecurityOpt&quot;:null,&quot;UTSMode&quot;:&quot;&quot;,&quot;UsernsMode&quot;:&quot;&quot;,&quot;ShmSize&quot;:67108864,&quot;Runtime&quot;:&quot;docker-runc&quot;,&quot;ConsoleSize&quot;:[0,0],&quot;Isolation&quot;:&quot;&quot;,&quot;CpuShares&quot;:0,&quot;Memory&quot;:0,&quot;NanoCpus&quot;:0,&quot;CgroupParent&quot;:&quot;&quot;,&quot;BlkioWeight&quot;:0,&quot;BlkioWeightDevice&quot;:null,&quot;BlkioDeviceReadBps&quot;:null,&quot;BlkioDeviceWriteBps&quot;:null,&quot;BlkioDeviceReadIOps&quot;:null,&quot;BlkioDeviceWriteIOps&quot;:null,&quot;CpuPeriod&quot;:0,&quot;CpuQuota&quot;:0,&quot;CpuRealtimePeriod&quot;:0,&quot;CpuRealtimeRuntime&quot;:0,&quot;CpusetCpus&quot;:&quot;&quot;,&quot;CpusetMems&quot;:&quot;&quot;,&quot;Devices&quot;:[],&quot;DiskQuota&quot;:0,&quot;KernelMemory&quot;:0,&quot;MemoryReservation&quot;:0,&quot;MemorySwap&quot;:0,&quot;MemorySwappiness&quot;:-1,&quot;OomKillDisable&quot;:false,&quot;PidsLimit&quot;:0,&quot;Ulimits&quot;:null,&quot;CpuCount&quot;:0,&quot;CpuPercent&quot;:0,&quot;IOMaximumIOps&quot;:0,&quot;IOMaximumBandwidth&quot;:0&#125;</span><br><span class="line">[root@ecs-5286 ~]# </span><br></pre></td></tr></table></figure>
+
+<p><img src="https://common.cnblogs.com/images/copycode.gif" alt="复制代码"></p>
+<p>按需修改端口, 按需修改挂载目录(权限和属主属组要相同)，然后重启docker服务，再启动容器服务就可以了。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">systemctl restart docker</span><br></pre></td></tr></table></figure>
+
+<p> 优缺点：这个方法的优点是没有副作用，操作简单。缺点是需要重启整个docker服务，如果在同一个宿主机上运行着多个容器服务的话，就会影响其他容器服务。</p>
+<h2 id="Docker-修改默认存储路径的一个方法"><a href="#Docker-修改默认存储路径的一个方法" class="headerlink" title="Docker 修改默认存储路径的一个方法"></a><a target="_blank" rel="noopener" href="https://www.cnblogs.com/jinanxiaolaohu/p/8301786.html">Docker 修改默认存储路径的一个方法</a></h2><p>\1. 前期安装创建centOS的虚拟机时发现自己对linux的挂载点不清楚, 造成挂载点的分配不太均匀,如图:</p>
+<p>root &#x2F; 节点的大小设置的比较小 &#x2F;home路径设置的一直比较大</p>
+<p>但是docker 默认的存储路径在 &#x2F;var&#x2F;lib&#x2F;docker下面 感觉不太好.</p>
+<p><img src="https://images2017.cnblogs.com/blog/485196/201801/485196-20180117110412474-1975160813.png" alt="img"></p>
+<p>\2. 为了解决这个问题, 计划将docker的默认存储路径从&#x2F;var&#x2F;lib&#x2F;docker中移出去</p>
+<p>方法: 在&#x2F;home 目录下创建目录.</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">cd /home</span><br><span class="line">mkdir docker</span><br></pre></td></tr></table></figure>
+
+<p>\3. 修改docker的systemd的 docker.service的配置文件</p>
+<p>不知道 配置文件在哪里可以使用systemd 命令显示一下.</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">systemctl disable docker</span><br><span class="line">systemctl enable docker</span><br><span class="line">#显示结果</span><br><span class="line">Created symlink from /etc/systemd/system/multi-user.target.wants/docker.service to /usr/lib/systemd/system/docker.service.</span><br></pre></td></tr></table></figure>
+
+<p>\4. 修改docker.service文件.</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">vim /usr/lib/systemd/system/docker.service</span><br></pre></td></tr></table></figure>
+
+<p>\5. 在里面的EXECStart的后面增加后如下:</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ExecStart=/usr/bin/dockerd --graph /home/docker</span><br></pre></td></tr></table></figure>
+
+<p>\6. 重新enable 一下docker 服务 重新进行软连接 以及进行一次 daemon-reload</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">systemctl disable docker</span><br><span class="line">systemctl enable docker</span><br><span class="line">systecmtl daemon-reload</span><br><span class="line">systemctl start docker</span><br><span class="line"></span><br><span class="line">http://22.200.126.235:15672/</span><br><span class="line">http://22.200.126.236:15672/</span><br><span class="line">  http://22.200.126.237:15672/</span><br><span class="line">http://22.200.126.238:15672/</span><br></pre></td></tr></table></figure>
+
+<p>\7. 查看docker info 信息<br><img src="/knowledge-base/docker-info.png" alt="img"></p>
+<p>\8. docker pull 一个image 查看存放路径是否准确</p>
+<p>验证镜像信息存放到了 &#x2F;home&#x2F;docker 目录下</p>
+<p><img src="/knowledge-base/du-docker.png" alt="img"></p>
+<h2 id="linux修改用户主目录的方法"><a href="#linux修改用户主目录的方法" class="headerlink" title="linux修改用户主目录的方法"></a>linux修改用户主目录的方法</h2><p>第一：修改&#x2F;etc&#x2F;passwd文件<br>第二：usermod命令 </p>
+<p>详细说明如下：<br>第一种方法：vi &#x2F;etc&#x2F;passwd<br>找到要修改的用户那几行，修改掉即可。此法很暴力，建议慎用。<br>&#x2F;etc&#x2F;passwd文件格式<br>登录名：加密口令：数字用户ID:数字组ID:注释字段：起始目录：shell程序<br>用此方法修改了用户宿主目录后，会出现某些异常，如：bash环境异常，需要将用户原宿主目录下的隐藏文件拷贝到更改后的宿主目录即可<br>cp &#x2F;原宿主目录&#x2F;.* &#x2F;目标目录  </p>
+<p>第二种：usermod<br>usermod -d &#x2F;usr&#x2F;newfolder -u uid<br>-u后面一定要接uid啊，不是username<br>附：usermod详细参数<br>语　　法：usermod [-LU][-c &lt;备注&gt;][-d &lt;登入目录&gt;][-e &lt;有效期限&gt;][- f &lt;缓冲天数&gt;][-g &lt;群组&gt;][-G &lt;群组&gt;][-l &lt;帐号名称&gt;][-s ][-u ] [用户帐号] </p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">使用案例 </span><br><span class="line">heihaier@heihaier-desktop:~$ id root </span><br><span class="line">uid=0(root) gid=0(root) groups=0(root) </span><br><span class="line">方法二：查看 /etc/password 文件  </span><br><span class="line">/etc/password 文件格式 </span><br><span class="line">root:x:0:0:root:/root:/bin/bash </span><br><span class="line">上面是这个文件的一行实例，每个域用 : 区分，从左向右分别是 </span><br><span class="line">root 用户名：1~32 字节长。 </span><br><span class="line">x 密码：字符x表示密码被加密保存在 /etc/shadow 文件中。 </span><br><span class="line">0 用户ID(UID)：每个用户必需指定UID。UID 0 是保留给 root 用户的。UID 1~99是保留给其它预定义用户的。 UID 100~999是保留给系统用户的。 </span><br><span class="line">0 组ID(GID)：主组ID（保存在 /etc/group 文件中）。 </span><br><span class="line">root 用户ID信息：用户备注信息。 </span><br><span class="line">/root 主目录：用户主目录。 </span><br><span class="line">/bin/bash 命令解释器(Shell)：用户默认的命令解释器的路径。 </span><br><span class="line">使用案例 </span><br><span class="line">heihaier@heihaier-desktop:~$ sudo cat /etc/passwd | grep root </span><br><span class="line">root:x:0:0:root:/root:/bin/bash</span><br></pre></td></tr></table></figure>
+
+<h3 id="修改目录之后shell出现bash-4-2想象"><a href="#修改目录之后shell出现bash-4-2想象" class="headerlink" title="修改目录之后shell出现bash-4.2想象"></a>修改目录之后shell出现bash-4.2想象</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">拷贝/etc/skel的文件到$HOME的文件家目录</span><br></pre></td></tr></table></figure>
+
+<h2 id="docker远程仓库镜像删除"><a href="#docker远程仓库镜像删除" class="headerlink" title="docker远程仓库镜像删除"></a>docker远程仓库镜像删除</h2><p>1、 查看仓库中的镜像</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">curl -X GET http://registry.test.cn:5000/v2/_catalog |python -m json.tool </span><br><span class="line">&#123;     &quot;repositories&quot;: [        &quot;nginx&quot;,        &quot;grafana&quot;    ] &#125; </span><br></pre></td></tr></table></figure>
+
+<p>2、 查看某个镜像的标签列表</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">curl -X GET http://registry.test.cn:5000/v2/grafana/tags/list |python -m json.tool </span><br><span class="line">&#123;    &quot;name&quot;: &quot;grafana&quot;,    &quot;tags&quot;: [        &quot;v3.11.82&quot;,        &quot;latest&quot;    ] &#125; </span><br></pre></td></tr></table></figure>
+
+<p>3、 查看某个镜像的digest值</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">curl  -I -X GET http://registry.test.cn:5000/v2/grafana/manifests/v3.11.82 </span><br><span class="line">HTTP/1.1 200 OK Content-Length: 5805 Content-Type: application/vnd.docker.distribution.manifest.v1+prettyjws Docker-Content-Digest: sha256:2d6ff127dd79779c7a4c0e42975ddec4d7243019946e0a53084c8107a736f9e5 Docker-Distribution-Api-Version: registry/2.0 Etag: &quot;sha256:2d6ff127dd79779c7a4c0e42975ddec4d7243019946e0a53084c8107a736f9e5&quot; Date: Wed, 04 Mar 2020 09:48:38 GMT </span><br></pre></td></tr></table></figure>
+
+<p>4、 删除某个镜像的某个版本</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">curl  -X DELETE http://registry.test.cn:5000/v2/grafana/manifests/v3.11.82 </span><br><span class="line">或者 </span><br><span class="line">curl  -X DELETE http://registry.test.cn:5000/v2/grafana/manifests/sha256:2d6ff127dd79779c7a4c0e42975ddec4d7243019946e0a53084c8107a736f9e5 &#123;&quot;errors&quot;:[&#123;&quot;code&quot;:&quot;UNSUPPORTED&quot;,&quot;message&quot;:&quot;The operation is unsupported.&quot;&#125;]&#125; </span><br></pre></td></tr></table></figure>
+
+<h1 id="docker-私有仓库-删除镜像"><a href="#docker-私有仓库-删除镜像" class="headerlink" title="docker 私有仓库 删除镜像"></a><a target="_blank" rel="noopener" href="https://www.cnblogs.com/liubiaos/p/11271395.html">docker 私有仓库 删除镜像</a></h1><p>1、查找官方删除法</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">https://github.com/burnettk/delete-docker-registry-image</span><br></pre></td></tr></table></figure>
+
+<p>2、民用删除法</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">https://segmentfault.com/a/1190000018166325</span><br></pre></td></tr></table></figure>
+
+<p>3、测试过后，发现自己部署的居然和大众不一样，随机自己摸索。</p>
+<p>大体流程，找到数据存放在服务器的数据，然后删除数据。即便这样删除了，也没有用，需要再到容器内部更新数据，启用垃圾回收机制，才能真正的删除掉数据。</p>
+<p>1、查看是否开启了删除数据功能：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker exec -it registry sh 进入容器内部，查看数据是否有开删除数据功能``cd /etc/registry/config.yml  </span><br></pre></td></tr></table></figure>
+
+<p>　　<img src="https://img2018.cnblogs.com/blog/1244297/201907/1244297-20190730170416919-244362191.png" alt="img"></p>
+<p>2、查看数据存放在哪？</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"># cd /data/registry/docker/registry/v2/repositories</span><br></pre></td></tr></table></figure>
+
+<p>　　查看到仓库数据，所以尝试删出一个仓库数据。（这个需要查看容器和服务器的文件夹目录来找到）</p>
+<p>3、删除数据，同步垃圾回收。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">registry garbage-collect /etc/registry/config.yml</span><br></pre></td></tr></table></figure>
+
+<p>　　</p>
+<p>4、查看效果</p>
+<p><img src="https://img2018.cnblogs.com/blog/1244297/201907/1244297-20190730170837131-976985934.png" alt="img"></p>
+<p>删除完毕！！！</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">/opt/etcd/bin/etcd --name=etcd01 --data-dir=/opt/etcd/data/default.etcd --listen-client-urls=https://192.168.0.201:2379,http://127.0.0.1:2379 --listen-peer-urls=https://192.168.0.201:2380 --advertise-client-urls=https://192.168.0.201:2379 --initial-advertise-peer-urls=https://192.168.0.201:2380 --initial-cluster-token=etcd-cluster --initial-cluster=etcd01=https://192.168.0.201:2380,etcd02=https://192.168.0.10:2380 --initial-cluster-state=new  --cert-file=/opt/etcd/ssl/server.pem --key-file=/opt/etcd/ssl/server-key.pem --peer-cert-file=/opt/etcd/ssl/server.pem --peer-key-file=/opt/etcd/ssl/server-key.pem --trusted-ca-file=/opt/etcd/ssl/ca.pem --peer-trusted-ca-file=/opt/etcd/ssl/ca.pem</span><br></pre></td></tr></table></figure>
+
+<p>老师，应用堡垒机的网络是你们这边打通吗？</p>
+<p> 21.9.198.229&#x2F;230–&gt; 22.252.7.3 端口443</p>
+<p>21.9.198.229&#x2F;230–&gt; 22.244.87.22 端口15672</p>
+<p>21.9.198.229&#x2F;230–&gt; 22.244.87.23 端口 15672</p>
+<p>21.9.198.229&#x2F;230–&gt; 22.244.87.24 端口 15672</p>
+<p>21.9.198.229&#x2F;230–&gt; 22.244.87.25 端口 15672</p>
+<p>21.9.198.229&#x2F;230–&gt; 22.244.87.26 端口 15672</p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/knowledge-base/tags/docker/" rel="tag"># docker</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/knowledge-base/2019/08/20/labelerr/" rel="prev" title="React配置label报错，package.json和.babelrc出现冲突">
+                  <i class="fa fa-chevron-left"></i> React配置label报错，package.json和.babelrc出现冲突
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/knowledge-base/2019/08/23/docker/" rel="next" title="docker 详解">
+                  docker 详解 <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  &copy; 
+  <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">ZHD</span>
+</div>
+<div class="wordcount">
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-chart-line"></i>
+    </span>
+    <span title="站点总字数">220k</span>
+  </span>
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+    <span title="站点阅读时长">3:20</span>
+  </span>
+</div>
+<div class="busuanzi-count">
+    <span class="post-meta-item" id="busuanzi_container_site_uv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div><script color="0,0,255" opacity="0.5" zIndex="-1" count="99" src="https://lib.baomitu.com/canvas-nest.js/1.0.1/canvas-nest.js"></script>
+
+
+    </div>
+  </footer>
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.1/jquery.min.js" integrity="sha256-o88AwQnZB+VDvE9tvIXrMQaPlFFSUTR+nldQm1LuPXQ=" crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/fancybox/3.5.7/jquery.fancybox.min.js" integrity="sha256-yt2kYMy0w8AbtF89WXb2P1rfjcP/HTHLT7097U8Y5b8=" crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pangu/4.0.7/pangu.min.js" integrity="sha256-j+yj56cdEY2CwkVtGyz18fNybFGpMGJ8JxG3GSyO2+I=" crossorigin="anonymous"></script>
+<script src="/knowledge-base/js/comments.js"></script><script src="/knowledge-base/js/utils.js"></script><script src="/knowledge-base/js/motion.js"></script><script src="/knowledge-base/js/next-boot.js"></script>
+
+  
+<script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-generator-searchdb/1.4.0/search.js" integrity="sha256-vXZMYLEqsROAXkEw93GGIvaB2ab+QW6w3+1ahD9nXXA=" crossorigin="anonymous"></script>
+<script src="/knowledge-base/js/third-party/search/local-search.js"></script>
+
+
+
+  <script src="/knowledge-base/js/third-party/fancybox.js"></script>
+
+  <script src="/knowledge-base/js/third-party/pace.js"></script>
+
+  
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+
+
+
+<script src="/knowledge-base/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"pluginModelPath":"assets/","model":{"jsonPath":"/knowledge-base/live2dw/assets/shizuku.model.json"},"display":{"position":"left","width":200,"height":400},"mobile":{"show":false},"rect":"opacity:0.7","log":false,"pluginJsPath":"lib/","pluginRootPath":"live2dw/","tagMode":false});</script></body>
+</html>

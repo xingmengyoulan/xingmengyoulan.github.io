@@ -1,0 +1,476 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222"><meta name="generator" content="Hexo 6.3.0">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/knowledge-base/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/knowledge-base/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/knowledge-base/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/knowledge-base/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/knowledge-base/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css" integrity="sha256-AbA177XfpSnFEvgpYu1jMygiLabzPCJCRIBtR5jGc0k=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fancybox/3.5.7/jquery.fancybox.min.css" integrity="sha256-Vzbj7sDDS/woiFS3uNKo8eIuni59rjyNGtXfstRzStA=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/pace/1.2.4/themes/blue/pace-theme-minimal.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pace/1.2.4/pace.min.js" integrity="sha256-gqd7YTjg/BtfqWSwsJOvndl0Bxc8gFImLEkXQT8+qj0=" crossorigin="anonymous"></script>
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"zhd_snow.gitee.io","root":"/knowledge-base/","images":"/knowledge-base/images","scheme":"Gemini","darkmode":false,"version":"8.13.0","exturl":false,"sidebar":{"position":"left","display":"always","padding":18,"offset":12,"b2t":false,"scrollpercent":true},"copycode":{"enable":true,"style":"mac"},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":true,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":true,"motion":{"enable":true,"async":true,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/knowledge-base/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false}}</script><script src="/knowledge-base/js/config.js"></script>
+
+    <meta name="description" content="本文主要讲述 pip 离线安装包的相关事宜，主要针对内网无法直接使用pip安装的情况, 使用的是linux 服务器 我的讲述重点是能够学会离线的环境下批量安装python库">
+<meta property="og:type" content="article">
+<meta property="og:title" content="pip 通过 requirements 文件，批量下载包，批量离线安装包">
+<meta property="og:url" content="https://zhd_snow.gitee.io/knowledge-base/2019/08/31/pip-install/index.html">
+<meta property="og:site_name" content="雪兰度">
+<meta property="og:description" content="本文主要讲述 pip 离线安装包的相关事宜，主要针对内网无法直接使用pip安装的情况, 使用的是linux 服务器 我的讲述重点是能够学会离线的环境下批量安装python库">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2019-08-31T01:15:10.000Z">
+<meta property="article:modified_time" content="2022-09-17T07:37:52.513Z">
+<meta property="article:author" content="ZHD">
+<meta property="article:tag" content="python">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="canonical" href="https://zhd_snow.gitee.io/knowledge-base/2019/08/31/pip-install/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://zhd_snow.gitee.io/knowledge-base/2019/08/31/pip-install/","path":"2019/08/31/pip-install/","title":"pip 通过 requirements 文件，批量下载包，批量离线安装包"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>pip 通过 requirements 文件，批量下载包，批量离线安装包 | 雪兰度</title>
+  
+
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/knowledge-base/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/knowledge-base/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">雪兰度</p>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">ZHD's Notes</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/knowledge-base/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-about"><a href="/knowledge-base/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a></li><li class="menu-item menu-item-tags"><a href="/knowledge-base/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签<span class="badge">14</span></a></li><li class="menu-item menu-item-categories"><a href="/knowledge-base/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类<span class="badge">15</span></a></li><li class="menu-item menu-item-archives"><a href="/knowledge-base/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档<span class="badge">33</span></a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup"><div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off" maxlength="80"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close" role="button">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div class="search-result-container no-result">
+  <div class="search-result-icon">
+    <i class="fa fa-spinner fa-pulse fa-5x"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%9C%AC%E6%96%87%E7%9B%AE%E5%BD%95"><span class="nav-number">1.</span> <span class="nav-text">本文目录</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%B8%80%E3%80%81-python%E5%BA%93%E7%9A%84%E5%AE%89%E8%A3%85%E6%96%B9%E6%B3%95"><span class="nav-number">2.</span> <span class="nav-text">一、 python库的安装方法</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%BA%8C%E3%80%81pip-pypi%E4%B8%8Epython-%E5%BA%93"><span class="nav-number">3.</span> <span class="nav-text">二、pip, pypi与python 库</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%B8%89%E3%80%81%E6%93%8D%E4%BD%9C%E6%AD%A5%E9%AA%A4"><span class="nav-number">4.</span> <span class="nav-text">三、操作步骤</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%9B%9B%E3%80%81%E5%B8%B8%E8%A7%81%E9%97%AE%E9%A2%98"><span class="nav-number">5.</span> <span class="nav-text">四、常见问题</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="ZHD"
+      src="/knowledge-base/images/header.jpg">
+  <p class="site-author-name" itemprop="name">ZHD</p>
+  <div class="site-description" itemprop="description">盛年不重来，一日难再晨;及时当勉励，岁月不待人。</div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/knowledge-base/archives/">
+          <span class="site-state-item-count">33</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/knowledge-base/categories/">
+        <span class="site-state-item-count">15</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/knowledge-base/tags/">
+        <span class="site-state-item-count">14</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author site-overview-item animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/xingmengyoulan" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;xingmengyoulan" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:xingmengyoulan@163.com" title="E-Mail → mailto:xingmengyoulan@163.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+
+
+
+        </div>
+      </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://zhd_snow.gitee.io/knowledge-base/2019/08/31/pip-install/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/knowledge-base/images/header.jpg">
+      <meta itemprop="name" content="ZHD">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="雪兰度">
+      <meta itemprop="description" content="盛年不重来，一日难再晨;及时当勉励，岁月不待人。">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="pip 通过 requirements 文件，批量下载包，批量离线安装包 | 雪兰度">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          pip 通过 requirements 文件，批量下载包，批量离线安装包
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2019-08-31 09:15:10" itemprop="dateCreated datePublished" datetime="2019-08-31T09:15:10+08:00">2019-08-31</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新于</span>
+      <time title="修改时间：2022-09-17 15:37:52" itemprop="dateModified" datetime="2022-09-17T15:37:52+08:00">2022-09-17</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/knowledge-base/categories/python/" itemprop="url" rel="index"><span itemprop="name">python</span></a>
+        </span>
+    </span>
+
+  
+    <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv">
+      <span class="post-meta-item-icon">
+        <i class="far fa-eye"></i>
+      </span>
+      <span class="post-meta-item-text">阅读次数：</span>
+      <span id="busuanzi_value_page_pv"></span>
+    </span>
+    <span class="post-meta-break"></span>
+    <span class="post-meta-item" title="本文字数">
+      <span class="post-meta-item-icon">
+        <i class="far fa-file-word"></i>
+      </span>
+      <span class="post-meta-item-text">本文字数：</span>
+      <span>4.8k</span>
+    </span>
+    <span class="post-meta-item" title="阅读时长">
+      <span class="post-meta-item-icon">
+        <i class="far fa-clock"></i>
+      </span>
+      <span class="post-meta-item-text">阅读时长 &asymp;</span>
+      <span>4 分钟</span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <div class="note success"><p>本文主要讲述 pip 离线安装包的相关事宜，主要针对内网无法直接使用pip安装的情况, 使用的是linux 服务器</p>
+<p>我的讲述重点是能够学会离线的环境下批量安装python库</p>
+</div>
+<span id="more"></span>
+
+<p>本文概览</p>
+<p>本文主要讲述 pip 离线安装包的相关事宜，<br>主要针对内网无法直接使用pip安装的情况, 使用的是linux 服务器</p>
+<pre><code>由于大多数情况下都可直接使用 pip install -r requirements.txt
+我的讲述重点是能够学会离线的环境下批量安装python库
+会兼顾一些常见问题和基础知识，本文不会讲的太深，在一些地方会给出链接，以便深入讨论该主题
+本文不仅仅是为了写出解决方案，更多地是学习python 库的基础知识，以便遇见问题时能够自行解决
+</code></pre>
+<h3 id="本文目录"><a href="#本文目录" class="headerlink" title="本文目录"></a>本文目录</h3><pre><code>python库的安装方法 主要讲安装python 库的几种方式及其分析
+pip, pypi与python 库 主要讲安装pip 的安装方法，与python 库的各种分类
+操作步骤 主要讲整体操作
+常见问题 各种安装或异常情况的问题及其处理
+
+该文也是边学习边总结中不断修改，不断更新的，希望能够帮助到你，有问题可留言评论
+</code></pre>
+<h3 id="一、-python库的安装方法"><a href="#一、-python库的安装方法" class="headerlink" title="一、 python库的安装方法"></a>一、 python库的安装方法</h3><pre><code>更多关于python 库安装的资料
+</code></pre>
+<p>常见的安装方法</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">直接在 pypi 官网下载，而后进行手动安装</span><br><span class="line">使用 pip 根据requirements文件下载安装包，到离线环境中再使用 pip 安装</span><br><span class="line">通过docker 安装相应环境，高级版</span><br><span class="line">通过 Ansible 自动化部署，超级版</span><br></pre></td></tr></table></figure>
+
+<p>各种方式优劣</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">第一种效率低，但可以解决一两个包的安装，暂时性地解决问题</span><br><span class="line">第二种是本文推荐的方式，可以批量的下载，并且批量安装，解决的是一台服务器上安装多个包的问题</span><br><span class="line">第三种这种方式可以将python 环境进行复制，更适合于多个服务器的安装</span><br><span class="line">不了解，有兴趣可以自行学习</span><br></pre></td></tr></table></figure>
+
+<h3 id="二、pip-pypi与python-库"><a href="#二、pip-pypi与python-库" class="headerlink" title="二、pip, pypi与python 库"></a>二、pip, pypi与python 库</h3><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">pip 官方文档</span><br><span class="line">pip 快速上手</span><br><span class="line">pypi 官网</span><br><span class="line">python package官方文档</span><br><span class="line"></span><br><span class="line">pypi 是存储 python 库(package) 并可通过 pip 进行安装的一个平台</span><br><span class="line"></span><br><span class="line">python 库 比作货物，pypi 就是存储货物的仓库，而pip 可以想象成 pypi 的管理人员，帮助你获取python 库</span><br><span class="line">pip 也是一个python 库，是 easy_install 的升级版，两者就好像 rpm 和 yum 一样</span><br><span class="line">pypi 是一个python 库的官方存储仓库，相应的还有一些镜像源，用来提升速度的</span><br></pre></td></tr></table></figure>
+
+<p>python 库</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line">python 库是什么</span><br><span class="line">python 库本质上就是一个python 程序包，路径一般在 /usr/lib/python3<span class="number">.6</span>/site-packages 下</span><br><span class="line">python 库很重要的一点是 库与库之间是相互依赖的，还有python 库的版本问题也很重要</span><br><span class="line">python 库的常见分类</span><br><span class="line">    是否需要安装后才可使用，可以分为标准库(内置库)和第三方库</span><br><span class="line">    按照操作系统，可以大致分为 windows 和 UNIX 系统两类</span><br><span class="line">    按照python 版本，可以分为 python <span class="number">2</span> ，python <span class="number">3.6</span>，python <span class="number">3.7</span> 等等</span><br><span class="line">    按照解释器，可以分为 cp(C语言 解释器)，jp(Java 解释器)，IronPython（.Net 解释器）等等</span><br><span class="line">    并且库本身还有很多版本，相应版本之间也会有差异</span><br><span class="line">    按照安装包的方式可以分为， 源码包，wheel 包， egg包</span><br><span class="line">源码包，wheel 包与 egg 包</span><br><span class="line">    常见的是 源码包和wheel 包，egg 已经较少了</span><br><span class="line">    源码包就是二进制包，一般安装后会有一个可执行文件</span><br><span class="line">    wheel 包是一种包的格式，可直接使用 pip install xxx.whl 进行安装</span><br><span class="line">    egg 包是以前的版本，相对来说，wheel 格式是 egg 格式的升级版本 ，可使用 python setup.py xxx.egg进行安装</span><br><span class="line">wheel包的命名方式(源码包只有包的版本号)</span><br><span class="line">    wheel包名官方文档</span><br><span class="line">    wheel 包的命名格式为 &#123;distribution&#125;-&#123;version&#125;(-&#123;build tag&#125;)?-&#123;python tag&#125;-&#123;abi tag&#125;-&#123;platform tag&#125;.whl</span><br><span class="line">    例如 mysql_connector-<span class="number">2.1</span><span class="number">.6</span>-cp36-cp36m-win_amd64.whl</span><br><span class="line">    一些通用的包可以使用 no 或者 <span class="built_in">any</span> 对相应字段进行替换，例如这个包是linux 和 windows 都通用的，就可以在platform 上写 <span class="built_in">any</span></span><br></pre></td></tr></table></figure>
+
+<p>名称 	对应名称 	解释<br>distribution 	mysql_connector 	包名<br>version 	2.1.6 	版本<br>bulid tag 	备注标签 	可省略<br>python-tag 	cp36 	表示 cpython 3.6 版本<br>abi-tag 	cp36m 	abi Application Binary Interface<br>应用程序二进制接口<br>platform 	win_amd64 	platform 还可以是 any<br>win32 , linux_i386 , linux_x86_64, any 表示 跨平台</p>
+<h3 id="三、操作步骤"><a href="#三、操作步骤" class="headerlink" title="三、操作步骤"></a>三、操作步骤</h3><ol>
+<li><p>源码包手动安装</p>
+ <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">以 uwsgi 为例，在linux 上安装uwsgi</span><br><span class="line"></span><br><span class="line">下载 uwsgi 源码包, Pypi 官网下载</span><br><span class="line">解压 tar -zxvf uwsgi.tar.gz</span><br><span class="line">进入目录 cd uwsgi</span><br><span class="line">使用python 安装 python3 setup.py install</span><br><span class="line">即可安装成功</span><br><span class="line"></span><br><span class="line">更简单的方法</span><br><span class="line">pip3 install uwsgi-<span class="number">2.0</span><span class="number">.18</span>.tar.gz</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>pip 安装 官方说明</p>
+ <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">In some cases, you may want to install <span class="keyword">from</span> local packages only, <span class="keyword">with</span> no traffic to PyPI.</span><br></pre></td></tr></table></figure>
+
+</li>
+<li><p>首先，在项目中分析出所有依赖的库</p>
+ <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">pip freeze &gt; requirements.txt</span><br></pre></td></tr></table></figure>
+
+</li>
+<li><p>将所有包下载到DIR这个目录中</p>
+ <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"> pip download -d DIR -r requirements.txt</span><br><span class="line"> pip wheel -w DIR -r requirements.txt</span><br><span class="line"></span><br><span class="line">切记，不要在 windows 下载包，然后放到 Linux 上进行安装，这样八成装不上</span><br><span class="line"></span><br><span class="line">这两条命令的区别在于wheel 方式下载会将下载的包放入wheel 缓存，但缺点是wheel 不可以下载源码包</span><br><span class="line">download 命令会查看wheel缓存，然后再去PyPI下载库，但download命令下载的包不会进入wheel缓存，download 的优点是可以下载源码包</span><br><span class="line">需要注意，使用wheel 方式安装可能会报错，因为有些包是源码包，不能被打包成wheel 格式</span><br><span class="line">download 方法下载的包，不会对依赖性进行检查，这意味着，如果下载 Flask-PyMongo 这个包，只会下载该包，而不会下载 pymongo，经试验发现，download 适合补充wheel不可下载的包，两者搭配使用，才能将requirements文件的库完整的下载</span><br><span class="line">注意: 如果只使用download 方法下载，很有可能安装时候会报错</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+</li>
+<li><p>将文件打包后放到离线服务器上，并进行解压缩</p>
+</li>
+</ol>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="number">1.</span> 下载后执行下面的命令就可以进行安装了</span><br><span class="line"></span><br><span class="line">$ pip3 install --no-index --find-links=DIR -r requirements.txt</span><br><span class="line">命令说明</span><br><span class="line">freeze 将依赖关系分析出来并 使用管道符导入到该文件中</span><br><span class="line">download 分析 requirements 文件，将所有包进行下载，通过 d 选项导入 DIR 文件夹</span><br><span class="line">wheel 分析requirements 文件，并将所有包及其依赖包下载为 wheel 格式，通过 w 选项导入 DIR 文件夹中</span><br><span class="line">--find-links 指定离线安装的文件夹DIR，也就是你下载好的包</span><br><span class="line">注意: --no-index 必须搭配 --find-links 使用</span><br><span class="line"></span><br><span class="line">--no-index¶</span><br><span class="line">Ignore package index (only looking at --find-links URLs instead).</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<h3 id="四、常见问题"><a href="#四、常见问题" class="headerlink" title="四、常见问题"></a>四、常见问题</h3><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br></pre></td><td class="code"><pre><span class="line">注意生产环境是什么平台，如果是Linux，你需要在虚拟机中下载 wheel包，切记</span><br><span class="line">    包名中有 win ，代表只能在windows 中安装</span><br><span class="line">    没有 win，代表跨平台</span><br><span class="line"></span><br><span class="line">安装时报错，不能找到相应的包，打开文件夹后却发现有 cffi 这个库</span><br><span class="line"></span><br><span class="line">Collecting cffi==<span class="number">1.11</span><span class="number">.5</span> (<span class="keyword">from</span> -r lla/requirements.txt (line <span class="number">12</span>))</span><br><span class="line">  Could <span class="keyword">not</span> find a version that satisfies the requirement cffi==<span class="number">1.11</span><span class="number">.5</span> </span><br><span class="line">    (<span class="keyword">from</span> -r lla/requirements.txt (line <span class="number">12</span>)) (<span class="keyword">from</span> versions: )</span><br><span class="line">No matching distribution found <span class="keyword">for</span> cffi==<span class="number">1.11</span><span class="number">.5</span> (<span class="keyword">from</span> -r lla/requirements.txt (line <span class="number">12</span>))</span><br><span class="line"></span><br><span class="line">    原因是该库是<span class="number">3.7</span> 版本，而服务器是<span class="number">3.6</span> 版本，导致安装不上</span><br><span class="line">    使用以下命令选择合适的版本，注意 --no-deps 不可缺少，参考官方文档</span><br><span class="line"></span><br><span class="line">     pip3 download </span><br><span class="line">     	--no-deps</span><br><span class="line">        --platform linux_x86_64</span><br><span class="line">        --python-version <span class="number">36</span></span><br><span class="line">        --implementation cp  </span><br><span class="line">        --abi cp36m    </span><br><span class="line">         -r requirements.txt -d pk</span><br><span class="line"></span><br><span class="line">下载时报错</span><br><span class="line"></span><br><span class="line">  Failed building wheel <span class="keyword">for</span> alembic</span><br><span class="line">  Running setup.py clean <span class="keyword">for</span> alembic</span><br><span class="line">  Running setup.py bdist_wheel <span class="keyword">for</span> Mako ... error</span><br><span class="line">  Complete output <span class="keyword">from</span> command /usr/local/<span class="built_in">bin</span>/python3<span class="number">.7</span> -u -c <span class="string">&quot;import setuptoolstokenize;</span></span><br><span class="line"><span class="string">  __file__=&#x27;/tmp/pip-wheel-e6wqgb6g/Mako/setup.py&#x27;;</span></span><br><span class="line"><span class="string">  f=getattr(tokenize,&#x27;open&#x27;, open)(__file__);</span></span><br><span class="line"><span class="string">  code=f.read().replace(&#x27;\r\n&#x27;, &#x27;\n&#x27;);f.close();exec(compile(code, __file__, &#x27;exec&#x27;))&quot;</span></span><br><span class="line">   bdist_wheel -d /tmp/pip-wheel-l_pjqx6k:</span><br><span class="line">  usage: -c [global_opts] cmd1 [cmd1_opts] [cmd2 [cmd2_opts] ...]</span><br><span class="line">     <span class="keyword">or</span>: -c --<span class="built_in">help</span> [cmd1 cmd2 ...]</span><br><span class="line">     <span class="keyword">or</span>: -c --<span class="built_in">help</span>-commands</span><br><span class="line">     <span class="keyword">or</span>: -c cmd --<span class="built_in">help</span></span><br><span class="line"></span><br><span class="line">  error: invalid command <span class="string">&#x27;bdist_wheel&#x27;</span></span><br><span class="line"></span><br><span class="line">  ----------------------------------------</span><br><span class="line">  Failed building wheel <span class="keyword">for</span> Mako</span><br><span class="line">  Running setup.py clean <span class="keyword">for</span> Mako</span><br><span class="line">Failed to build mysql-connector uwsgi SQLAlchemy alembic Mako</span><br><span class="line">ERROR: Failed to build one <span class="keyword">or</span> more wheels</span><br><span class="line">    问题原因，因为这些包的格式是 tar.gz，也就是源码包，是不可以直接转为 wheel 包的</span><br><span class="line">    可参考上面源代码安装方式</span><br><span class="line"></span><br><span class="line">安装报错</span><br><span class="line">    由于服务器自带的是python2，存在python <span class="number">3</span> 和 python <span class="number">2</span> 两个版本共存的情况</span><br><span class="line">    pip 版本错了，换成 pip3 就OK了</span><br></pre></td></tr></table></figure>
+
+<p>PyPI 服务器搭建</p>
+<pre><code>https://www.cnblogs.com/special-li/p/9149573.html
+该项没有研究
+</code></pre>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/knowledge-base/tags/python/" rel="tag"># python</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/knowledge-base/2019/08/27/react-promise/" rel="prev" title="详解Promise对象">
+                  <i class="fa fa-chevron-left"></i> 详解Promise对象
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/knowledge-base/2019/08/31/pip-config/" rel="next" title="python pip指定安装源安装类库">
+                  python pip指定安装源安装类库 <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  &copy; 
+  <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">ZHD</span>
+</div>
+<div class="wordcount">
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-chart-line"></i>
+    </span>
+    <span title="站点总字数">220k</span>
+  </span>
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+    <span title="站点阅读时长">3:20</span>
+  </span>
+</div>
+<div class="busuanzi-count">
+    <span class="post-meta-item" id="busuanzi_container_site_uv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div><script color="0,0,255" opacity="0.5" zIndex="-1" count="99" src="https://lib.baomitu.com/canvas-nest.js/1.0.1/canvas-nest.js"></script>
+
+
+    </div>
+  </footer>
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.1/jquery.min.js" integrity="sha256-o88AwQnZB+VDvE9tvIXrMQaPlFFSUTR+nldQm1LuPXQ=" crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/fancybox/3.5.7/jquery.fancybox.min.js" integrity="sha256-yt2kYMy0w8AbtF89WXb2P1rfjcP/HTHLT7097U8Y5b8=" crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pangu/4.0.7/pangu.min.js" integrity="sha256-j+yj56cdEY2CwkVtGyz18fNybFGpMGJ8JxG3GSyO2+I=" crossorigin="anonymous"></script>
+<script src="/knowledge-base/js/comments.js"></script><script src="/knowledge-base/js/utils.js"></script><script src="/knowledge-base/js/motion.js"></script><script src="/knowledge-base/js/next-boot.js"></script>
+
+  
+<script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-generator-searchdb/1.4.0/search.js" integrity="sha256-vXZMYLEqsROAXkEw93GGIvaB2ab+QW6w3+1ahD9nXXA=" crossorigin="anonymous"></script>
+<script src="/knowledge-base/js/third-party/search/local-search.js"></script>
+
+
+
+  <script src="/knowledge-base/js/third-party/fancybox.js"></script>
+
+  <script src="/knowledge-base/js/third-party/pace.js"></script>
+
+  
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+
+
+
+<script src="/knowledge-base/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"pluginModelPath":"assets/","model":{"jsonPath":"/knowledge-base/live2dw/assets/shizuku.model.json"},"display":{"position":"left","width":200,"height":400},"mobile":{"show":false},"rect":"opacity:0.7","log":false,"pluginJsPath":"lib/","pluginRootPath":"live2dw/","tagMode":false});</script></body>
+</html>

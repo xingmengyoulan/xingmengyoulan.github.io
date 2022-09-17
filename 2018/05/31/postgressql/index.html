@@ -1,0 +1,580 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222"><meta name="generator" content="Hexo 6.3.0">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/knowledge-base/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/knowledge-base/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/knowledge-base/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/knowledge-base/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/knowledge-base/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css" integrity="sha256-AbA177XfpSnFEvgpYu1jMygiLabzPCJCRIBtR5jGc0k=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fancybox/3.5.7/jquery.fancybox.min.css" integrity="sha256-Vzbj7sDDS/woiFS3uNKo8eIuni59rjyNGtXfstRzStA=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/pace/1.2.4/themes/blue/pace-theme-minimal.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pace/1.2.4/pace.min.js" integrity="sha256-gqd7YTjg/BtfqWSwsJOvndl0Bxc8gFImLEkXQT8+qj0=" crossorigin="anonymous"></script>
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"zhd_snow.gitee.io","root":"/knowledge-base/","images":"/knowledge-base/images","scheme":"Gemini","darkmode":false,"version":"8.13.0","exturl":false,"sidebar":{"position":"left","display":"always","padding":18,"offset":12,"b2t":false,"scrollpercent":true},"copycode":{"enable":true,"style":"mac"},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":true,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":true,"motion":{"enable":true,"async":true,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/knowledge-base/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false}}</script><script src="/knowledge-base/js/config.js"></script>
+
+    <meta name="description" content="主要记录本人平时使用的postgres的建库，备库和日常使用的SQL语句，其中涉及一点postgres的高可用运维内容和数据库的注意事项。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="postgres日常使用">
+<meta property="og:url" content="https://zhd_snow.gitee.io/knowledge-base/2018/05/31/postgressql/index.html">
+<meta property="og:site_name" content="雪兰度">
+<meta property="og:description" content="主要记录本人平时使用的postgres的建库，备库和日常使用的SQL语句，其中涉及一点postgres的高可用运维内容和数据库的注意事项。">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2018-05-31T13:43:35.000Z">
+<meta property="article:modified_time" content="2022-09-17T07:37:52.481Z">
+<meta property="article:author" content="ZHD">
+<meta property="article:tag" content="postgres">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="canonical" href="https://zhd_snow.gitee.io/knowledge-base/2018/05/31/postgressql/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://zhd_snow.gitee.io/knowledge-base/2018/05/31/postgressql/","path":"2018/05/31/postgressql/","title":"postgres日常使用"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>postgres日常使用 | 雪兰度</title>
+  
+
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/knowledge-base/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/knowledge-base/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">雪兰度</p>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">ZHD's Notes</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/knowledge-base/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-about"><a href="/knowledge-base/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a></li><li class="menu-item menu-item-tags"><a href="/knowledge-base/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签<span class="badge">14</span></a></li><li class="menu-item menu-item-categories"><a href="/knowledge-base/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类<span class="badge">15</span></a></li><li class="menu-item menu-item-archives"><a href="/knowledge-base/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档<span class="badge">33</span></a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup"><div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off" maxlength="80"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close" role="button">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div class="search-result-container no-result">
+  <div class="search-result-icon">
+    <i class="fa fa-spinner fa-pulse fa-5x"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-5"><a class="nav-link" href="#%E7%8E%AF%E5%A2%83%E5%8F%98%E9%87%8F"><span class="nav-number">1.</span> <span class="nav-text">环境变量</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#%E5%88%9B%E5%BB%BA%E6%95%B0%E6%8D%AE%E5%BA%93"><span class="nav-number">2.</span> <span class="nav-text">创建数据库</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#%E6%B8%85%E9%99%A4%E6%89%80%E6%9C%89%E8%A1%A8"><span class="nav-number">3.</span> <span class="nav-text">清除所有表</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#Sequence%E5%BA%8F%E5%88%97"><span class="nav-number">4.</span> <span class="nav-text">Sequence序列</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#%E6%9F%A5%E7%9C%8B%E8%A1%A8%E7%9A%84%E7%B4%A2%E5%BC%95%EF%BC%9A"><span class="nav-number">5.</span> <span class="nav-text">查看表的索引：</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#%E5%AF%BC%E5%87%BA%E5%A4%87%E4%BB%BD%E6%95%B0%E6%8D%AE%E5%BA%93%EF%BC%9A"><span class="nav-number">6.</span> <span class="nav-text">导出备份数据库：</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#%E5%AF%BC%E5%85%A5%E6%81%A2%E5%A4%8D%E6%95%B0%E6%8D%AE%E5%BA%93-sql%E6%96%87%E4%BB%B6%E6%98%AFpg-dump%E5%AF%BC%E5%87%BA%E7%9A%84%E6%96%87%E4%BB%B6%E5%B0%B1%E8%A1%8C%EF%BC%8C%E5%8F%AF%E4%BB%A5%E6%98%AF%E6%95%B4%E4%B8%AA%E6%95%B0%E6%8D%AE%E5%BA%93%EF%BC%8C%E4%B9%9F%E5%8F%AF%E4%BB%A5%E5%8F%AA%E6%98%AF%E5%8D%95%E4%B8%AA%E8%A1%A8%EF%BC%8C%E4%B9%9F%E5%8F%AF%E4%BB%A5%E5%8F%AA%E6%98%AF%E7%BB%93%E6%9E%84%E7%AD%89"><span class="nav-number">7.</span> <span class="nav-text">导入恢复数据库(sql文件是pg_dump导出的文件就行，可以是整个数据库，也可以只是单个表，也可以只是结构等)</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#%E5%AF%BC%E5%87%BA%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%EF%BC%8C%E4%B8%BB%E8%A6%81%E6%98%AF%E5%8A%A0%E4%B8%8A%E5%8F%82%E6%95%B0-s%EF%BC%9A"><span class="nav-number">8.</span> <span class="nav-text">导出数据结构，主要是加上参数-s：</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#%E5%AF%BC%E5%87%BA%E6%9F%90%E4%B8%AA%E8%A1%A8%EF%BC%9A"><span class="nav-number">9.</span> <span class="nav-text">导出某个表：</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#%E5%AF%BC%E5%87%BA%E6%9F%90%E4%B8%AA%E8%A1%A8%E7%9A%84%E7%BB%93%E6%9E%84%EF%BC%8C%E5%90%8C%E6%A0%B7%E6%98%AF%E5%8A%A0%E5%8F%82%E6%95%B0%E2%80%9D-s%E2%80%9D%EF%BC%9A"><span class="nav-number">10.</span> <span class="nav-text">导出某个表的结构，同样是加参数”-s”：</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#%E5%AF%BC%E5%87%BA%E6%9F%90%E4%B8%AA%E8%A1%A8%E7%9A%84%E6%95%B0%E6%8D%AE%EF%BC%8C%E5%8A%A0%E5%8F%82%E6%95%B0%E2%80%9D-a%E2%80%9D%EF%BC%9A"><span class="nav-number">11.</span> <span class="nav-text">导出某个表的数据，加参数”-a”：</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#%E7%94%B1%E4%BA%8E-copy-%E5%91%BD%E4%BB%A4%E5%A7%8B%E7%BB%88%E6%98%AF%E5%88%B0%E6%95%B0%E6%8D%AE%E5%BA%93%E6%9C%8D%E5%8A%A1%E7%AB%AF%E6%89%BE%E6%96%87%E4%BB%B6%EF%BC%8C%E5%BD%93%E4%BB%A5%E6%96%87%E4%BB%B6%E5%BD%A2%E5%BC%8F%E5%AF%BC%E5%85%A5%E5%AF%BC%E5%87%BA%E6%95%B0%E6%8D%AE%E6%97%B6%E9%9C%80%E4%BB%A5%E8%B6%85%E7%BA%A7%E7%94%A8%E6%88%B7%E6%89%A7%E8%A1%8C%EF%BC%8C%E6%9D%83%E9%99%90%E8%A6%81%E6%B1%82%E5%BE%88%E9%AB%98%EF%BC%8C%E9%80%82%E5%90%88%E6%95%B0%E6%8D%AE%E5%BA%93%E7%AE%A1%E7%90%86%E5%91%98%E6%93%8D%E4%BD%9C-%E8%80%8C-copy-%E5%91%BD%E4%BB%A4%E5%8F%AF%E5%9C%A8%E5%AE%A2%E6%88%B7%E7%AB%AF%E6%89%A7%E8%A1%8C%E5%AF%BC%E5%85%A5%E5%AE%A2%E6%88%B7%E7%AB%AF%E7%9A%84%E6%95%B0%E6%8D%AE%E6%96%87%E4%BB%B6%EF%BC%8C%E6%9D%83%E9%99%90%E8%A6%81%E6%B1%82%E6%B2%A1%E9%82%A3%E4%B9%88%E9%AB%98%EF%BC%8C%E9%80%82%E5%90%88%E5%BC%80%E5%8F%91%E4%BA%BA%E5%91%98%EF%BC%8C%E6%B5%8B%E8%AF%95%E4%BA%BA%E5%91%98%E4%BD%BF%E7%94%A8%EF%BC%8C%E5%9B%A0%E4%B8%BA%E7%94%9F%E4%BA%A7%E5%BA%93%E7%9A%84%E6%9D%83%E9%99%90%E6%8E%8C%E6%8F%A1%E5%9C%A8-DBA-%E6%89%8B%E4%B8%AD%E3%80%82"><span class="nav-number">12.</span> <span class="nav-text">由于 copy 命令始终是到数据库服务端找文件，当以文件形式导入导出数据时需以超级用户执行，权限要求很高，适合数据库管理员操作;而 \copy 命令可在客户端执行导入客户端的数据文件，权限要求没那么高，适合开发人员，测试人员使用，因为生产库的权限掌握在 DBA 手中。</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#%E6%B8%85%E9%99%A4%E6%89%80%E6%9C%89%E8%A1%A8-1"><span class="nav-number">13.</span> <span class="nav-text">清除所有表</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#%E8%8E%B7%E5%8F%96%E7%B3%BB%E7%BB%9F%E8%A1%A8%E4%B8%AD%E5%AD%97%E6%AE%B5%E4%BF%A1%E6%81%AF"><span class="nav-number">14.</span> <span class="nav-text">获取系统表中字段信息</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#%E6%8C%87%E5%AE%9A%E5%8E%BB%E9%87%8D%E7%9A%84%E5%88%97%E6%8E%92%E5%BA%8F"><span class="nav-number">15.</span> <span class="nav-text">指定去重的列排序</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#%E5%88%9B%E5%BB%BA%E5%BA%8F%E5%88%97"><span class="nav-number">16.</span> <span class="nav-text">创建序列</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#%E9%94%81%E8%A1%A8%E9%97%AE%E9%A2%98"><span class="nav-number">17.</span> <span class="nav-text">锁表问题</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#%E5%A2%9E%E5%88%A0%E6%94%B9%E6%9F%A5%E7%9A%84%E6%93%8D%E4%BD%9C"><span class="nav-number">18.</span> <span class="nav-text">增删改查的操作</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#%E5%88%9B%E5%BB%BA%E7%B4%A2%E5%BC%95"><span class="nav-number">19.</span> <span class="nav-text">创建索引</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#%E6%97%B6%E9%97%B4%E7%9A%84%E4%BD%BF%E7%94%A8%E6%96%B9%E6%B3%95"><span class="nav-number">20.</span> <span class="nav-text">时间的使用方法:</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#%E5%A6%82%E4%BD%95%E6%89%BE%E5%88%B0postgreSQL%E6%95%B0%E6%8D%AE%E5%BA%93%E4%B8%AD%E5%8D%A0%E7%A9%BA%E9%97%B4%E6%9C%80%E5%A4%A7%E7%9A%84%E8%A1%A8%EF%BC%9F"><span class="nav-number">21.</span> <span class="nav-text">如何找到postgreSQL数据库中占空间最大的表？</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#%E5%A6%82%E4%BD%95%E8%AE%A1%E7%AE%97postgreSQL%E6%95%B0%E6%8D%AE%E5%BA%93%E6%89%80%E5%8D%A0%E7%94%A8%E7%9A%84%E7%A1%AC%E7%9B%98%E5%A4%A7%E5%B0%8F%EF%BC%9F"><span class="nav-number">22.</span> <span class="nav-text">如何计算postgreSQL数据库所占用的硬盘大小？</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#%E5%A6%82%E4%BD%95%E8%AE%A1%E7%AE%97postgreSQL%E8%A1%A8%E6%89%80%E5%8D%A0%E7%94%A8%E7%9A%84%E7%A1%AC%E7%9B%98%E5%A4%A7%E5%B0%8F%EF%BC%9F"><span class="nav-number">23.</span> <span class="nav-text">如何计算postgreSQL表所占用的硬盘大小？</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#%E7%B1%BB%E5%88%AB%E4%B8%80%E3%80%81-%E5%A6%82%E6%9E%9C%E4%B8%A4%E5%BC%A0%E5%BC%A0%E8%A1%A8%EF%BC%88%E5%AF%BC%E5%87%BA%E8%A1%A8%E5%92%8C%E7%9B%AE%E6%A0%87%E8%A1%A8%EF%BC%89%E7%9A%84%E5%AD%97%E6%AE%B5%E4%B8%80%E8%87%B4%EF%BC%8C%E5%B9%B6%E4%B8%94%E5%B8%8C%E6%9C%9B%E6%8F%92%E5%85%A5%E5%85%A8%E9%83%A8%E6%95%B0%E6%8D%AE%EF%BC%8C%E5%8F%AF%E4%BB%A5%E7%94%A8%E8%BF%99%E7%A7%8D%E6%96%B9%E6%B3%95%EF%BC%9A"><span class="nav-number">24.</span> <span class="nav-text">类别一、 如果两张张表（导出表和目标表）的字段一致，并且希望插入全部数据，可以用这种方法：</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#%E8%A6%81%E5%B0%86-articles-%E8%A1%A8%E6%8F%92%E5%85%A5%E5%88%B0-newArticles-%E8%A1%A8%E4%B8%AD%EF%BC%8C%E5%88%99%E5%8F%AF%E4%BB%A5%E9%80%9A%E8%BF%87%E5%A6%82%E4%B8%8BSQL%E8%AF%AD%E5%8F%A5%E5%AE%9E%E7%8E%B0%EF%BC%9A"><span class="nav-number">25.</span> <span class="nav-text">要将 articles 表插入到 newArticles 表中，则可以通过如下SQL语句实现：</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#%E5%A6%82%E6%9E%9C%E5%8F%AA%E5%B8%8C%E6%9C%9B%E5%AF%BC%E5%85%A5%E6%8C%87%E5%AE%9A%E5%AD%97%E6%AE%B5%EF%BC%8C%E5%8F%AF%E4%BB%A5%E7%94%A8%E8%BF%99%E7%A7%8D%E6%96%B9%E6%B3%95%EF%BC%9A"><span class="nav-number">26.</span> <span class="nav-text">如果只希望导入指定字段，可以用这种方法：</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#generate-series%E5%87%BD%E6%95%B0%E5%BA%94%E7%94%A8"><span class="nav-number">27.</span> <span class="nav-text">generate_series函数应用</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#%E6%89%B9%E9%87%8F%E6%B7%BB%E5%8A%A0%E6%95%B0%E6%8D%AE"><span class="nav-number">28.</span> <span class="nav-text">批量添加数据</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E9%94%81%E7%9A%84%E9%97%AE%E9%A2%98"><span class="nav-number"></span> <span class="nav-text">锁的问题</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%B8%B8%E7%94%A8%E8%AF%AD%E5%8F%A5"><span class="nav-number"></span> <span class="nav-text">常用语句</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E6%AF%8F%E5%88%86%E9%92%9F%E6%9F%A5%E8%AF%A2%E7%BB%93%E6%9E%9C"><span class="nav-number"></span> <span class="nav-text">每分钟查询结果</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%88%9B%E5%BB%BA%E5%9F%BA%E7%A1%80%E5%A4%87%E4%BB%BD"><span class="nav-number"></span> <span class="nav-text">创建基础备份</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%94%A8pg-rewind%E5%91%BD%E4%BB%A4%E5%90%8C%E6%AD%A5%E6%96%B0%E5%A4%87%E5%BA%93"><span class="nav-number"></span> <span class="nav-text">用pg_rewind命令同步新备库</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%AB%98%E5%8F%AF%E7%94%A8%EF%BC%88pcs-corosync-postgres%EF%BC%89%E4%BF%AE%E5%A4%8D%E6%97%A7Master"><span class="nav-number"></span> <span class="nav-text">高可用（pcs+corosync+postgres）修复旧Master</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%AB%98%E5%8F%AF%E7%94%A8%EF%BC%88pcs-corosync-postgres%EF%BC%89Slave%E4%B8%8A%E8%BF%9B%E7%A8%8B%E6%95%85%E9%9A%9C"><span class="nav-number"></span> <span class="nav-text">高可用（pcs+corosync+postgres）Slave上进程故障</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E4%BF%AE%E5%A4%8DSalve"><span class="nav-number"></span> <span class="nav-text">修复Salve</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%94%99%E8%AF%AF%E6%8E%92%E6%9F%A5"><span class="nav-number"></span> <span class="nav-text">错误排查</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%85%B6%E5%AE%83%E6%95%85%E9%9A%9C%E7%9A%84%E5%A4%84%E7%90%86"><span class="nav-number"></span> <span class="nav-text">其它故障的处理</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%97%A0Master%E6%97%B6%E7%9A%84%E4%BF%AE%E5%A4%8D"><span class="nav-number"></span> <span class="nav-text">无Master时的修复</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E6%96%B9%E6%B3%951%EF%BC%9A%E4%BD%BF%E7%94%A8cleanup%E4%BF%AE%E5%A4%8D"><span class="nav-number"></span> <span class="nav-text">方法1：使用cleanup修复</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E6%96%B9%E6%B3%952%EF%BC%9A%E4%BA%BA%E5%B7%A5%E4%BF%AE%E5%A4%8D%E5%A4%8D%E5%88%B6%E5%85%B3%E7%B3%BB"><span class="nav-number"></span> <span class="nav-text">方法2：人工修复复制关系</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E6%96%B9%E6%B3%953%EF%BC%9A%E5%BF%AB%E9%80%9F%E6%81%A2%E5%A4%8DMaster%E8%8A%82%E7%82%B9%E5%86%8D%E6%81%A2%E5%A4%8DSlave"><span class="nav-number"></span> <span class="nav-text">方法3：快速恢复Master节点再恢复Slave</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%96%91%E9%9A%BE%E7%9A%84Pacemaker%E9%97%AE%E9%A2%98%E7%9A%84%E5%A4%84%E7%90%86"><span class="nav-number"></span> <span class="nav-text">疑难的Pacemaker问题的处理</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#fail-count%E7%9A%84%E6%B8%85%E9%99%A4"><span class="nav-number"></span> <span class="nav-text">fail-count的清除</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%B3%A8%E6%84%8F%E4%BA%8B%E9%A1%B9"><span class="nav-number"></span> <span class="nav-text">注意事项</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#pg-log-%E5%92%8Cpg-xlog-%E5%92%8Cpg-clog%E7%9A%84%E5%8C%BA%E5%88%AB"><span class="nav-number"></span> <span class="nav-text">pg_log 和pg_xlog 和pg_clog的区别</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#PostgreSQL%E9%81%BF%E5%85%8DOOM%E5%8F%91%E7%94%9F%E6%96%B9%E6%B3%95"><span class="nav-number"></span> <span class="nav-text">PostgreSQL避免OOM发生方法</span></a></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="ZHD"
+      src="/knowledge-base/images/header.jpg">
+  <p class="site-author-name" itemprop="name">ZHD</p>
+  <div class="site-description" itemprop="description">盛年不重来，一日难再晨;及时当勉励，岁月不待人。</div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/knowledge-base/archives/">
+          <span class="site-state-item-count">33</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/knowledge-base/categories/">
+        <span class="site-state-item-count">15</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/knowledge-base/tags/">
+        <span class="site-state-item-count">14</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author site-overview-item animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/xingmengyoulan" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;xingmengyoulan" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:xingmengyoulan@163.com" title="E-Mail → mailto:xingmengyoulan@163.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+
+
+
+        </div>
+      </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://zhd_snow.gitee.io/knowledge-base/2018/05/31/postgressql/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/knowledge-base/images/header.jpg">
+      <meta itemprop="name" content="ZHD">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="雪兰度">
+      <meta itemprop="description" content="盛年不重来，一日难再晨;及时当勉励，岁月不待人。">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="postgres日常使用 | 雪兰度">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          postgres日常使用
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2018-05-31 21:43:35" itemprop="dateCreated datePublished" datetime="2018-05-31T21:43:35+08:00">2018-05-31</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新于</span>
+      <time title="修改时间：2022-09-17 15:37:52" itemprop="dateModified" datetime="2022-09-17T15:37:52+08:00">2022-09-17</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/knowledge-base/categories/postgres/" itemprop="url" rel="index"><span itemprop="name">postgres</span></a>
+        </span>
+    </span>
+
+  
+    <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv">
+      <span class="post-meta-item-icon">
+        <i class="far fa-eye"></i>
+      </span>
+      <span class="post-meta-item-text">阅读次数：</span>
+      <span id="busuanzi_value_page_pv"></span>
+    </span>
+    <span class="post-meta-break"></span>
+    <span class="post-meta-item" title="本文字数">
+      <span class="post-meta-item-icon">
+        <i class="far fa-file-word"></i>
+      </span>
+      <span class="post-meta-item-text">本文字数：</span>
+      <span>14k</span>
+    </span>
+    <span class="post-meta-item" title="阅读时长">
+      <span class="post-meta-item-icon">
+        <i class="far fa-clock"></i>
+      </span>
+      <span class="post-meta-item-text">阅读时长 &asymp;</span>
+      <span>13 分钟</span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <div class="note warning"><p>主要记录本人平时使用的postgres的建库，备库和日常使用的SQL语句，其中涉及一点postgres的高可用运维内容和数据库的注意事项。</p>
+</div>
+
+<span id="more"></span>
+<h5 id="环境变量"><a href="#环境变量" class="headerlink" title="环境变量"></a>环境变量</h5><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">export PGHOME=/db/pgSQL</span><br><span class="line">export PGDATA=/db/dbc1</span><br><span class="line">export LD_LIBRARY_PATH=$PGHOME/lib</span><br><span class="line">export PATH=$PGHOME/bin:$PATH</span><br><span class="line">export PGDATABASE=atlas</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<h5 id="创建数据库"><a href="#创建数据库" class="headerlink" title="创建数据库"></a>创建数据库</h5><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">CREATE</span> DATABASE test <span class="keyword">WITH</span> OWNER <span class="operator">=</span> postgres ENCODING <span class="operator">=</span> <span class="string">&#x27;UTF8&#x27;</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">create</span>  <span class="keyword">user</span> corp_channel <span class="keyword">with</span> password <span class="string">&#x27;corp_channel&#x27;</span>; <span class="comment">-- 创建用户密码</span></span><br><span class="line"><span class="keyword">create</span> database corp_channel owner  corp_channel; <span class="comment">---创建用户</span></span><br><span class="line"><span class="keyword">alter</span> database corp_channel owner <span class="keyword">to</span> corp_channel;(修改数据库owner)</span><br><span class="line"><span class="keyword">grant</span> <span class="keyword">all</span> privileges <span class="keyword">on</span> database corp_channel <span class="keyword">to</span> corp_channel; <span class="comment">---将corp_channel数据库的所有权限赋予corp_channel用户</span></span><br><span class="line"> 查看表的权限 <span class="comment">--- \z table</span></span><br></pre></td></tr></table></figure>
+<h5 id="清除所有表"><a href="#清除所有表" class="headerlink" title="清除所有表"></a>清除所有表</h5><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">do $$</span><br><span class="line">	<span class="keyword">begin</span></span><br><span class="line">		if( to_regclass(<span class="string">&#x27;tablename&#x27;</span>) <span class="keyword">is</span> <span class="keyword">not</span> <span class="keyword">null</span> ) <span class="keyword">then</span></span><br><span class="line">			if( (<span class="keyword">select</span> <span class="number">1</span> <span class="keyword">from</span> pathman_config <span class="keyword">where</span> partrel <span class="operator">=</span> <span class="string">&#x27;tablename&#x27;</span>::regclass) <span class="keyword">is</span> <span class="keyword">not</span> <span class="keyword">null</span>) <span class="keyword">then</span></span><br><span class="line">				PERFORM drop_partitions(<span class="string">&#x27;tablename&#x27;</span>::regclass,<span class="literal">true</span>);</span><br><span class="line">			<span class="keyword">end</span> if;</span><br><span class="line">			<span class="keyword">drop</span> <span class="keyword">table</span> tablename;</span><br><span class="line">		<span class="keyword">end</span> if;</span><br><span class="line">	<span class="keyword">end</span>;</span><br><span class="line">$$;</span><br></pre></td></tr></table></figure>
+
+<h5 id="Sequence序列"><a href="#Sequence序列" class="headerlink" title="Sequence序列"></a>Sequence序列</h5><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line">Sequence是一种自动增加的数字序列，一般作为行或者表的唯一标识，用作代理主键。</span><br><span class="line">例子：创建一个seq_commodity，最小值为<span class="number">1</span>，最大值为<span class="number">9223372036854775807</span>，从<span class="number">1</span>开始，增量的步长为<span class="number">1</span>，缓存为<span class="number">1</span>的循环排序Sequence。</span><br><span class="line"> <span class="keyword">CREATE</span> SEQUENCE seq_commodity</span><br><span class="line">  INCREMENT <span class="number">1</span></span><br><span class="line">  MINVALUE <span class="number">1</span></span><br><span class="line">  MAXVALUE <span class="number">9223372036854775807</span></span><br><span class="line">  <span class="keyword">START</span> <span class="number">1</span></span><br><span class="line">  CACHE <span class="number">1</span> </span><br><span class="line">  <span class="keyword">CYCLE</span>; <span class="operator">/</span><span class="operator">/</span> 循环，表示到最大值后从头开始</span><br><span class="line"><span class="number">2</span>、查找Sequence中的值</span><br><span class="line"><span class="keyword">SELECT</span> nextval(<span class="string">&#x27;seq_commodity&#x27;</span>)； </span><br><span class="line"><span class="number">3</span>、修改 Sequence</span><br><span class="line">用<span class="keyword">alter</span> sequence来修改，除了<span class="keyword">start</span>以外的所有sequence参数都可以被修改，</span><br><span class="line"><span class="keyword">alter</span> sequence 的例子 （<span class="keyword">SQL</span>语句）</span><br><span class="line"><span class="keyword">ALTER</span> SEQUENCE seq_commodity </span><br><span class="line">  INCREMENT <span class="number">10</span> </span><br><span class="line">  MAXVALUE <span class="number">10000</span> </span><br><span class="line">  <span class="keyword">CYCLE</span> </span><br><span class="line">  NOCACHE ; </span><br><span class="line">  当然如果想要修改<span class="keyword">start</span>的值，可以先用 <span class="keyword">drop</span> sequence删掉，然后再重新创建。</span><br></pre></td></tr></table></figure>
+
+<h5 id="查看表的索引："><a href="#查看表的索引：" class="headerlink" title="查看表的索引："></a>查看表的索引：</h5><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">select</span> <span class="operator">*</span> <span class="keyword">from</span> pg_indexes <span class="keyword">where</span> tablename<span class="operator">=</span><span class="string">&#x27;log&#x27;</span>;</span><br></pre></td></tr></table></figure>
+
+<h5 id="导出备份数据库："><a href="#导出备份数据库：" class="headerlink" title="导出备份数据库："></a>导出备份数据库：</h5><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">pg_dump <span class="operator">-</span>h localhost <span class="operator">-</span>U postgres databasename <span class="operator">&gt;</span> <span class="operator">/</span>tmp<span class="operator">/</span>databasename.bak.yyyymmdd.sql</span><br></pre></td></tr></table></figure>
+
+<h5 id="导入恢复数据库-sql文件是pg-dump导出的文件就行，可以是整个数据库，也可以只是单个表，也可以只是结构等"><a href="#导入恢复数据库-sql文件是pg-dump导出的文件就行，可以是整个数据库，也可以只是单个表，也可以只是结构等" class="headerlink" title="导入恢复数据库(sql文件是pg_dump导出的文件就行，可以是整个数据库，也可以只是单个表，也可以只是结构等)"></a>导入恢复数据库(sql文件是pg_dump导出的文件就行，可以是整个数据库，也可以只是单个表，也可以只是结构等)</h5><figure class="highlight sql"><figcaption><span>lite</span></figcaption><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">psql <span class="operator">-</span>h localhost <span class="operator">-</span>U postgres <span class="operator">-</span>d databasename <span class="operator">&lt;</span> <span class="operator">/</span>tmp<span class="operator">/</span>databasename.bak.yyyymmdd.sql</span><br></pre></td></tr></table></figure>
+
+<h5 id="导出数据结构，主要是加上参数-s："><a href="#导出数据结构，主要是加上参数-s：" class="headerlink" title="导出数据结构，主要是加上参数-s："></a>导出数据结构，主要是加上参数-s：</h5><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">pg_dump <span class="operator">-</span>U username <span class="operator">-</span>W dbname <span class="operator">-</span>f <span class="operator">/</span>tmp<span class="operator">/</span>filename.sql</span><br></pre></td></tr></table></figure>
+
+<h5 id="导出某个表："><a href="#导出某个表：" class="headerlink" title="导出某个表："></a>导出某个表：</h5><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">pg_dump <span class="operator">-</span>h localhost <span class="operator">-</span>U postgres <span class="operator">-</span>t tablename dbname <span class="operator">&gt;</span> test.sql</span><br></pre></td></tr></table></figure>
+
+<h5 id="导出某个表的结构，同样是加参数”-s”："><a href="#导出某个表的结构，同样是加参数”-s”：" class="headerlink" title="导出某个表的结构，同样是加参数”-s”："></a>导出某个表的结构，同样是加参数”-s”：</h5><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">pg_dump <span class="operator">-</span>h localhost <span class="operator">-</span>U postgres <span class="operator">-</span>t tablename <span class="operator">-</span>s dbname <span class="operator">&gt;</span> test_construct.sql</span><br></pre></td></tr></table></figure>
+
+<h5 id="导出某个表的数据，加参数”-a”："><a href="#导出某个表的数据，加参数”-a”：" class="headerlink" title="导出某个表的数据，加参数”-a”："></a>导出某个表的数据，加参数”-a”：</h5><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">pg_dump <span class="operator">-</span>h localhost <span class="operator">-</span>U postgres <span class="operator">-</span>t tablename <span class="operator">-</span>a dbname <span class="operator">&gt;</span> test_data.sql</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">查看序列：<span class="keyword">select</span> <span class="operator">*</span> <span class="keyword">from</span> information_schema.sequences <span class="keyword">where</span> sequence_schema <span class="operator">=</span> <span class="string">&#x27;public&#x27;</span>;</span><br><span class="line">查看数据库大小：<span class="keyword">select</span> pg_size_pretty(pg_database_size(<span class="string">&#x27;test&#x27;</span>));</span><br><span class="line">查看表的大小：<span class="keyword">select</span> pg_size_pretty(pg_relation_size(<span class="string">&#x27;test&#x27;</span>));</span><br></pre></td></tr></table></figure>
+
+<h5 id="由于-copy-命令始终是到数据库服务端找文件，当以文件形式导入导出数据时需以超级用户执行，权限要求很高，适合数据库管理员操作-而-copy-命令可在客户端执行导入客户端的数据文件，权限要求没那么高，适合开发人员，测试人员使用，因为生产库的权限掌握在-DBA-手中。"><a href="#由于-copy-命令始终是到数据库服务端找文件，当以文件形式导入导出数据时需以超级用户执行，权限要求很高，适合数据库管理员操作-而-copy-命令可在客户端执行导入客户端的数据文件，权限要求没那么高，适合开发人员，测试人员使用，因为生产库的权限掌握在-DBA-手中。" class="headerlink" title="由于 copy 命令始终是到数据库服务端找文件，当以文件形式导入导出数据时需以超级用户执行，权限要求很高，适合数据库管理员操作;而 \copy 命令可在客户端执行导入客户端的数据文件，权限要求没那么高，适合开发人员，测试人员使用，因为生产库的权限掌握在 DBA 手中。"></a>由于 copy 命令始终是到数据库服务端找文件，当以文件形式导入导出数据时需以超级用户执行，权限要求很高，适合数据库管理员操作;而 \copy 命令可在客户端执行导入客户端的数据文件，权限要求没那么高，适合开发人员，测试人员使用，因为生产库的权限掌握在 DBA 手中。</h5><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">copy</span> (<span class="keyword">select</span> <span class="operator">*</span> <span class="keyword">from</span> tablename) <span class="keyword">to</span> <span class="string">&#x27;/tmp/1.txt&#x27;</span> (format csv,delimiter <span class="string">&#x27;|&#x27;</span>);</span><br><span class="line">\<span class="keyword">copy</span> (<span class="keyword">select</span> <span class="operator">*</span> <span class="keyword">from</span> tablename) <span class="keyword">to</span> <span class="string">&#x27;/tmp/1.txt&#x27;</span> <span class="keyword">with</span> delimiter <span class="string">&#x27;|&#x27;</span>;</span><br><span class="line">\<span class="keyword">copy</span> <span class="keyword">table</span> 	 <span class="keyword">from</span> <span class="string">&#x27;/tmp/1.txt&#x27;</span> <span class="keyword">with</span> delimiter <span class="string">&#x27;|&#x27;</span>;</span><br><span class="line"></span><br><span class="line">psql <span class="operator">-</span>c &quot;\copy (select * from PBX_CASH_RCV_REG where TRAN_DATE=&#x27;20170913&#x27;) to &#x27;PBX_CASH_RCV_REG.txt&#x27; with delimiter &#x27;|&#x27; NULL &#x27; &#x27;&quot;</span><br></pre></td></tr></table></figure>
+
+<h5 id="清除所有表-1"><a href="#清除所有表-1" class="headerlink" title="清除所有表"></a>清除所有表</h5><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">CREATE</span> <span class="keyword">FUNCTION</span> aaa() <span class="keyword">RETURNS</span> void <span class="keyword">AS</span> $$</span><br><span class="line"><span class="keyword">DECLARE</span></span><br><span class="line">    tmp <span class="type">VARCHAR</span>(<span class="number">512</span>);</span><br><span class="line"><span class="keyword">DECLARE</span> names <span class="keyword">CURSOR</span> <span class="keyword">FOR</span> </span><br><span class="line">    <span class="keyword">select</span> tablename <span class="keyword">from</span> pg_tables <span class="keyword">where</span> schemaname<span class="operator">=</span><span class="string">&#x27;public&#x27;</span> ;</span><br><span class="line"><span class="keyword">BEGIN</span></span><br><span class="line">  <span class="keyword">FOR</span> stmt <span class="keyword">IN</span> names LOOP</span><br><span class="line">    tmp :<span class="operator">=</span> <span class="string">&#x27;DROP TABLE &#x27;</span><span class="operator">||</span> quote_ident(stmt.tablename) <span class="operator">||</span> <span class="string">&#x27; CASCADE;&#x27;</span>;</span><br><span class="line">RAISE NOTICE <span class="string">&#x27;notice: %&#x27;</span>, tmp;</span><br><span class="line">    <span class="keyword">EXECUTE</span> <span class="string">&#x27;DROP TABLE &#x27;</span><span class="operator">||</span> quote_ident(stmt.tablename) <span class="operator">||</span> <span class="string">&#x27; CASCADE;&#x27;</span>;</span><br><span class="line">  <span class="keyword">END</span> LOOP;</span><br><span class="line">  RAISE NOTICE <span class="string">&#x27;finished .....&#x27;</span>;</span><br><span class="line"><span class="keyword">END</span>;</span><br><span class="line">$$ <span class="keyword">LANGUAGE</span> plpgsql;</span><br><span class="line"></span><br><span class="line">调用时用：</span><br><span class="line"><span class="keyword">select</span> aaa();</span><br></pre></td></tr></table></figure>
+
+<h5 id="获取系统表中字段信息"><a href="#获取系统表中字段信息" class="headerlink" title="获取系统表中字段信息"></a>获取系统表中字段信息</h5><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> a.attnum,a.attname <span class="keyword">AS</span> field,t.typname <span class="keyword">AS</span> type,a.attlen <span class="keyword">AS</span> length,a.atttypmod <span class="keyword">AS</span> lengthvar,a.attnotnull <span class="keyword">AS</span> notnull <span class="keyword">FROM</span> pg_class c,pg_attribute a,pg_type t</span><br><span class="line"><span class="keyword">WHERE</span> c.relname <span class="operator">=</span> <span class="string">&#x27;dbmanager_hostlist&#x27;</span> <span class="keyword">and</span> a.attnum <span class="operator">&gt;</span> <span class="number">0</span> <span class="keyword">and</span> a.attrelid <span class="operator">=</span> c.oid <span class="keyword">and</span> a.atttypid <span class="operator">=</span> t.oid <span class="keyword">ORDER</span> <span class="keyword">BY</span> a.attnum;</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">\dtS   <span class="comment">--- 查看系统表</span></span><br><span class="line">\dtS<span class="operator">+</span>  <span class="comment">---  查看详细信息</span></span><br><span class="line">comment <span class="keyword">on</span> <span class="keyword">table</span> t <span class="keyword">IS</span> <span class="string">&#x27;this is a test&#x27;</span>; <span class="comment">--- 添加表注释</span></span><br><span class="line">\<span class="keyword">set</span> AUTOCOMMIT off <span class="comment">--- 关闭自动更新</span></span><br></pre></td></tr></table></figure>
+
+<h5 id="指定去重的列排序"><a href="#指定去重的列排序" class="headerlink" title="指定去重的列排序"></a>指定去重的列排序</h5><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">select</span> <span class="keyword">distinct</span> <span class="keyword">on</span> (subject) id,name,subject,score <span class="keyword">from</span> <span class="keyword">table</span> <span class="keyword">order</span> <span class="keyword">by</span> subject,score <span class="keyword">desc</span>;</span><br><span class="line">扫描<span class="number">10</span>行</span><br><span class="line"><span class="keyword">select</span> <span class="operator">*</span> <span class="keyword">from</span> <span class="keyword">table</span> limit <span class="number">1</span> <span class="keyword">offset</span> <span class="number">10</span>;</span><br></pre></td></tr></table></figure>
+
+<h5 id="创建序列"><a href="#创建序列" class="headerlink" title="创建序列"></a>创建序列</h5><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">create</span> sequence seq</span><br><span class="line"><span class="keyword">select</span> nextval(<span class="string">&#x27;seq&#x27;</span>);</span><br><span class="line"><span class="keyword">select</span> nextval(<span class="string">&#x27;seq&#x27;</span>) <span class="keyword">from</span> window_test;</span><br><span class="line"><span class="keyword">alter</span> <span class="keyword">function</span> nextval(regclass) volatile; <span class="comment">-- 只执行一遍 </span></span><br><span class="line"><span class="keyword">alter</span> <span class="keyword">function</span> nextval(regclass) stable; </span><br><span class="line"><span class="keyword">select</span> <span class="operator">*</span> <span class="keyword">from</span> generate_series(<span class="number">1</span>,<span class="number">30</span>) <span class="keyword">as</span> g(i) <span class="keyword">where</span> i <span class="operator">=</span> nextval(<span class="string">&#x27;seq&#x27;</span>::regclass);</span><br></pre></td></tr></table></figure>
+
+<h5 id="锁表问题"><a href="#锁表问题" class="headerlink" title="锁表问题"></a>锁表问题</h5><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">--查询是否锁表了                                       </span></span><br><span class="line"><span class="keyword">select</span> oid <span class="keyword">from</span> pg_class <span class="keyword">where</span> relname<span class="operator">=</span><span class="string">&#x27;可能锁表了的表&#x27;</span></span><br><span class="line"><span class="keyword">select</span> pid <span class="keyword">from</span> pg_locks <span class="keyword">where</span> relation<span class="operator">=</span><span class="string">&#x27;上面查出的oid&#x27;</span></span><br><span class="line"><span class="comment">--如果查询到了结果，表示该表被锁 则需要释放锁定        </span></span><br><span class="line"><span class="keyword">select</span> pg_cancel_backend(上面查到的pid) </span><br><span class="line"><span class="keyword">select</span> pg_terminate_backend(上面查到pid);</span><br></pre></td></tr></table></figure>
+
+<h5 id="增删改查的操作"><a href="#增删改查的操作" class="headerlink" title="增删改查的操作"></a>增删改查的操作</h5><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">--- 修改字段名</span></span><br><span class="line"><span class="keyword">alter</span> <span class="keyword">table</span> ubb_model rename <span class="keyword">column</span> hostname <span class="keyword">to</span> hostgroup;</span><br><span class="line"><span class="comment">--- 删除唯一约束</span></span><br><span class="line"><span class="keyword">alter</span> <span class="keyword">table</span> ubb_services <span class="keyword">drop</span> <span class="keyword">constraint</span> ubb_services_services_key;</span><br><span class="line"><span class="comment">--- 增加一列</span></span><br><span class="line"><span class="keyword">ALTER</span> <span class="keyword">TABLE</span> table_name <span class="keyword">ADD</span> column_name datatype;                   </span><br><span class="line"><span class="comment">--- 删除一列</span></span><br><span class="line"><span class="keyword">ALTER</span> <span class="keyword">TABLE</span> table_name <span class="keyword">DROP</span>  column_name;                           </span><br><span class="line"><span class="comment">--- 更改列的数据类型</span></span><br><span class="line"><span class="keyword">ALTER</span> <span class="keyword">TABLE</span> table_name <span class="keyword">ALTER</span>  column_name TYPE datatype;              </span><br><span class="line"><span class="comment">--- 表的重命名</span></span><br><span class="line"><span class="keyword">ALTER</span> <span class="keyword">TABLE</span> table_name RENAME <span class="keyword">TO</span> new_name;                           </span><br><span class="line"><span class="comment">--- 更改列的名字</span></span><br><span class="line"><span class="keyword">ALTER</span> <span class="keyword">TABLE</span> table_name RENAME column_name <span class="keyword">to</span> new_column_name;          </span><br><span class="line"><span class="comment">--- 字段的not null设置</span></span><br><span class="line"><span class="keyword">ALTER</span> <span class="keyword">TABLE</span> table_name <span class="keyword">ALTER</span> column_name &#123;<span class="keyword">SET</span><span class="operator">|</span><span class="keyword">DROP</span>&#125; <span class="keyword">NOT</span> <span class="keyword">NULL</span>;          </span><br><span class="line"><span class="comment">--- 给列添加default</span></span><br><span class="line"><span class="keyword">ALTER</span> <span class="keyword">TABLE</span> table_name <span class="keyword">ALTER</span> column_name <span class="keyword">SET</span> <span class="keyword">DEFAULT</span> expression;</span><br><span class="line"><span class="comment">--- 添加主键</span></span><br><span class="line"><span class="keyword">alter</span> <span class="keyword">table</span> goods <span class="keyword">add</span> <span class="keyword">primary</span> key(sid);</span><br><span class="line"><span class="comment">--- 添加外键</span></span><br><span class="line"><span class="keyword">alter</span> <span class="keyword">table</span> orders <span class="keyword">add</span> <span class="keyword">foreign</span> key(goods_id) <span class="keyword">references</span> goods(sid)  <span class="keyword">on</span> <span class="keyword">update</span> cascade <span class="keyword">on</span> <span class="keyword">delete</span> cascade;</span><br><span class="line"><span class="keyword">on</span> <span class="keyword">update</span> cascade: <span class="comment">--- 被引用行更新时，引用行自动更新； </span></span><br><span class="line"><span class="keyword">on</span> <span class="keyword">update</span> restrict: <span class="comment">--- 被引用的行禁止更新；</span></span><br><span class="line"><span class="keyword">on</span> <span class="keyword">delete</span> cascade: <span class="comment">--- 被引用行删除时，引用行也一起删除；</span></span><br><span class="line"><span class="keyword">on</span> <span class="keyword">delete</span> restrict: <span class="comment">--- 被引用的行禁止删除；</span></span><br><span class="line"><span class="comment">--- 删除外键</span></span><br><span class="line"><span class="keyword">alter</span> <span class="keyword">table</span> orders <span class="keyword">drop</span> <span class="keyword">constraint</span> orders_goods_id_fkey;</span><br><span class="line"><span class="comment">--- 添加唯一约束</span></span><br><span class="line"><span class="keyword">alter</span> <span class="keyword">table</span> goods <span class="keyword">add</span> <span class="keyword">constraint</span> unique_goods_sid <span class="keyword">unique</span>(sid);</span><br><span class="line"><span class="comment">--- 删除默认值</span></span><br><span class="line"><span class="keyword">alter</span> <span class="keyword">table</span> goods  <span class="keyword">alter</span> <span class="keyword">column</span> sid <span class="keyword">drop</span> <span class="keyword">default</span>;</span><br><span class="line"><span class="comment">---  修改字段的数据类型</span></span><br><span class="line"><span class="keyword">alter</span> <span class="keyword">table</span> goods <span class="keyword">alter</span> <span class="keyword">column</span> sid type <span class="type">character</span> <span class="type">varying</span>;</span><br><span class="line"><span class="comment">--- 重命名字段</span></span><br><span class="line"><span class="keyword">alter</span> <span class="keyword">table</span> goods rename <span class="keyword">column</span> sid <span class="keyword">to</span> ssid;</span><br></pre></td></tr></table></figure>
+
+<h5 id="创建索引"><a href="#创建索引" class="headerlink" title="创建索引"></a>创建索引</h5><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">单列索引</span><br><span class="line"><span class="keyword">CREATE</span> INDEX index_name</span><br><span class="line"><span class="keyword">ON</span> table_name (column_name);</span><br><span class="line"><span class="keyword">CREATE</span> INDEX salary_index <span class="keyword">ON</span> COMPANY (salary); <span class="comment">-- 例子</span></span><br><span class="line">组合索引</span><br><span class="line"><span class="keyword">CREATE</span> INDEX index_name</span><br><span class="line"><span class="keyword">ON</span> table_name (column1_name, column2_name);</span><br><span class="line">唯一索引</span><br><span class="line"><span class="keyword">CREATE</span> <span class="keyword">UNIQUE</span> INDEX index_name</span><br><span class="line"><span class="keyword">on</span> table_name (column_name);</span><br><span class="line">局部索引</span><br><span class="line"><span class="keyword">CREATE</span> INDEX index_name</span><br><span class="line"><span class="keyword">on</span> table_name (conditional_expression);</span><br><span class="line">删除索引</span><br><span class="line"><span class="keyword">DROP</span> INDEX index_name;</span><br></pre></td></tr></table></figure>
+
+<h5 id="时间的使用方法"><a href="#时间的使用方法" class="headerlink" title="时间的使用方法:"></a>时间的使用方法:</h5><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">select  to_char(CURRENT_DATE,&#x27;YYYYMMDD&#x27;);</span><br><span class="line">select  to_char(CURRENT_TIMESTAMP,&#x27;YYYYMMDD&#x27;);</span><br><span class="line">select  to_char(CURRENT_TIMESTAMP,&#x27;YYYYMMDDMSUS&#x27;);	</span><br><span class="line">select  to_char(CURRENT_TIMESTAMP,&#x27;HH24MISS&#x27;);</span><br><span class="line">select  to_char(number,&#x27;00000000&#x27;)</span><br><span class="line">--- 时间的计算</span><br><span class="line">select CURRENT_DATE  + integer &#x27;7&#x27;;</span><br><span class="line">select CURRENT_TIME  + interval &#x27;1 hour&#x27;;</span><br><span class="line">select CURRENT_TIME  + time &#x27;03:00&#x27;;</span><br></pre></td></tr></table></figure>
+
+<p>####类型转化</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">--- numeric转化为字符串</span><br><span class="line">select cast(transamt as varchar) from ol_transdetail where cast(transamt as varchar) like &#x27;%.50&#x27;;</span><br></pre></td></tr></table></figure>
+
+
+
+<h5 id="如何找到postgreSQL数据库中占空间最大的表？"><a href="#如何找到postgreSQL数据库中占空间最大的表？" class="headerlink" title="如何找到postgreSQL数据库中占空间最大的表？"></a>如何找到postgreSQL数据库中占空间最大的表？</h5><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"> <span class="keyword">SELECT</span> relname,relpages <span class="keyword">FROM</span> pg_class <span class="keyword">ORDER</span> <span class="keyword">BY</span> relpages <span class="keyword">DESC</span>;</span><br><span class="line">如果你只想要最大的那个表，可以用limit参数来限制结果的数量，就像这样：</span><br><span class="line"><span class="keyword">SELECT</span> relname, relpages <span class="keyword">FROM</span> pg_class <span class="keyword">ORDER</span> <span class="keyword">BY</span> relpages <span class="keyword">DESC</span> limit <span class="number">1</span>;</span><br><span class="line"></span><br><span class="line"><span class="number">1.</span>relname <span class="operator">-</span> 关系名<span class="operator">/</span>表名</span><br><span class="line"><span class="number">2.</span>relpages <span class="operator">-</span> 关系页数（默认情况下一个页大小是<span class="number">8</span>kb）</span><br><span class="line"><span class="number">3.</span>pg_class <span class="operator">-</span> 系统表, 维护着所有relations的详细信息</span><br><span class="line"><span class="number">4.</span>limit <span class="number">1</span> <span class="operator">-</span> 限制返回结果只显示一行</span><br></pre></td></tr></table></figure>
+
+<h5 id="如何计算postgreSQL数据库所占用的硬盘大小？"><a href="#如何计算postgreSQL数据库所占用的硬盘大小？" class="headerlink" title="如何计算postgreSQL数据库所占用的硬盘大小？"></a>如何计算postgreSQL数据库所占用的硬盘大小？</h5><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">pg_database_size 这个方法是专门用来查询数据库大小的，它返回的结果单位是字节（bytes）。:</span><br><span class="line"><span class="keyword">SELECT</span> pg_database_size(<span class="string">&#x27;geekdb&#x27;</span>);</span><br><span class="line">如果你想要让结果更直观一点，那就使用pg_size_pretty方法，它可以把字节数转换成更友好易读的格式。</span><br><span class="line"><span class="keyword">SELECT</span> pg_size_pretty(pg_database_size(<span class="string">&#x27;geekdb&#x27;</span>));</span><br></pre></td></tr></table></figure>
+
+<h5 id="如何计算postgreSQL表所占用的硬盘大小？"><a href="#如何计算postgreSQL表所占用的硬盘大小？" class="headerlink" title="如何计算postgreSQL表所占用的硬盘大小？"></a>如何计算postgreSQL表所占用的硬盘大小？</h5><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">下面这个命令查出来的表大小是包含索引和toasted data的，如果你对除去索引外仅仅是表占的大小感兴趣，可以 使用后面提供的那个命令。</span><br><span class="line"><span class="keyword">SELECT</span> pg_size_pretty(pg_total_relation_size(<span class="string">&#x27;big_table&#x27;</span>));</span><br></pre></td></tr></table></figure>
+
+<h5 id="类别一、-如果两张张表（导出表和目标表）的字段一致，并且希望插入全部数据，可以用这种方法："><a href="#类别一、-如果两张张表（导出表和目标表）的字段一致，并且希望插入全部数据，可以用这种方法：" class="headerlink" title="类别一、 如果两张张表（导出表和目标表）的字段一致，并且希望插入全部数据，可以用这种方法："></a>类别一、 如果两张张表（导出表和目标表）的字段一致，并且希望插入全部数据，可以用这种方法：</h5><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">INSERT INTO  目标表  SELECT  * FROM  来源表 ;</span><br></pre></td></tr></table></figure>
+
+<h5 id="要将-articles-表插入到-newArticles-表中，则可以通过如下SQL语句实现："><a href="#要将-articles-表插入到-newArticles-表中，则可以通过如下SQL语句实现：" class="headerlink" title="要将 articles 表插入到 newArticles 表中，则可以通过如下SQL语句实现："></a>要将 articles 表插入到 newArticles 表中，则可以通过如下SQL语句实现：</h5><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">INSERT INTO  newArticles  SELECT  * FROM  articles ;</span><br></pre></td></tr></table></figure>
+
+<h5 id="如果只希望导入指定字段，可以用这种方法："><a href="#如果只希望导入指定字段，可以用这种方法：" class="headerlink" title="如果只希望导入指定字段，可以用这种方法："></a>如果只希望导入指定字段，可以用这种方法：</h5><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">INSERT INTO  目标表 (字段1, 字段2, ...)  SELECT   字段1, 字段2, ...   FROM  来源表 ;</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">INSERT</span> <span class="keyword">INTO</span> TPersonnelChange(  </span><br><span class="line">    UserId,  </span><br><span class="line">    DepId,  </span><br><span class="line">    SubDepId,  </span><br><span class="line">    PostionType,  </span><br><span class="line">    AuthorityId,  </span><br><span class="line">    ChangeDateS,  </span><br><span class="line">    InsertDate,  </span><br><span class="line">    UpdateDate,  </span><br><span class="line">    SakuseiSyaId  </span><br><span class="line">)<span class="keyword">SELECT</span>  </span><br><span class="line">    UserId,  </span><br><span class="line">    DepId,  </span><br><span class="line">    SubDepId,  </span><br><span class="line">    PostionType,  </span><br><span class="line">    AuthorityId,  </span><br><span class="line">    DATE_FORMAT(EmployDate, <span class="string">&#x27;%Y%m%d&#x27;</span>),  </span><br><span class="line">    NOW(),  </span><br><span class="line">    NOW(),  </span><br><span class="line">    <span class="number">1</span>  </span><br><span class="line"><span class="keyword">FROM</span>  </span><br><span class="line">    TUserMst  </span><br><span class="line"><span class="keyword">WHERE</span>  </span><br><span class="line">    `Status` <span class="operator">=</span> <span class="number">0</span>  </span><br><span class="line"><span class="keyword">AND</span> QuitFlg <span class="operator">=</span> <span class="number">0</span>  </span><br><span class="line"><span class="keyword">AND</span> UserId <span class="operator">&gt;</span> <span class="number">2</span>  </span><br></pre></td></tr></table></figure>
+
+<h5 id="generate-series函数应用"><a href="#generate-series函数应用" class="headerlink" title="generate_series函数应用"></a><a target="_blank" rel="noopener" href="http://www.cnblogs.com/mchina/archive/2013/04/03/2997722.html">generate_series函数应用</a></h5><h5 id="批量添加数据"><a href="#批量添加数据" class="headerlink" title="批量添加数据"></a>批量添加数据</h5><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">select</span> generate_series(<span class="number">1</span>, <span class="number">10</span>); <span class="comment">--- int</span></span><br><span class="line"><span class="keyword">select</span> generate_series(<span class="number">1</span>, <span class="number">10</span>, <span class="number">3</span>); <span class="comment">--- 如果step 是正数，而start 大于stop，那么返回零行。相反，如果step 是负数，start 小于stop，则返回零行。如果是NULL 输入，也产生零行。step 为零则是一个错误。</span></span><br><span class="line"><span class="keyword">select</span> generate_series(<span class="number">5</span>,<span class="number">1</span>,<span class="number">-1</span>);</span><br><span class="line"><span class="keyword">select</span> generate_series(now(), now() <span class="operator">+</span> <span class="string">&#x27;7 days&#x27;</span>, <span class="string">&#x27;1 day&#x27;</span>);</span><br><span class="line"><span class="keyword">select</span> generate_series(to_date(<span class="string">&#x27;20130403&#x27;</span>,<span class="string">&#x27;yyyymmdd&#x27;</span>), to_date(<span class="string">&#x27;20130404&#x27;</span>,<span class="string">&#x27;yyyymmdd&#x27;</span>), <span class="string">&#x27;3 hours&#x27;</span>);  </span><br></pre></td></tr></table></figure>
+
+<h4 id="锁的问题"><a href="#锁的问题" class="headerlink" title="锁的问题"></a>锁的问题</h4><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">1.如何锁一个表的某一行</span><br><span class="line">select * from table rowlock where id =1</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<h4 id="常用语句"><a href="#常用语句" class="headerlink" title="常用语句"></a>常用语句</h4><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">select</span> localdatetime,retcode,respinfo <span class="keyword">from</span>  ol_transdetail <span class="keyword">where</span> localdatetime<span class="operator">&gt;</span> <span class="string">&#x27;20180109100000&#x27;</span> <span class="keyword">and</span> receprodcode<span class="operator">=</span><span class="string">&#x27;612020&#x27;</span> <span class="keyword">and</span> retcode<span class="operator">=</span><span class="string">&#x27;09209999&#x27;</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">select</span> <span class="operator">*</span> <span class="keyword">from</span> ol_transdetail <span class="keyword">where</span>  localdatetime<span class="operator">&gt;</span><span class="string">&#x27;20180109163000&#x27;</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">select</span> SUBSTR(localdatetime,<span class="number">9</span>,<span class="number">4</span>),logip,retcode,<span class="built_in">count</span>(<span class="operator">*</span>),round(<span class="built_in">avg</span>(protime),<span class="number">2</span>) <span class="keyword">as</span> 渠道耗时,round(<span class="built_in">avg</span>(backtime),<span class="number">2</span>) <span class="keyword">as</span> 后台耗时 <span class="keyword">from</span> ol_transdetail <span class="keyword">where</span> localdate <span class="operator">=</span><span class="string">&#x27;20180329&#x27;</span>  <span class="keyword">and</span> localdatetime <span class="operator">&gt;</span> <span class="string">&#x27;20180329170300&#x27;</span> <span class="keyword">GROUP</span> <span class="keyword">BY</span> SUBSTR(localdatetime,<span class="number">9</span>,<span class="number">4</span>),logip,retcode <span class="keyword">ORDER</span> <span class="keyword">BY</span> SUBSTR(localdatetime,<span class="number">9</span>,<span class="number">4</span>);</span><br><span class="line"> </span><br><span class="line"> <span class="keyword">select</span> <span class="keyword">DISTINCT</span>(logip) <span class="keyword">from</span> ol_transdetail  ;</span><br><span class="line"> </span><br><span class="line"><span class="keyword">select</span> logip,retcode,<span class="built_in">count</span>(<span class="operator">*</span>),round(<span class="built_in">avg</span>(protime),<span class="number">2</span>) <span class="keyword">as</span> 渠道耗时,round(<span class="built_in">avg</span>(backtime),<span class="number">2</span>) <span class="keyword">as</span> 后台耗时  <span class="keyword">from</span> ol_transdetail <span class="keyword">where</span> localdatetime <span class="operator">&gt;=</span> to_char(now() <span class="operator">-</span> <span class="type">interval</span> <span class="string">&#x27;1 min&#x27;</span>,<span class="string">&#x27;YYYYMMDDHHMMSS&#x27;</span>) <span class="keyword">group</span> <span class="keyword">by</span>  logip ,retcode;</span><br></pre></td></tr></table></figure>
+
+<h4 id="每分钟查询结果"><a href="#每分钟查询结果" class="headerlink" title="每分钟查询结果"></a>每分钟查询结果</h4><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">select</span> SUBSTR(localdatetime,<span class="number">9</span>,<span class="number">4</span>),logip,retcode,<span class="built_in">count</span>(<span class="operator">*</span>),round(<span class="built_in">avg</span>(protime),<span class="number">2</span>) <span class="keyword">as</span> 渠道耗时,round(<span class="built_in">avg</span>(backtime),<span class="number">2</span>) <span class="keyword">as</span> 后台耗时 <span class="keyword">from</span> ol_transdetail <span class="keyword">where</span>  localdatetime <span class="operator">&gt;</span> to_char(now() <span class="operator">-</span> <span class="type">interval</span> <span class="string">&#x27;1 min&#x27;</span>,<span class="string">&#x27;YYYYMMDDHHMISS&#x27;</span>) <span class="keyword">GROUP</span> <span class="keyword">BY</span> SUBSTR(localdatetime,<span class="number">9</span>,<span class="number">4</span>),logip,retcode <span class="keyword">ORDER</span> <span class="keyword">BY</span> SUBSTR(localdatetime,<span class="number">9</span>,<span class="number">4</span>),渠道耗时 <span class="keyword">desc</span>;</span><br></pre></td></tr></table></figure>
+
+<h3 id="创建基础备份"><a href="#创建基础备份" class="headerlink" title="创建基础备份"></a>创建基础备份</h3><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">	vi pg_hba.conf</span><br><span class="line">	host <span class="keyword">all</span> <span class="keyword">all</span>  <span class="number">192.168</span><span class="number">.67</span><span class="number">.35</span><span class="operator">/</span><span class="number">24</span>             md5</span><br><span class="line">	host replication postgres <span class="number">192.168</span><span class="number">.67</span><span class="number">.35</span><span class="operator">/</span><span class="number">24</span> trust</span><br><span class="line">	pg_basebackup <span class="operator">-</span>h node1 <span class="operator">-</span>U replication <span class="operator">-</span>D <span class="operator">/</span>data<span class="operator">/</span>postgresql<span class="operator">/</span>data<span class="operator">/</span> <span class="operator">-</span>X stream <span class="operator">-</span>P</span><br><span class="line">查看主备关系</span><br><span class="line">	<span class="keyword">select</span> <span class="operator">*</span> <span class="keyword">from</span> pg_stat_replication ;</span><br></pre></td></tr></table></figure>
+
+<h3 id="用pg-rewind命令同步新备库"><a href="#用pg-rewind命令同步新备库" class="headerlink" title="用pg_rewind命令同步新备库"></a>用pg_rewind命令同步新备库</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">pg_rewind --target-pgdata $PGDATA --source-server=&#x27;host=192.168.1.203 port=5432 user=postgres dbname=postgres&#x27; -P</span><br><span class="line">mv recovery.done recovery.conf</span><br><span class="line">vi recovery.conf</span><br></pre></td></tr></table></figure>
+
+<h3 id="高可用（pcs-corosync-postgres）修复旧Master"><a href="#高可用（pcs-corosync-postgres）修复旧Master" class="headerlink" title="高可用（pcs+corosync+postgres）修复旧Master"></a>高可用（pcs+corosync+postgres）修复旧Master</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">检查集群状态   </span><br><span class="line">由于设置了migration-threshold=&quot;3&quot;，发生一次普通的错误，Pacemaker会在原地重新启动postgres进程，不发生主从切换。</span><br><span class="line">（如果Master的物理机或网络发生故障，直接进行failover。）</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p>第一种方法：可通过<code>pg_basebackup</code>修复旧Master（需要强行恢复的情况下）</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"># su - postgres</span><br><span class="line">$ rm -rf /data/postgresql/data</span><br><span class="line">$ pg_basebackup -h 192.168.41.136 -U postgres -D /data/postgresql/data -X stream -P</span><br><span class="line">$ exit</span><br><span class="line"># pcs resource cleanup msPostgresql</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p>第二种方法：通过<code>pg_baseback</code>修复旧Master。<code>cls_rebuild_slave</code>是对<code>pg_basebackup</code>的包装，主要多了执行结果状态的检查。</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">[root@node1 pha4pgsql]# rm -rf /data/postgresql/data</span><br><span class="line">[root@node1 pha4pgsql]# cls_rebuild_slave </span><br><span class="line">22636/22636 kB (100%), 1/1 tablespace</span><br><span class="line">All resources/stonith devices successfully cleaned up</span><br><span class="line">wait for recovery complete</span><br><span class="line">.....</span><br><span class="line">slave recovery of node1 successed</span><br><span class="line">[root@node1 pha4pgsql]# cls_status</span><br><span class="line">Last updated: Fri Apr 22 02:40:48 2016</span><br><span class="line">Last change: Fri Apr 22 02:40:36 2016 by root via crm_resource on node1</span><br><span class="line">Stack: corosync</span><br><span class="line">Current DC: node2 (2) - partition with quorum</span><br><span class="line">Version: 1.1.12-a14efad</span><br><span class="line">2 Nodes configured</span><br><span class="line">4 Resources configured</span><br></pre></td></tr></table></figure>
+
+<p>第三种方法: 9.5以上版本还可以通过<code>pg_rewind</code>修复旧Master</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">[root@node1 pha4pgsql]# cls_repair_by_pg_rewind </span><br><span class="line">connected to server</span><br><span class="line">servers diverged at WAL position 0/7000410 on timeline 2</span><br><span class="line">rewinding from last common checkpoint at 0/7000368 on timeline 2</span><br><span class="line">reading source file list</span><br><span class="line">reading target file list</span><br><span class="line">reading WAL in target</span><br><span class="line">need to copy 67 MB (total source directory size is 85 MB)</span><br><span class="line">69591/69591 kB (100%) copied</span><br><span class="line">creating backup label and updating control file</span><br><span class="line">syncing target data directory</span><br><span class="line">Done!</span><br><span class="line">All resources/stonith devices successfully cleaned up</span><br><span class="line">wait for recovery complete</span><br><span class="line">....</span><br><span class="line">slave recovery of node1 successed </span><br></pre></td></tr></table></figure>
+
+<h3 id="高可用（pcs-corosync-postgres）Slave上进程故障"><a href="#高可用（pcs-corosync-postgres）Slave上进程故障" class="headerlink" title="高可用（pcs+corosync+postgres）Slave上进程故障"></a>高可用（pcs+corosync+postgres）Slave上进程故障</h3><p>再强制杀死Master上的postgres进程2次后检查集群状态。</p>
+<p>fail-count增加到3后，Pacemaker不再启动PostgreSQL，保持其为停止状态。</p>
+<p>同时，Master(node1)(VIP所在的主机)上的复制模式被自动切换到异步复制，防止写操作hang住。</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">[root@node1 pha4pgsql]# tail /var/lib/pgsql/tmp/rep_mode.conf</span><br><span class="line">synchronous_standby_names = &#x27;&#x27;</span><br></pre></td></tr></table></figure>
+
+<h4 id="修复Salve"><a href="#修复Salve" class="headerlink" title="修复Salve"></a>修复Salve</h4><p>在node2上执行<code>cls_cleanup</code>，清除fail-count后，Pacemaker会再次启动PostgreSQL进程。</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">[root@node2 ~]# cls_cleanup </span><br><span class="line">All resources/stonith devices successfully cleaned up</span><br><span class="line">[root@node2 ~]# cls_status </span><br><span class="line">Last updated: Sun May  8 01:43:13 2016</span><br><span class="line">Last change: Sun May  8 01:43:08 2016 by root via crm_resource on node1</span><br><span class="line">Stack: corosync</span><br><span class="line">Current DC: node2 (2) - partition with quorum</span><br><span class="line">Version: 1.1.12-a14efad</span><br><span class="line">2 Nodes configured</span><br><span class="line">4 Resources configured</span><br></pre></td></tr></table></figure>
+
+<p>同时，Master(node1)上的复制模式又自动切换回到同步复制。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">[root@node1 pha4pgsql]# tail /var/lib/pgsql/tmp/rep_mode.conf</span><br><span class="line">synchronous_standby_names = &#x27;node2&#x27;(只会有同步流复制)</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<h2 id="错误排查"><a href="#错误排查" class="headerlink" title="错误排查"></a>错误排查</h2><p>出现故障时，可通过以下方法排除故障</p>
+<ol>
+<li><p>确认集群服务是否OK</p>
+<p>pcs status</p>
+</li>
+<li><p>查看错误日志</p>
+<p>PostgreSQL的错误日志</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">/var/log/messages</span><br><span class="line">/var/log/cluster/corosync.log</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p>Pacemaker输出的日志非常多，可以进行过滤。</p>
+<p>只看Pacemaker的资源调度（在Current DC节点上执行)：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">grep Initiating /var/log/messages </span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p>只查看expgsql RA的输出：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">grep expgsql /var/log/messages</span><br><span class="line"></span><br></pre></td></tr></table></figure></li>
+</ol>
+<h2 id="其它故障的处理"><a href="#其它故障的处理" class="headerlink" title="其它故障的处理"></a>其它故障的处理</h2><h3 id="无Master时的修复"><a href="#无Master时的修复" class="headerlink" title="无Master时的修复"></a>无Master时的修复</h3><p>如果切换失败或其它原因导致集群中没有Master，可以参考下面的步骤修复</p>
+<h4 id="方法1：使用cleanup修复"><a href="#方法1：使用cleanup修复" class="headerlink" title="方法1：使用cleanup修复"></a>方法1：使用cleanup修复</h4><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">cls_cleanup</span><br></pre></td></tr></table></figure>
+
+<p>大部分情况，cleanup就可以找到Master。而且应该首先使用cleanup。如果不成功，再采用下面的方法</p>
+<h4 id="方法2：人工修复复制关系"><a href="#方法2：人工修复复制关系" class="headerlink" title="方法2：人工修复复制关系"></a>方法2：人工修复复制关系</h4><ol>
+<li><p>将资源脱离集群管理</p>
+<p>cls_unmanage</p>
+</li>
+<li><p>人工修复PostgreSQL，建立复制关系<br>至于master的选取，可以选择<code>pgsql_REPL_INFO</code>中的master节点，或根据xlog位置确定。</p>
+</li>
+<li><p>在所有节点上停止PostgreSQL</p>
+</li>
+<li><p>清除状态并恢复集群管理</p>
+<p>cls_manage</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">cls_reset_master</span><br><span class="line"></span><br></pre></td></tr></table></figure></li>
+</ol>
+<h4 id="方法3：快速恢复Master节点再恢复Slave"><a href="#方法3：快速恢复Master节点再恢复Slave" class="headerlink" title="方法3：快速恢复Master节点再恢复Slave"></a>方法3：快速恢复Master节点再恢复Slave</h4><p>可以明确指定将哪个节点作为Master，省略则通过xlog位置比较确定master</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">cls_reset_master [master]</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<h3 id="疑难的Pacemaker问题的处理"><a href="#疑难的Pacemaker问题的处理" class="headerlink" title="疑难的Pacemaker问题的处理"></a>疑难的Pacemaker问题的处理</h3><p>有时候可能会遇到一些顽固的问题，Pacemaker不按期望的动作，或某个资源处于错误状态却无法清除。<br>这时最简单的办法就是清除CIB重新设置。可执行下面的命令完成。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">./setup.sh [master]</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p>如果不指定master，并且PostgreSQL进程是活动的，通过当前PostgreSQL进程的主备关系决定谁是master。<br>如果当前没有处于主的PostgreSQL进程，通过比较xlog位置确定谁作为master。</p>
+<p>在PostgreSQL服务启动期间，正常情况下，执行setup.sh不会使服务停止。</p>
+<p>setup.sh还可以完全取代前面的<code>cls_reset_master</code>。</p>
+<h3 id="fail-count的清除"><a href="#fail-count的清除" class="headerlink" title="fail-count的清除"></a>fail-count的清除</h3><p>如果某个节点上有资源的fail-count不为0，最好将其清除，即使当前资源是健康的。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">cls_cleanup</span><br><span class="line">ps resource cleanup msPostgresql</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<h3 id="注意事项"><a href="#注意事项" class="headerlink" title="注意事项"></a>注意事项</h3><ol>
+<li>.&#x2F;setup.sh会清除CIB，对Pacemaker资源定义的修改应该写到config.pcs里，防止下次执行setup.sh丢失。</li>
+<li>有些包装后的脚本容易超时，比如<code>cls_rebuild_slave</code>。此时可能执行还没有完成的，需要通过<code>cls_status</code>或日志进行确认。</li>
+</ol>
+<h3 id="pg-log-和pg-xlog-和pg-clog的区别"><a href="#pg-log-和pg-xlog-和pg-clog的区别" class="headerlink" title="pg_log 和pg_xlog 和pg_clog的区别"></a>pg_log 和pg_xlog 和pg_clog的区别</h3><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">#</span><span class="language-bash">pg_xlog</span></span><br><span class="line">这个日志是记录的Postgresql的WAL信息，也就是一些事务日志信息(transaction log)，默认单个大小是16M，源码安装的时候可以更改其大小。这些信息通常名字是类似&#x27;000000010000000000000013&#x27;这样的文件，这些日志会在定时回滚恢复(PITR)，流复制(Replication Stream)以及归档时能被用到，这些日志是非常重要的，记录着数据库发生的各种事务信息，不得随意删除或者移动这类日志文件，不然你的数据库会有无法恢复的风险</span><br><span class="line"></span><br><span class="line">当你的归档或者流复制发生异常的时候，事务日志会不断地生成，有可能会造成你的磁盘空间被塞满，最终导致DB挂掉或者起不来。遇到这种情况不用慌，可以先关闭归档或者流复制功能，备份pg_xlog日志到其他地方，但请不要删除。然后删除较早时间的的pg_xlog，有一定空间后再试着启动Postgres。</span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_">#</span><span class="language-bash">pg_clog</span></span><br><span class="line">pg_clog这个文件也是事务日志文件，但与pg_xlog不同的是它记录的是事务的元数据(metadata)，这个日志告诉我们哪些事务完成了，哪些没有完成。这个日志文件一般非常小，但是重要性也是相当高，不得随意删除或者对其更改信息。</span><br><span class="line"></span><br><span class="line">总结：</span><br><span class="line"><span class="meta prompt_">#</span><span class="language-bash">pg_log记录各种Error信息，以及服务器与DB的状态信息，可由用户随意更新删除</span></span><br><span class="line"><span class="meta prompt_">#</span><span class="language-bash">pg_xlog与pg_clog记录数据库的事务信息，不得随意删除更新，做物理备份时要记得备份着两个日志。</span></span><br></pre></td></tr></table></figure>
+
+<h1 id="PostgreSQL避免OOM发生方法"><a href="#PostgreSQL避免OOM发生方法" class="headerlink" title="PostgreSQL避免OOM发生方法"></a>PostgreSQL避免OOM发生方法</h1><p><strong>操作系统层：</strong></p>
+<p>如前面所述，主要设置以下两点：</p>
+<ul>
+<li>vm.overcommit_memory设置为2：sysctl -w vm.overcommit_memory&#x3D;2</li>
+<li>修改postgres进程的oom_score：echo -1000 &gt; &#x2F;proc&#x2F;self&#x2F;oom_score_adj</li>
+</ul>
+<p><strong>数据库层：</strong></p>
+<p>数据库中可以进行以下调整来降低OOM发生的可能：</p>
+<ul>
+<li>分区表特别多, 需要注意分区的catalog cache占用大量内存（PG12之后基本可以避免，或者使用pg_pathman）</li>
+<li>避免长连接，连接时间越长, 访问的元数据积累越多, 导致每个会话的私有内存较大。可以通过降低总连接数或者使用连接池</li>
+<li>使用HUGEPAGE, 避免page table占用较大内存. 最终引起OOM</li>
+<li>避免使用较大的work_mem或hash_mem_multiplier，优化SQL，减少hash agg、hash join的使用</li>
+</ul>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/knowledge-base/tags/postgres/" rel="tag"># postgres</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/knowledge-base/2018/05/31/postgres/" rel="prev" title="postgres日常使用">
+                  <i class="fa fa-chevron-left"></i> postgres日常使用
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/knowledge-base/2018/05/31/corosync-pg/" rel="next" title="corosync+ pacemaker实现pg流复制自动切换">
+                  corosync+ pacemaker实现pg流复制自动切换 <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  &copy; 
+  <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">ZHD</span>
+</div>
+<div class="wordcount">
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-chart-line"></i>
+    </span>
+    <span title="站点总字数">220k</span>
+  </span>
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+    <span title="站点阅读时长">3:20</span>
+  </span>
+</div>
+<div class="busuanzi-count">
+    <span class="post-meta-item" id="busuanzi_container_site_uv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div><script color="0,0,255" opacity="0.5" zIndex="-1" count="99" src="https://lib.baomitu.com/canvas-nest.js/1.0.1/canvas-nest.js"></script>
+
+
+    </div>
+  </footer>
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.1/jquery.min.js" integrity="sha256-o88AwQnZB+VDvE9tvIXrMQaPlFFSUTR+nldQm1LuPXQ=" crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/fancybox/3.5.7/jquery.fancybox.min.js" integrity="sha256-yt2kYMy0w8AbtF89WXb2P1rfjcP/HTHLT7097U8Y5b8=" crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pangu/4.0.7/pangu.min.js" integrity="sha256-j+yj56cdEY2CwkVtGyz18fNybFGpMGJ8JxG3GSyO2+I=" crossorigin="anonymous"></script>
+<script src="/knowledge-base/js/comments.js"></script><script src="/knowledge-base/js/utils.js"></script><script src="/knowledge-base/js/motion.js"></script><script src="/knowledge-base/js/next-boot.js"></script>
+
+  
+<script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-generator-searchdb/1.4.0/search.js" integrity="sha256-vXZMYLEqsROAXkEw93GGIvaB2ab+QW6w3+1ahD9nXXA=" crossorigin="anonymous"></script>
+<script src="/knowledge-base/js/third-party/search/local-search.js"></script>
+
+
+
+  <script src="/knowledge-base/js/third-party/fancybox.js"></script>
+
+  <script src="/knowledge-base/js/third-party/pace.js"></script>
+
+  
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+
+
+
+<script src="/knowledge-base/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"pluginModelPath":"assets/","model":{"jsonPath":"/knowledge-base/live2dw/assets/shizuku.model.json"},"display":{"position":"left","width":200,"height":400},"mobile":{"show":false},"rect":"opacity:0.7","log":false,"pluginJsPath":"lib/","pluginRootPath":"live2dw/","tagMode":false});</script></body>
+</html>

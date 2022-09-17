@@ -1,0 +1,423 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222"><meta name="generator" content="Hexo 6.3.0">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/knowledge-base/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/knowledge-base/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/knowledge-base/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/knowledge-base/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/knowledge-base/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css" integrity="sha256-AbA177XfpSnFEvgpYu1jMygiLabzPCJCRIBtR5jGc0k=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fancybox/3.5.7/jquery.fancybox.min.css" integrity="sha256-Vzbj7sDDS/woiFS3uNKo8eIuni59rjyNGtXfstRzStA=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/pace/1.2.4/themes/blue/pace-theme-minimal.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pace/1.2.4/pace.min.js" integrity="sha256-gqd7YTjg/BtfqWSwsJOvndl0Bxc8gFImLEkXQT8+qj0=" crossorigin="anonymous"></script>
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"zhd_snow.gitee.io","root":"/knowledge-base/","images":"/knowledge-base/images","scheme":"Gemini","darkmode":false,"version":"8.13.0","exturl":false,"sidebar":{"position":"left","display":"always","padding":18,"offset":12,"b2t":false,"scrollpercent":true},"copycode":{"enable":true,"style":"mac"},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":true,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":true,"motion":{"enable":true,"async":true,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/knowledge-base/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false}}</script><script src="/knowledge-base/js/config.js"></script>
+
+    <meta name="description" content="PG主备流复制的核心部分由walsender，walreceiver和startup三个进程组成。 walsender进程是用来发送WAL日志记录的walreceiver进程是用来接收WAL日志记录的startup进程是用来apply日志的">
+<meta property="og:type" content="article">
+<meta property="og:title" content="postgres 同步&#x2F;异步流复制详解">
+<meta property="og:url" content="https://zhd_snow.gitee.io/knowledge-base/2018/08/26/pg-basebackup/index.html">
+<meta property="og:site_name" content="雪兰度">
+<meta property="og:description" content="PG主备流复制的核心部分由walsender，walreceiver和startup三个进程组成。 walsender进程是用来发送WAL日志记录的walreceiver进程是用来接收WAL日志记录的startup进程是用来apply日志的">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2018-08-26T10:06:01.000Z">
+<meta property="article:modified_time" content="2022-09-17T07:37:52.453Z">
+<meta property="article:author" content="ZHD">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="canonical" href="https://zhd_snow.gitee.io/knowledge-base/2018/08/26/pg-basebackup/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://zhd_snow.gitee.io/knowledge-base/2018/08/26/pg-basebackup/","path":"2018/08/26/pg-basebackup/","title":"postgres 同步/异步流复制详解"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>postgres 同步/异步流复制详解 | 雪兰度</title>
+  
+
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/knowledge-base/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/knowledge-base/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">雪兰度</p>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">ZHD's Notes</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/knowledge-base/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-about"><a href="/knowledge-base/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a></li><li class="menu-item menu-item-tags"><a href="/knowledge-base/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签<span class="badge">14</span></a></li><li class="menu-item menu-item-categories"><a href="/knowledge-base/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类<span class="badge">15</span></a></li><li class="menu-item menu-item-archives"><a href="/knowledge-base/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档<span class="badge">33</span></a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup"><div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off" maxlength="80"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close" role="button">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div class="search-result-container no-result">
+  <div class="search-result-icon">
+    <i class="fa fa-spinner fa-pulse fa-5x"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%B5%81%E5%A4%8D%E5%88%B6%E5%91%BD%E4%BB%A4%E5%8F%82%E6%95%B0%E8%AF%A6%E8%A7%A3"><span class="nav-number">1.</span> <span class="nav-text">流复制命令参数详解</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#postgresql-%E4%B8%BB%E5%A4%87%E5%BA%93archive-mode%E3%80%81archive-command"><span class="nav-number">2.</span> <span class="nav-text">postgresql 主备库archive_mode、archive_command</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%BC%82%E6%AD%A5%E6%B5%81%E5%A4%8D%E5%88%B6"><span class="nav-number">3.</span> <span class="nav-text">异步流复制</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%BC%82%E6%AD%A5%E6%B5%81%E5%A4%8D%E5%88%B6-1"><span class="nav-number">4.</span> <span class="nav-text">异步流复制</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="ZHD"
+      src="/knowledge-base/images/header.jpg">
+  <p class="site-author-name" itemprop="name">ZHD</p>
+  <div class="site-description" itemprop="description">盛年不重来，一日难再晨;及时当勉励，岁月不待人。</div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/knowledge-base/archives/">
+          <span class="site-state-item-count">33</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/knowledge-base/categories/">
+        <span class="site-state-item-count">15</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/knowledge-base/tags/">
+        <span class="site-state-item-count">14</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author site-overview-item animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/xingmengyoulan" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;xingmengyoulan" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:xingmengyoulan@163.com" title="E-Mail → mailto:xingmengyoulan@163.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+
+
+
+        </div>
+      </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://zhd_snow.gitee.io/knowledge-base/2018/08/26/pg-basebackup/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/knowledge-base/images/header.jpg">
+      <meta itemprop="name" content="ZHD">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="雪兰度">
+      <meta itemprop="description" content="盛年不重来，一日难再晨;及时当勉励，岁月不待人。">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="postgres 同步/异步流复制详解 | 雪兰度">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          postgres 同步/异步流复制详解
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2018-08-26 18:06:01" itemprop="dateCreated datePublished" datetime="2018-08-26T18:06:01+08:00">2018-08-26</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新于</span>
+      <time title="修改时间：2022-09-17 15:37:52" itemprop="dateModified" datetime="2022-09-17T15:37:52+08:00">2022-09-17</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/knowledge-base/categories/postgres/" itemprop="url" rel="index"><span itemprop="name">postgres</span></a>
+        </span>
+    </span>
+
+  
+    <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv">
+      <span class="post-meta-item-icon">
+        <i class="far fa-eye"></i>
+      </span>
+      <span class="post-meta-item-text">阅读次数：</span>
+      <span id="busuanzi_value_page_pv"></span>
+    </span>
+    <span class="post-meta-break"></span>
+    <span class="post-meta-item" title="本文字数">
+      <span class="post-meta-item-icon">
+        <i class="far fa-file-word"></i>
+      </span>
+      <span class="post-meta-item-text">本文字数：</span>
+      <span>4.1k</span>
+    </span>
+    <span class="post-meta-item" title="阅读时长">
+      <span class="post-meta-item-icon">
+        <i class="far fa-clock"></i>
+      </span>
+      <span class="post-meta-item-text">阅读时长 &asymp;</span>
+      <span>4 分钟</span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <div class="note info"><p>PG主备流复制的核心部分由walsender，walreceiver和startup三个进程组成。</p>
+<p>walsender进程是用来发送WAL日志记录的<br>walreceiver进程是用来接收WAL日志记录的<br>startup进程是用来apply日志的</p>
+</div>
+
+<span id="more"></span>
+
+<h2 id="流复制命令参数详解"><a href="#流复制命令参数详解" class="headerlink" title="流复制命令参数详解"></a>流复制命令参数详解</h2><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line">pg_basebackup 命令行参数</span><br><span class="line"> <span class="operator">-</span>D, <span class="comment">--pgdata=DIRECTORY receive base backup into directory</span></span><br><span class="line">    指定把备份写到那个目录，如果这个目录或这个目录路径中的各级父目录不存在，则pg_basebackup就会自动创建这个目录，如果目录存在，但目录不为空，则会导致pg_basebackup执行失败。</span><br><span class="line"><span class="operator">-</span>F, <span class="comment">--format=p|t       output format (plain (default), tar)</span></span><br><span class="line"> <span class="comment">--指定输出格式：</span></span><br><span class="line">   p原样输出，即把主数据库中的各个数据文件，配置文件、目录结构都完全一样的写到备份目录；</span><br><span class="line">   t 把输出的备份文件打包到一个tar文件中。</span><br><span class="line"><span class="operator">-</span>R, <span class="comment">--write-recovery-conf</span></span><br><span class="line">    <span class="comment">-- write recovery.conf after backup</span></span><br><span class="line">     生成recovery.conf文件</span><br><span class="line"><span class="operator">-</span>x, <span class="comment">--xlog   include required WAL files in backup (fetch mode)</span></span><br><span class="line">    备份时会把备份中产生的xlog文件也自动备份出来，这样才能在恢复数据库时，应用这些xlog文件把数据库推到一个一致点，然后真正打开这个备份的数据库，这个选项与 <span class="operator">-</span>X <span class="keyword">fetch</span>是完全一样的。使用这个选项，需要设置&quot;wal_keep_segments&quot;参数，以保证在备份过程中，需要的WAL日志文件不会被覆盖。</span><br><span class="line"><span class="operator">-</span>P, <span class="comment">--progress         show progress information</span></span><br><span class="line">    在备份过程中实时打印备份进度</span><br><span class="line"><span class="operator">-</span>X, <span class="comment">--xlog-method=fetch|stream</span></span><br><span class="line">    xlogdir<span class="operator">=</span>XLOGDIR  location <span class="keyword">for</span> the transaction log directory</span><br><span class="line"><span class="operator">-</span>z, <span class="comment">--gzip             compress tar output </span></span><br><span class="line">    使用gzip压缩，仅能能与tar输出模式配合使用。</span><br><span class="line">实例：</span><br><span class="line">pg_basebackup   <span class="operator">-</span>D backup     <span class="operator">-</span>Ft  <span class="operator">-</span>z <span class="operator">-</span>R <span class="operator">-</span>P </span><br><span class="line">pg_basebackup   <span class="operator">-</span>D backup     <span class="operator">-</span>Fp    <span class="operator">-</span>P </span><br><span class="line">pg_basebackup <span class="operator">-</span>h <span class="number">192.168</span><span class="number">.106</span><span class="number">.128</span> <span class="operator">-</span>p <span class="number">5432</span> <span class="operator">-</span>U postgres <span class="operator">-</span>D $HOME<span class="operator">/</span>data <span class="operator">-</span>Ft <span class="operator">-</span>z <span class="operator">-</span>R <span class="operator">-</span>P</span><br></pre></td></tr></table></figure>
+<h2 id="postgresql-主备库archive-mode、archive-command"><a href="#postgresql-主备库archive-mode、archive-command" class="headerlink" title="postgresql 主备库archive_mode、archive_command"></a>postgresql 主备库archive_mode、archive_command</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">1、在主库,postgresql.conf配置文件配置如下</span><br><span class="line"></span><br><span class="line">      archive_mode=on</span><br><span class="line"></span><br><span class="line">      archive_command =<span class="string">&#x27;cp -i %p /u01/pg9.1/archivelog/%f &lt;/dev/null&#x27;</span></span><br><span class="line"></span><br><span class="line">      主库开启归档模式，归档日志写入/pg9.1/data/pg_xlog目录，archive_command把归档日志复制到/u01/pg9.1/archivelog/</span><br><span class="line"></span><br><span class="line">2、在备库，archive_mode、archive_command是否注销对备库没有任何影响，备库不会加载该配置。</span><br><span class="line"></span><br><span class="line">3、主库归档事务提交后，备库进行相应操作，进行归档，归档日志写入/pg9.1/data/pg_xlog目录，但不执行archive_command命令。</span><br></pre></td></tr></table></figure>
+
+<h2 id="异步流复制"><a href="#异步流复制" class="headerlink" title="异步流复制"></a>异步流复制</h2><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br></pre></td><td class="code"><pre><span class="line">主数据库配置</span><br><span class="line"><span class="number">1.</span> 主机<span class="number">192.168</span><span class="number">.1</span><span class="number">.202</span></span><br><span class="line"><span class="number">1.1</span> 首先需要配置一个账号进行主从同步。</span><br><span class="line">创建replica用户设置密码，登录和备份权限。</span><br><span class="line"><span class="keyword">CREATE</span> ROLE replica login replication encrypted password <span class="string">&#x27;replica&#x27;</span></span><br><span class="line"></span><br><span class="line"><span class="number">1.2</span> 修改pg_hba.conf，增加replica用户，进行同步。</span><br><span class="line">host    replication     replica     <span class="number">192.168</span><span class="number">.1</span><span class="number">.0</span><span class="operator">/</span><span class="number">24</span>              md5</span><br><span class="line">这样，就设置了replica这个用户可以从<span class="number">192.168</span><span class="number">.1</span><span class="number">.0</span>对应的网段进行流复制请求。</span><br><span class="line"></span><br><span class="line"><span class="number">1.3</span> 修改postgresql.conf，注意设置下下面几个地方：</span><br><span class="line">wal_level <span class="operator">=</span> hot_standby   # 这个是设置主为wal的主机</span><br><span class="line">max_wal_senders <span class="operator">=</span> <span class="number">5</span>       # 这个设置了可以最多有几个流复制连接，差不多有几个从，就设置几个</span><br><span class="line">wal_keep_segments <span class="operator">=</span> <span class="number">128</span>   # 设置流复制保留的最多的xlog数目</span><br><span class="line">wal_sender_timeout <span class="operator">=</span> <span class="number">60</span>s  # 设置流复制主机发送数据的超时时间</span><br><span class="line">max_connections <span class="operator">=</span> <span class="number">100</span>     # 这个设置要注意下，从库的max_connections必须要大于主库的</span><br><span class="line"></span><br><span class="line"><span class="number">1.4</span> 重启主库</span><br><span class="line"></span><br><span class="line"><span class="number">2.</span> 备数据库配置</span><br><span class="line">主机<span class="number">192.168</span><span class="number">.1</span><span class="number">.203</span></span><br><span class="line"><span class="number">2.1</span> 使用pg_basebackup建备库</span><br><span class="line">pg_basebackup <span class="operator">-</span>F p <span class="comment">--progress -D /home/postgres/data -h 192.168.1.202 -p 5432 -U replica --password</span></span><br><span class="line">这里使用了pg_basebackup这个命令，<span class="operator">/</span>home<span class="operator">/</span>postgres<span class="operator">/</span>data这个目录是空的</span><br><span class="line">成功之后，就可以看到这个目录中现有的文件都是一样的了。</span><br><span class="line"></span><br><span class="line"><span class="number">2.2</span> 进入到<span class="operator">/</span>home<span class="operator">/</span>postgres<span class="operator">/</span>data目录，修改recovery.conf，只要修改几个地方就行了</span><br><span class="line">standby_mode <span class="operator">=</span> <span class="keyword">on</span>  # 这个说明这台机器为从库</span><br><span class="line">primary_conninfo <span class="operator">=</span> <span class="string">&#x27;host=192.168.1.202 port=5432 user=replica password=replica&#x27;</span>  # 这个说明这台机器对应主库的信息</span><br><span class="line">recovery_target_timeline <span class="operator">=</span> <span class="string">&#x27;latest&#x27;</span> # 这个说明这个流复制同步到最新的数据</span><br><span class="line"></span><br><span class="line"><span class="number">2.3</span> postgresql.conf中也有几个地方要进行修改</span><br><span class="line">max_connections <span class="operator">=</span> <span class="number">200</span>              # 一般查多于写的应用从库的最大连接数要比较大</span><br><span class="line">hot_standby <span class="operator">=</span> <span class="keyword">on</span>                   # 说明这台机器不仅仅是用于数据归档，也用于数据查询</span><br><span class="line">max_standby_streaming_delay <span class="operator">=</span> <span class="number">30</span>s  # 数据流备份的最大延迟时间</span><br><span class="line">wal_receiver_status_interval <span class="operator">=</span> <span class="number">10</span>s # 多久向主报告一次从的状态，当然从每次数据复制都会向主报告状态，这里只是设置最长的间隔时间</span><br><span class="line">hot_standby_feedback <span class="operator">=</span> <span class="keyword">on</span>          # 如果有错误的数据复制，是否向主进行反馈</span><br><span class="line"></span><br><span class="line"><span class="number">2.4</span> 启动备</span><br><span class="line"></span><br><span class="line">【主库】查看配置结果</span><br><span class="line">postgres<span class="operator">=</span># <span class="keyword">select</span> <span class="operator">*</span> <span class="keyword">from</span> pg_stat_replication ;</span><br><span class="line"><span class="operator">-</span>[ RECORD <span class="number">1</span> ]<span class="comment">----+------------------------------</span></span><br><span class="line">pid              <span class="operator">|</span> <span class="number">1793</span></span><br><span class="line">usesysid         <span class="operator">|</span> <span class="number">24576</span></span><br><span class="line">usename          <span class="operator">|</span> replica</span><br><span class="line">application_name <span class="operator">|</span> walreceiver</span><br><span class="line">client_addr      <span class="operator">|</span> <span class="number">192.168</span><span class="number">.1</span><span class="number">.203</span></span><br><span class="line">client_hostname  <span class="operator">|</span> </span><br><span class="line">client_port      <span class="operator">|</span> <span class="number">32250</span></span><br><span class="line">backend_start    <span class="operator">|</span> <span class="number">2017</span><span class="number">-09</span><span class="number">-01</span> <span class="number">22</span>:<span class="number">23</span>:<span class="number">16.924496</span><span class="operator">+</span><span class="number">08</span></span><br><span class="line">backend_xmin     <span class="operator">|</span> <span class="number">1676</span></span><br><span class="line">state            <span class="operator">|</span> streaming</span><br><span class="line">sent_location    <span class="operator">|</span> <span class="number">0</span><span class="operator">/</span><span class="number">60003E0</span></span><br><span class="line">write_location   <span class="operator">|</span> <span class="number">0</span><span class="operator">/</span><span class="number">60003E0</span></span><br><span class="line">flush_location   <span class="operator">|</span> <span class="number">0</span><span class="operator">/</span><span class="number">60003E0</span></span><br><span class="line">replay_location  <span class="operator">|</span> <span class="number">0</span><span class="operator">/</span><span class="number">60003E0</span></span><br><span class="line">sync_priority    <span class="operator">|</span> <span class="number">0</span></span><br><span class="line">sync_state       <span class="operator">|</span> async</span><br></pre></td></tr></table></figure>
+<h2 id="异步流复制-1"><a href="#异步流复制-1" class="headerlink" title="异步流复制"></a>异步流复制</h2><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br></pre></td><td class="code"><pre><span class="line"><span class="number">1.</span> 主数据库配置</span><br><span class="line">主机<span class="number">192.168</span><span class="number">.1</span><span class="number">.202</span></span><br><span class="line"><span class="number">1.1</span> 修改postgresql.conf</span><br><span class="line">synchronous_standby_names <span class="operator">=</span> <span class="string">&#x27;standby01&#x27;</span></span><br><span class="line"></span><br><span class="line"><span class="number">2.</span> 备数据库配置</span><br><span class="line">主机<span class="number">192.168</span><span class="number">.1</span><span class="number">.203</span></span><br><span class="line"></span><br><span class="line"><span class="number">2.2</span> vi recovery.conf </span><br><span class="line">standby_mode <span class="operator">=</span> <span class="keyword">on</span></span><br><span class="line">primary_conninfo <span class="operator">=</span> <span class="string">&#x27;application_name=standby01 host=192.168.1.202 port=5432 user=replica password=replica&#x27;</span></span><br><span class="line">recovery_target_timeline <span class="operator">=</span> <span class="string">&#x27;latest&#x27;</span></span><br><span class="line"></span><br><span class="line"><span class="comment">--注意：application_name 名称必须和主库的postgres.conf中的synchronous_standby_names 参数必须一致</span></span><br><span class="line"></span><br><span class="line"><span class="number">3.</span>重启动主备库</span><br><span class="line"></span><br><span class="line">【主库】查看</span><br><span class="line">postgres<span class="operator">=</span># <span class="keyword">select</span> <span class="operator">*</span> <span class="keyword">from</span> pg_stat_replication ;</span><br><span class="line"><span class="operator">-</span>[ RECORD <span class="number">1</span> ]<span class="comment">----+----------------------------</span></span><br><span class="line">pid              <span class="operator">|</span> <span class="number">1706</span></span><br><span class="line">usesysid         <span class="operator">|</span> <span class="number">24576</span></span><br><span class="line">usename          <span class="operator">|</span> replica</span><br><span class="line">application_name <span class="operator">|</span> standby01</span><br><span class="line">client_addr      <span class="operator">|</span> <span class="number">192.168</span><span class="number">.1</span><span class="number">.203</span></span><br><span class="line">client_hostname  <span class="operator">|</span> </span><br><span class="line">client_port      <span class="operator">|</span> <span class="number">59550</span></span><br><span class="line">backend_start    <span class="operator">|</span> <span class="number">2017</span><span class="number">-09</span><span class="number">-01</span> <span class="number">23</span>:<span class="number">36</span>:<span class="number">05.7176</span><span class="operator">+</span><span class="number">08</span></span><br><span class="line">backend_xmin     <span class="operator">|</span> <span class="number">1676</span></span><br><span class="line">state            <span class="operator">|</span> streaming</span><br><span class="line">sent_location    <span class="operator">|</span> <span class="number">0</span><span class="operator">/</span><span class="number">70000</span>D0</span><br><span class="line">write_location   <span class="operator">|</span> <span class="number">0</span><span class="operator">/</span><span class="number">70000</span>D0</span><br><span class="line">flush_location   <span class="operator">|</span> <span class="number">0</span><span class="operator">/</span><span class="number">70000</span>D0</span><br><span class="line">replay_location  <span class="operator">|</span> <span class="number">0</span><span class="operator">/</span><span class="number">70000</span>D0</span><br><span class="line">sync_priority    <span class="operator">|</span> <span class="number">1</span></span><br><span class="line">sync_state       <span class="operator">|</span> sync</span><br></pre></td></tr></table></figure>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/knowledge-base/2018/08/25/redis-conf/" rel="prev" title="redis.conf 配置文件介绍">
+                  <i class="fa fa-chevron-left"></i> redis.conf 配置文件介绍
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/knowledge-base/2019/08/20/labelerr/" rel="next" title="React配置label报错，package.json和.babelrc出现冲突">
+                  React配置label报错，package.json和.babelrc出现冲突 <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  &copy; 
+  <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">ZHD</span>
+</div>
+<div class="wordcount">
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-chart-line"></i>
+    </span>
+    <span title="站点总字数">220k</span>
+  </span>
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+    <span title="站点阅读时长">3:20</span>
+  </span>
+</div>
+<div class="busuanzi-count">
+    <span class="post-meta-item" id="busuanzi_container_site_uv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div><script color="0,0,255" opacity="0.5" zIndex="-1" count="99" src="https://lib.baomitu.com/canvas-nest.js/1.0.1/canvas-nest.js"></script>
+
+
+    </div>
+  </footer>
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.1/jquery.min.js" integrity="sha256-o88AwQnZB+VDvE9tvIXrMQaPlFFSUTR+nldQm1LuPXQ=" crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/fancybox/3.5.7/jquery.fancybox.min.js" integrity="sha256-yt2kYMy0w8AbtF89WXb2P1rfjcP/HTHLT7097U8Y5b8=" crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pangu/4.0.7/pangu.min.js" integrity="sha256-j+yj56cdEY2CwkVtGyz18fNybFGpMGJ8JxG3GSyO2+I=" crossorigin="anonymous"></script>
+<script src="/knowledge-base/js/comments.js"></script><script src="/knowledge-base/js/utils.js"></script><script src="/knowledge-base/js/motion.js"></script><script src="/knowledge-base/js/next-boot.js"></script>
+
+  
+<script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-generator-searchdb/1.4.0/search.js" integrity="sha256-vXZMYLEqsROAXkEw93GGIvaB2ab+QW6w3+1ahD9nXXA=" crossorigin="anonymous"></script>
+<script src="/knowledge-base/js/third-party/search/local-search.js"></script>
+
+
+
+  <script src="/knowledge-base/js/third-party/fancybox.js"></script>
+
+  <script src="/knowledge-base/js/third-party/pace.js"></script>
+
+  
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+
+
+
+<script src="/knowledge-base/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"pluginModelPath":"assets/","model":{"jsonPath":"/knowledge-base/live2dw/assets/shizuku.model.json"},"display":{"position":"left","width":200,"height":400},"mobile":{"show":false},"rect":"opacity:0.7","log":false,"pluginJsPath":"lib/","pluginRootPath":"live2dw/","tagMode":false});</script></body>
+</html>

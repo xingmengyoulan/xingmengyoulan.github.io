@@ -1,0 +1,552 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222"><meta name="generator" content="Hexo 6.3.0">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/knowledge-base/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/knowledge-base/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/knowledge-base/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/knowledge-base/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/knowledge-base/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css" integrity="sha256-AbA177XfpSnFEvgpYu1jMygiLabzPCJCRIBtR5jGc0k=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fancybox/3.5.7/jquery.fancybox.min.css" integrity="sha256-Vzbj7sDDS/woiFS3uNKo8eIuni59rjyNGtXfstRzStA=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/pace/1.2.4/themes/blue/pace-theme-minimal.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pace/1.2.4/pace.min.js" integrity="sha256-gqd7YTjg/BtfqWSwsJOvndl0Bxc8gFImLEkXQT8+qj0=" crossorigin="anonymous"></script>
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"zhd_snow.gitee.io","root":"/knowledge-base/","images":"/knowledge-base/images","scheme":"Gemini","darkmode":false,"version":"8.13.0","exturl":false,"sidebar":{"position":"left","display":"always","padding":18,"offset":12,"b2t":false,"scrollpercent":true},"copycode":{"enable":true,"style":"mac"},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":true,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":true,"motion":{"enable":true,"async":true,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/knowledge-base/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false}}</script><script src="/knowledge-base/js/config.js"></script>
+
+    <meta name="description" content="搭建Redis集群">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Redis keepalived 集群搭建">
+<meta property="og:url" content="https://zhd_snow.gitee.io/knowledge-base/2019/10/22/redis-keepalived/index.html">
+<meta property="og:site_name" content="雪兰度">
+<meta property="og:description" content="搭建Redis集群">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2019-10-22T07:27:58.000Z">
+<meta property="article:modified_time" content="2022-09-17T07:37:52.458Z">
+<meta property="article:author" content="ZHD">
+<meta property="article:tag" content="redis">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="canonical" href="https://zhd_snow.gitee.io/knowledge-base/2019/10/22/redis-keepalived/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://zhd_snow.gitee.io/knowledge-base/2019/10/22/redis-keepalived/","path":"2019/10/22/redis-keepalived/","title":"Redis keepalived 集群搭建"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>Redis keepalived 集群搭建 | 雪兰度</title>
+  
+
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/knowledge-base/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/knowledge-base/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">雪兰度</p>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">ZHD's Notes</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/knowledge-base/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-about"><a href="/knowledge-base/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a></li><li class="menu-item menu-item-tags"><a href="/knowledge-base/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签<span class="badge">14</span></a></li><li class="menu-item menu-item-categories"><a href="/knowledge-base/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类<span class="badge">15</span></a></li><li class="menu-item menu-item-archives"><a href="/knowledge-base/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档<span class="badge">33</span></a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup"><div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off" maxlength="80"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close" role="button">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div class="search-result-container no-result">
+  <div class="search-result-icon">
+    <i class="fa fa-spinner fa-pulse fa-5x"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%80%E3%80%81-Redis%E4%BD%BF%E7%94%A8%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84-Hash%E7%B1%BB%E5%9E%8B"><span class="nav-number">1.</span> <span class="nav-text">一、 Redis使用数据结构-Hash类型</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BA%8C%E3%80%81redis%E9%AB%98%E5%8F%AF%E7%94%A8%E6%96%B9%E6%A1%88"><span class="nav-number">2.</span> <span class="nav-text">二、redis高可用方案</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-%E5%9F%BA%E6%9C%AC%E6%9E%84%E5%BB%BA%E4%B8%8E%E5%8E%9F%E7%90%86"><span class="nav-number">2.1.</span> <span class="nav-text">1. 基本构建与原理</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-keepalived%E7%9A%84%E9%80%89%E6%8B%A9"><span class="nav-number">2.2.</span> <span class="nav-text">2. keepalived的选择</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-keepalived-Redis%EF%BC%88%E4%B8%80%E4%B8%BB%E4%B8%89%E5%A4%87%EF%BC%89-%E7%9A%84%E9%83%A8%E7%BD%B2"><span class="nav-number">2.3.</span> <span class="nav-text">3. keepalived + Redis（一主三备） 的部署</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#3-1-redis-%E5%AE%89%E8%A3%85"><span class="nav-number">2.3.1.</span> <span class="nav-text">3.1 redis 安装</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#3-2-%E4%BF%AE%E6%94%B9redis%E9%85%8D%E7%BD%AE%E6%96%87%E4%BB%B6"><span class="nav-number">2.3.2.</span> <span class="nav-text">3.2 修改redis配置文件</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#3-3-%E5%90%AF%E5%8A%A8Redis"><span class="nav-number">2.3.3.</span> <span class="nav-text">3.3 启动Redis</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#3-4-keepalived-%E9%85%8D%E7%BD%AE%E4%B8%BB%E4%BB%8E%E5%85%AC%E5%85%B1%E8%84%9A%E6%9C%AC"><span class="nav-number">2.3.4.</span> <span class="nav-text">3.4 keepalived 配置主从公共脚本</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#3-4-1-Redis-%E7%9B%91%E6%8E%A7%E8%84%9A%E6%9C%AC"><span class="nav-number">2.3.4.1.</span> <span class="nav-text">3.4.1 Redis 监控脚本</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#3-4-2-redis-fault-sh"><span class="nav-number">2.3.4.2.</span> <span class="nav-text">3.4.2 redis_fault.sh</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#3-4-3-redis-stop-sh"><span class="nav-number">2.3.4.3.</span> <span class="nav-text">3.4.3 redis_stop.sh</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#3-4-4-Redis-Master-Scripts"><span class="nav-number">2.3.4.4.</span> <span class="nav-text">3.4.4 Redis Master Scripts</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#3-4-5-Redis-Backup-Scripts"><span class="nav-number">2.3.4.5.</span> <span class="nav-text">3.4.5 Redis Backup Scripts</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#3-4-6-%E9%85%8D%E7%BD%AEkeepalived-conf"><span class="nav-number">2.3.4.6.</span> <span class="nav-text">3.4.6 配置keepalived.conf</span></a></li></ol></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-6-%E6%B5%8B%E8%AF%95VIP%E6%BC%82%E7%A7%BB"><span class="nav-number">2.4.</span> <span class="nav-text">3.6 测试VIP漂移</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%89%E3%80%81Redis-%E5%88%87%E6%8D%A2%E6%96%B9%E6%A1%88"><span class="nav-number">3.</span> <span class="nav-text">三、Redis 切换方案</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="ZHD"
+      src="/knowledge-base/images/header.jpg">
+  <p class="site-author-name" itemprop="name">ZHD</p>
+  <div class="site-description" itemprop="description">盛年不重来，一日难再晨;及时当勉励，岁月不待人。</div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/knowledge-base/archives/">
+          <span class="site-state-item-count">33</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/knowledge-base/categories/">
+        <span class="site-state-item-count">15</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/knowledge-base/tags/">
+        <span class="site-state-item-count">14</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author site-overview-item animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/xingmengyoulan" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;xingmengyoulan" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:xingmengyoulan@163.com" title="E-Mail → mailto:xingmengyoulan@163.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+
+
+
+        </div>
+      </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://zhd_snow.gitee.io/knowledge-base/2019/10/22/redis-keepalived/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/knowledge-base/images/header.jpg">
+      <meta itemprop="name" content="ZHD">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="雪兰度">
+      <meta itemprop="description" content="盛年不重来，一日难再晨;及时当勉励，岁月不待人。">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="Redis keepalived 集群搭建 | 雪兰度">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Redis keepalived 集群搭建
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2019-10-22 15:27:58" itemprop="dateCreated datePublished" datetime="2019-10-22T15:27:58+08:00">2019-10-22</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新于</span>
+      <time title="修改时间：2022-09-17 15:37:52" itemprop="dateModified" datetime="2022-09-17T15:37:52+08:00">2022-09-17</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/knowledge-base/categories/redis/" itemprop="url" rel="index"><span itemprop="name">redis</span></a>
+        </span>
+    </span>
+
+  
+    <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv">
+      <span class="post-meta-item-icon">
+        <i class="far fa-eye"></i>
+      </span>
+      <span class="post-meta-item-text">阅读次数：</span>
+      <span id="busuanzi_value_page_pv"></span>
+    </span>
+    <span class="post-meta-break"></span>
+    <span class="post-meta-item" title="本文字数">
+      <span class="post-meta-item-icon">
+        <i class="far fa-file-word"></i>
+      </span>
+      <span class="post-meta-item-text">本文字数：</span>
+      <span>12k</span>
+    </span>
+    <span class="post-meta-item" title="阅读时长">
+      <span class="post-meta-item-icon">
+        <i class="far fa-clock"></i>
+      </span>
+      <span class="post-meta-item-text">阅读时长 &asymp;</span>
+      <span>11 分钟</span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <div class="note primary"><p>搭建Redis集群</p>
+</div>
+<span id="more"></span>
+
+
+<h2 id="一、-Redis使用数据结构-Hash类型"><a href="#一、-Redis使用数据结构-Hash类型" class="headerlink" title="一、 Redis使用数据结构-Hash类型"></a>一、 Redis使用数据结构-Hash类型</h2><p><strong>Hash类型</strong>是String类型的field和value映射表，或者说是一个String集合，它特别适合存储对象，相比较而言，将一个对象类型存储在Hash类型里要比存储在String类型类，占用 更小的内存空间，并方便存取整个对象。</p>
+<blockquote>
+<p>适合场景为数据库表迁移到redis数据库中。</p>
+</blockquote>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line">hash数据键值使用规则：【表名+索引值】，为确保键值的唯一性。</span><br><span class="line">Hash类型相关命令：</span><br><span class="line">redis-cli -h 127.0.0.1 -p 6379 -- 连接redis</span><br><span class="line">1. 设置值</span><br><span class="line">hset 键值             域      值   域   值</span><br><span class="line">hset ol_deptinfo123456 operno xxxx dept asdsa</span><br><span class="line">2. 获取值</span><br><span class="line">hget ol_deptinfo123456  dept</span><br><span class="line">3. 删除field</span><br><span class="line">hdel ol_deptinfo123456  dept</span><br><span class="line">4. 计算field个数</span><br><span class="line">hlen ol_deptinfo123456</span><br><span class="line">5. 批量设置或者获取field-value</span><br><span class="line">hmset ol_deptinfo123456 operno xxxx dept asdfsaf time 201923</span><br><span class="line">hmget ol_deptinfo123456 operno dept time</span><br><span class="line">6. 判断field是否存在</span><br><span class="line">hexists ol_deptinfo123456 dept</span><br><span class="line">7. 获取所有的field</span><br><span class="line">hkeys ol_deptinfo123456</span><br><span class="line">8. 获取所有的value</span><br><span class="line">hvals ol_deptinfo123456</span><br><span class="line">9. 获取所有的field-value</span><br><span class="line">hgetall ol_deptinfo123456</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>redis生产危险命令,禁止在生产上运行</p>
+</blockquote>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">1. keys *</span><br><span class="line">虽然其模糊匹配功能使用非常方便也很强大，在小数据量情况下使用没什么问题，数据量大会导致 Redis 锁住及 CPU 飙升，</span><br><span class="line">2. flushdb </span><br><span class="line">删除 Redis 中当前所在数据库中的所有记录，并且此命令从不会执行失败</span><br><span class="line">3. flushall</span><br><span class="line">删除 Redis 中所有数据库中的所有记录，不只是当前所在数据库，并且此命令从不会执行失败。</span><br><span class="line">4. config</span><br><span class="line">客户端可修改 Redis 配置。</span><br></pre></td></tr></table></figure>
+
+<h2 id="二、redis高可用方案"><a href="#二、redis高可用方案" class="headerlink" title="二、redis高可用方案"></a>二、redis高可用方案</h2><h3 id="1-基本构建与原理"><a href="#1-基本构建与原理" class="headerlink" title="1. 基本构建与原理"></a>1. 基本构建与原理</h3><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">渠道采用的是Redis Master-Slave + Keepalived + VIP</span><br><span class="line">1）Keepalived + VIP : 在redis master-slave上部署keepalived、redis instance存活检测脚本、以及告警通知脚本。</span><br><span class="line">2）当redis master失效的时候，VIP从master上漂移到slave上，完成m-s角色和配置更改。3）客户端连接redis的参数中host设置的是VIP，整个切换过程对客户端透明。</span><br></pre></td></tr></table></figure>
+
+<h3 id="2-keepalived的选择"><a href="#2-keepalived的选择" class="headerlink" title="2. keepalived的选择"></a>2. keepalived的选择</h3><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">如果使用的红旗AX4 SP4的系统，请安装系统自带的keepalived的版本，使用网上下载的版本可能存在不兼容的情况，特别是在用keepavlied stop命令的时候，会存在无法停止的现象。</span><br></pre></td></tr></table></figure>
+
+<h3 id="3-keepalived-Redis（一主三备）-的部署"><a href="#3-keepalived-Redis（一主三备）-的部署" class="headerlink" title="3. keepalived + Redis（一主三备） 的部署"></a>3. keepalived + Redis（一主三备） 的部署</h3><p>部署实例IP地址</p>
+<table>
+<thead>
+<tr>
+<th align="center">IP地址</th>
+<th align="center">端口</th>
+<th align="center">VIP</th>
+<th align="center">主备关系</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center">20.200.21.3</td>
+<td align="center">6379</td>
+<td align="center">20.200.21.100</td>
+<td align="center">主</td>
+</tr>
+<tr>
+<td align="center">20.200.21.4</td>
+<td align="center">6379</td>
+<td align="center"></td>
+<td align="center">备</td>
+</tr>
+<tr>
+<td align="center">20.200.21.5</td>
+<td align="center">6379</td>
+<td align="center"></td>
+<td align="center">备</td>
+</tr>
+<tr>
+<td align="center">20.200.21.6</td>
+<td align="center">6379</td>
+<td align="center"></td>
+<td align="center">备</td>
+</tr>
+</tbody></table>
+<h4 id="3-1-redis-安装"><a href="#3-1-redis-安装" class="headerlink" title="3.1 redis 安装"></a>3.1 redis 安装</h4><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">步骤：</span><br><span class="line">1. 首先从官网（http://download.redis.io/releases/）下载redis正式版的压缩包redis-3.2.8.tar.gz   </span><br><span class="line">分别在20.200.21.3/4/5/6机器上执行</span><br><span class="line">2. 编译源码安装： </span><br><span class="line">tar -xzvf redis-3.2.8.tar.gz </span><br><span class="line">cd redis-3.2.8</span><br><span class="line">make </span><br><span class="line">安装在普通用户</span><br><span class="line">mkdir $HOME/bin</span><br><span class="line">cp redis-3.2.8/src/redis-* $HOME/bin</span><br><span class="line">mkdir $HOME/redis</span><br><span class="line">cp redis-3.2.8/redis.conf $HOME/redis</span><br><span class="line">=================================</span><br><span class="line">编写启动脚本</span><br><span class="line">vi start.sh</span><br><span class="line">reids-server $HOME/redis/redis.conf</span><br><span class="line">添加环境变量</span><br><span class="line">vi ～/.bash_profile</span><br><span class="line">export PATH=$PATH:$HOME/bin</span><br></pre></td></tr></table></figure>
+
+<h4 id="3-2-修改redis配置文件"><a href="#3-2-修改redis配置文件" class="headerlink" title="3.2 修改redis配置文件"></a>3.2 修改redis配置文件</h4><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">vim redis.conf </span><br><span class="line">修改相关配置项，这里仅做DOME演示，其他配置项默认。 </span><br><span class="line">修改redis master的redis.conf </span><br><span class="line">daemonize yes </span><br><span class="line">bind 0.0.0.0</span><br><span class="line">port 6379</span><br><span class="line">logfile &quot;/var/log/redis-6379.log&quot;</span><br><span class="line">dir &quot;/app/chredis/redis/&quot; --- “家目录/redis/”</span><br></pre></td></tr></table></figure>
+
+<h4 id="3-3-启动Redis"><a href="#3-3-启动Redis" class="headerlink" title="3.3 启动Redis"></a>3.3 启动Redis</h4><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">在20.200.21.3/4/5/6上启动</span><br><span class="line">sh start.sh</span><br></pre></td></tr></table></figure>
+
+<h4 id="3-4-keepalived-配置主从公共脚本"><a href="#3-4-keepalived-配置主从公共脚本" class="headerlink" title="3.4 keepalived 配置主从公共脚本"></a>3.4 keepalived 配置主从公共脚本</h4><h5 id="3-4-1-Redis-监控脚本"><a href="#3-4-1-Redis-监控脚本" class="headerlink" title="3.4.1 Redis 监控脚本"></a>3.4.1 Redis 监控脚本</h5><p>该脚本检测redis的运行状态,如果启动失败则停止keepalived，准备让其它机器接管。</p>
+<p>&#x2F;etc&#x2F;keepalived&#x2F;scripts&#x2F;check_redis.sh:</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">#</span><span class="language-bash">!/bin/bash</span> </span><br><span class="line">ALIVE=`/app/chredis/bin/redis-cli -h $1 -p $2 PING`</span><br><span class="line">LOGFILE=&quot;/var/log/keepalived-redis-check.log&quot;</span><br><span class="line">echo &quot;[CHECK]&quot; &gt;&gt; $LOGFILE</span><br><span class="line">date &gt;&gt; $LOGFILE</span><br><span class="line">if [ $ALIVE == &quot;PONG&quot; ]; then :</span><br><span class="line">   echo &quot;Success: redis-cli -h $1 -p $2 PING $ALIVE&quot; &gt;&gt; $LOGFILE 2&gt;&amp;1</span><br><span class="line">   exit 0</span><br><span class="line">else</span><br><span class="line">   echo &quot;Failed:redis-cli -h $1 -p $2 PING $ALIVE &quot; &gt;&gt; $LOGFILE 2&gt;&amp;1</span><br><span class="line">   exit 1</span><br><span class="line">fi</span><br></pre></td></tr></table></figure>
+
+<p>keepalived根据监控脚本的返回码调整优先级：</p>
+<p>☉如果脚本返回码为0，并且weight配置的值大于0，则优先级相应的增加；</p>
+<p>☉如果脚本返回码为非0，并且weight配置的值小于0，则优先级相应的减少；</p>
+<p>☉其他情况，原本配置的优先级不变，即配置文件中priority对应的值。</p>
+<p>提示：</p>
+<p>优先级不会不断的提高或者降低；</p>
+<p>可以编写多个检测脚本并为每个检测脚本设置不同的weight（在配置中列出就行）；</p>
+<p>不管提高优先级还是降低优先级，最终优先级的范围是在[1,254]，不会出现优先级小于等于0或者优先级大于等于255的情况；</p>
+<blockquote>
+<p>在vrrp_script模块中，如果不设置“weight”选项值，那么集群优先级的选择将由Keepalived配置文件中的“priority”值决定</p>
+</blockquote>
+<p>在MASTER节点的 vrrp_instance 中 配置 nopreempt ，当它异常恢复后，即使它 prio 更高也不会抢占，这样可以避免正常情况下做无谓的切换。</p>
+<p>以上可以做到利用脚本检测业务进程的状态，并动态调整优先级从而实现主备切换。</p>
+<h5 id="3-4-2-redis-fault-sh"><a href="#3-4-2-redis-fault-sh" class="headerlink" title="3.4.2 redis_fault.sh"></a>3.4.2 redis_fault.sh</h5><p>vim &#x2F;etc&#x2F;keepalived&#x2F;scripts&#x2F;redis_fault.sh </p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">#</span><span class="language-bash">/bin/bash</span> </span><br><span class="line">LOGFILE=/var/log/keepalived-redis-state.log</span><br><span class="line">echo &quot;[fault]&quot; &gt;&gt; $LOGFILE</span><br><span class="line">date &gt;&gt; $LOGFILE</span><br><span class="line">echo &quot;redis 出现故障,无法ping通,请检查redis服务&quot; &gt;&gt; $LOGFILE</span><br></pre></td></tr></table></figure>
+
+<h5 id="3-4-3-redis-stop-sh"><a href="#3-4-3-redis-stop-sh" class="headerlink" title="3.4.3 redis_stop.sh"></a>3.4.3 redis_stop.sh</h5><p>vim &#x2F;etc&#x2F;keepalived&#x2F;scripts&#x2F;redis_stop.sh  </p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">#</span><span class="language-bash">!/bin/bash</span></span><br><span class="line">LOGFILE=/var/log/keepalived-redis-state.log</span><br><span class="line">echo &quot;[stop]&quot; &gt;&gt; $LOGFILE</span><br><span class="line">date &gt;&gt; $LOGFILE</span><br><span class="line">echo &quot;$2 $3&quot; &gt;&gt; $LOGFILE</span><br><span class="line">echo &quot;keepalived 出现故障,redis变为备机&quot;&gt;&gt; $LOGFILE</span><br><span class="line">REDISCLI=&quot;/app/chredis/bin/redis-cli -h $1 -p $3&quot;</span><br><span class="line">echo &quot;Being slave....&quot; &gt;&gt; $LOGFILE 2&gt;&amp;1</span><br><span class="line">echo &quot;Run SLAVEOF cmd ...&quot; &gt;&gt; $LOGFILE 2&gt;&amp;1</span><br><span class="line"><span class="meta prompt_">$</span><span class="language-bash">REDISCLI SLAVEOF <span class="variable">$2</span> <span class="variable">$3</span> &gt;&gt; <span class="variable">$LOGFILE</span></span></span><br></pre></td></tr></table></figure>
+
+<h5 id="3-4-4-Redis-Master-Scripts"><a href="#3-4-4-Redis-Master-Scripts" class="headerlink" title="3.4.4 Redis Master Scripts"></a>3.4.4 Redis Master Scripts</h5><p>  在redis master配置：</p>
+<p>   vim&#x2F;etc&#x2F;keepalived&#x2F;scripts&#x2F;redis_master.sh</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">#</span><span class="language-bash">!/bin/bash</span> </span><br><span class="line">REDISCLI=&quot;/app/chredis/bin/redis-cli -h $1 -p $3&quot;</span><br><span class="line">LOGFILE=&quot;/var/log/keepalived-redis-state.log&quot;</span><br><span class="line">echo &quot;[master]&quot; &gt;&gt; $LOGFILE</span><br><span class="line">echo &quot;$2 $3&quot; &gt;&gt;$LOGFILE</span><br><span class="line">echo &quot;关闭备份,转换成主机模式&quot; &gt;&gt; $LOGFILE</span><br><span class="line">date &gt;&gt; $LOGFILE</span><br><span class="line">echo &quot;Being master....&quot; &gt;&gt; $LOGFILE 2&gt;&amp;1</span><br><span class="line">echo &quot;Run SLAVEOF NO ONE cmd ... &quot; &gt;&gt; $LOGFILE</span><br><span class="line"><span class="meta prompt_">$</span><span class="language-bash">REDISCLI SLAVEOF NO ONE &gt;&gt; <span class="variable">$LOGFILE</span> 2&gt;&amp;1</span></span><br><span class="line">echo &quot;close slaver ,become master &quot; &gt;&gt; $LOGFILE</span><br><span class="line">sleep 5</span><br></pre></td></tr></table></figure>
+
+<h5 id="3-4-5-Redis-Backup-Scripts"><a href="#3-4-5-Redis-Backup-Scripts" class="headerlink" title="3.4.5 Redis Backup Scripts"></a>3.4.5 Redis Backup Scripts</h5><p>  在redis backup配置：</p>
+<p>   vim &#x2F;etc&#x2F;keepalived&#x2F;scripts&#x2F;redis_backup.sh</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">#</span><span class="language-bash">!/bin/bash</span> </span><br><span class="line">REDISCLI=&quot;/app/chredis/bin/redis-cli -h $1 -p $3&quot;</span><br><span class="line">LOGFILE=&quot;/var/log/keepalived-redis-state.log&quot;</span><br><span class="line">echo &quot;[BACKUP]&quot; &gt;&gt; $LOGFILE</span><br><span class="line">echo &quot;$1 $3&quot; &gt;&gt; $LOGFILE</span><br><span class="line">echo &quot;关闭主机模式,转为备机模式&quot; &gt;&gt; $LOGFILE</span><br><span class="line">date &gt;&gt; $LOGFILE</span><br><span class="line">echo &quot;Being slave....&quot; &gt;&gt; $LOGFILE 2&gt;&amp;1</span><br><span class="line">echo &quot;Run SLAVEOF cmd ...&quot; &gt;&gt; $LOGFILE 2&gt;&amp;1</span><br><span class="line"><span class="meta prompt_">$</span><span class="language-bash">REDISCLI SLAVEOF <span class="variable">$2</span> <span class="variable">$3</span> &gt;&gt; <span class="variable">$LOGFILE</span></span></span><br></pre></td></tr></table></figure>
+
+<h5 id="3-4-6-配置keepalived-conf"><a href="#3-4-6-配置keepalived-conf" class="headerlink" title="3.4.6 配置keepalived.conf"></a>3.4.6 配置keepalived.conf</h5><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br></pre></td><td class="code"><pre><span class="line">! Configuration File for keepalived</span><br><span class="line"></span><br><span class="line">global_defs &#123;</span><br><span class="line">   router_id test</span><br><span class="line">&#125;</span><br><span class="line">vrrp_script chk_redis</span><br><span class="line">&#123;</span><br><span class="line">     script &quot;/etc/keepalived/scripts/redis_check.sh 127.0.0.1 6379&quot;</span><br><span class="line">     interval 2</span><br><span class="line">     timeout 2</span><br><span class="line">     fall 3</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">vrrp_instance redis &#123;</span><br><span class="line">    state BACKUP    # 主也配置成SLAVE</span><br><span class="line">    interface eth0  # 使用的网卡</span><br><span class="line">    # 这里设置VRID，这里非常重要，相同的VRID为一个组，他将决定多播的MAC地址</span><br><span class="line">    virtual_router_id 51</span><br><span class="line">    # 优先权 在不同的机器配置不一样，他决定了优先级，21.3-&gt;200 21.4-&gt;150 21.5-&gt;100 21.6-&gt;50</span><br><span class="line">    priority  200      # 注意</span><br><span class="line">    nopreempt</span><br><span class="line">    # 不抢占，注意加上，如果不加，在主停机后再重启，由于优先级高，还会抢占为主。</span><br><span class="line">    advert_int 1</span><br><span class="line">    authentication &#123;</span><br><span class="line">        auth_type PASS</span><br><span class="line">        auth_pass lulu</span><br><span class="line">    &#125;</span><br><span class="line">    virtual_ipaddress &#123;</span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">   20.200.21.100/26 brd 20.200.21.63 dev eth0   <span class="comment"># VIP</span></span></span><br><span class="line">    20.200.21.100  dev eth0   # VIP</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    track_script &#123;</span><br><span class="line">         chk_redis</span><br><span class="line">    &#125;</span><br><span class="line">    notify_master &quot;/etc/keepalived/scripts/redis_master.sh 127.0.0.1 20.200.21.100 6379&quot;</span><br><span class="line">    notify_backup &quot;/etc/keepalived/scripts/redis_backup.sh 127.0.0.1 20.200.21.100 6379&quot;</span><br><span class="line">    #由于master的IP一直在变，所以必须使用VIP</span><br><span class="line">    notify_fault /etc/keepalived/scripts/redis_fault.sh </span><br><span class="line">    notify_stop &quot;/etc/keepalived/scripts/redis_stop.sh 127.0.0.1 20.200.21.100 6379&quot;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>注意，在同一个网段内的，若为不同的应用做高可用，不同应用使用不同的VIP，那么vrrp_instance的名字（这里是VI_REDIS）、virtual_router_id在不同的高可用实例必须设置不同的值区分开。否则keepalived会报如下错误：</p>
+<p>Aug 11 11:28:36 localhostKeepalived_vrrp[16958]: (VI_1): received an invalid ip number count 1, expected2!</p>
+<p>Aug 11 11:28:36 localhostKeepalived_vrrp[16958]: bogus VRRP packet received on eth0 !!!</p>
+<p>Aug 11 11:28:36 localhostKeepalived_vrrp[16958]: VRRP_Instance(VI_1) Dropping received VRRP packet…</p>
+<p>以上是keepalived MASTER节点配置文件&#x2F;etc&#x2F;keepalived&#x2F;keepalived.conf的配置信息。在BACKUP节点，只需把vrrp_instance-&gt;state改为BACKUP，vrrp_instance-&gt;priority改为99即可。</p>
+<p>在默认的keepalive.conf里面还有 virtual_server,real_server 这样的配置，我们这用不到，它是为lvs准备的。 notify 可以定义在切换成MASTER或BACKUP时执行的脚本，如有需求请自行google。</p>
+<p>  配置选项说明</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line">global_defs</span><br><span class="line">☉notification_email： keepalived在发生诸如切换操作时需要发送email通知地址，后面的 smtp_server 相比也都知道是邮件服务器地址。也可以通过其它方式报警，毕竟邮件不是实时通知的。</span><br><span class="line">☉router_id： 机器标识，通常可设为hostname。故障发生时，邮件通知会用到</span><br><span class="line"></span><br><span class="line">vrrp_instance</span><br><span class="line">☉state ： 指定instance(Initial)的初始状态，就是说在配置好后，这台服务器的初始状态就是这里指定的，但这里指定的不算，还是得要通过竞选通过优先级来确定。如果这里设置为MASTER，但如若他的优先级不及另外一台，那么这台在发送通告时，会发送自己的优先级，另外一台发现优先级不如自己的高，那么他会就回抢占为MASTER</span><br><span class="line">☉interface： 实例绑定的网卡，因为在配置虚拟IP的时候必须是在已有的网卡上添加的，可以用ifconfig命令查看网卡。</span><br><span class="line">☉mcast_src_ip： 发送多播数据包时的源IP地址，这里注意了，这里实际上就是在那个地址上发送VRRP通告，这个非常重要，一定要选择稳定的网卡端口来发送，这里相当于heartbeat的心跳端口，如果没有设置那么就用默认的绑定的网卡的IP，也就是interface指定的IP地址</span><br><span class="line">☉virtual_router_id： 这里设置VRID，这里非常重要，相同的VRID为一个组，他将决定多播的MAC地址</span><br><span class="line">☉priority： 设置本节点的优先级，优先级高的为master</span><br><span class="line">☉advert_int： 检查间隔，默认为1秒。这就是VRRP的定时器，MASTER每隔这样一个时间间隔，就会发送一个advertisement报文以通知组内其他路由器自己工作正常</span><br><span class="line">☉authentication： 定义认证方式和密码，主从必须一样，样例用的是密码方式。</span><br><span class="line">☉virtual_ipaddress： 这里设置的就是VIP，也就是虚拟IP地址，他随着state的变化而增加删除，当state为master的时候就添加，当state为backup的时候删除，这里主要是有优先级来决定的，和state设置的值没有多大关系。这里可以设置多个虚拟IP地址，类似于一个域名可以解析对应多个IP地址。</span><br><span class="line">☉track_script： 引用VRRP脚本，即在 vrrp_script 部分指定的名字。每隔vrrp_script-&gt;interval时间运行脚本，如果监控服务有异常则改变优先级，并最终引发主备切换。</span><br><span class="line"></span><br><span class="line">vrrp_script</span><br><span class="line">告诉 keepalived 在什么情况下切换，所以尤为重要。可以有多个 vrrp_script</span><br><span class="line">☉script ： 自己写的检测脚本。</span><br><span class="line">☉interval4 ： 每4s检测一次，这里要大于监控脚本执行的时间，监控脚本会执行超时，keepalived会发送SIGTERM信号结束监控脚本的执行。</span><br><span class="line">☉weight-5 ： 检测失败（脚本返回非0）则优先级 -5</span><br><span class="line">☉fall 2： 检测连续 2 次失败才算确定是真失败。会用weight减少优先级（1-255之间）</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p>###3.5 启动keepalived </p>
+<p>在Redis Master和Redis Backup上将keepalived启动</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">启动keepalived：</span><br><span class="line">service keepalived start</span><br><span class="line">或者</span><br><span class="line">/etc/init.d/keepalived start</span><br><span class="line"></span><br><span class="line">查看进程，正常会有三个进程</span><br><span class="line">[root@localhost ~]# ps -ef | grepkeepalived</span><br><span class="line">root     3870     1  0 14:46 ?        00:00:00 keepalived -D</span><br><span class="line">root     3872  3870  0 14:46 ?        00:00:00 keepalived -D</span><br><span class="line">root     3873  3870  0 14:46 ?       00:00:00 keepalived -D</span><br><span class="line">root     3887 18774  0 14:46 pts/1    00:00:00 grep keepalived</span><br><span class="line"></span><br><span class="line">用ip命令查看VIP，ifconfig命令不能查看虚拟IP。</span><br><span class="line">[root@localhost ~]#  ip a | grep eth1</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<h3 id="3-6-测试VIP漂移"><a href="#3-6-测试VIP漂移" class="headerlink" title="3.6 测试VIP漂移"></a>3.6 测试VIP漂移</h3><p>测试时可以用命令tail -f &#x2F;var&#x2F;log&#x2F;messages查看keepalived的日志，查看主从机器状态的变化，VIP的漂移等。</p>
+<p>测试前，先确定那台机器接管着VIP，使用 ip a 在每台机器执行，确定VIP地址在20.200.21.3</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">eth0: &lt;BROADCAST,MULTICAST,UP,LOWER_UP&gt; mtu 1500 qdisc pfifo_fast state UP qlen 1000</span><br><span class="line">    inet 20.200.21.3/24 brd 20.200.21.255 scope global eth1</span><br><span class="line">    inet 20.200.21.100/32 scope global eth0</span><br></pre></td></tr></table></figure>
+
+<p>现在，把20.200.21.3机器上redis-server杀掉，查看VIP是否漂移</p>
+<p>由于21.4 的优先级为150，VIP会漂移到21.4,21.4 成为了主库。</p>
+<p>20.200.21.3加入集群，登录root用户service keepalived stop,备份redis的dump 文件，重启redis ，之后进入root用户service keepalived start.</p>
+<h2 id="三、Redis-切换方案"><a href="#三、Redis-切换方案" class="headerlink" title="三、Redis 切换方案"></a>三、Redis 切换方案</h2><p>&#x2F;etc&#x2F;keepalived&#x2F;start.sh</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">/etc/init.d/keepalived start</span><br><span class="line">ps -ef|grep keepalived</span><br></pre></td></tr></table></figure>
+
+<p>&#x2F;etc&#x2F;keepalived&#x2F;stop.sh</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">/etc/init.d/keepalived start</span><br></pre></td></tr></table></figure>
+
+<p>&#x2F;etc&#x2F;keepalived&#x2F;test.sh</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">/app/chredis/bin/redis-cli -p 6379 info |grep -A 5 Replication</span><br></pre></td></tr></table></figure>
+
+<p>###场景一：模拟切换演练，手动切换主到不同中心（以分片一为例）</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">20.200.21.3为主，20.200.21.4为备一 20.200.21.5为备二、20.200.21.6为备三</span><br><span class="line">操作： </span><br><span class="line">1、登录到20.200.21.3的root用户，cd /etc/keepalived的目录，执行sh stop.sh ,停止keepavlied的进程，</span><br><span class="line">2、再执行sh start.sh，启动keepalived的进程，使用ip a检查VIP 20.200.21.100是否已经漂移到其他机器，</span><br><span class="line">3、使用sh test.sh 检查redis的状态，查看主是否为 20.200.21.100</span><br><span class="line">4、如果VIP漂移到其他中心，无须继续操作，如果漂移到同中心，需要继续操作</span><br><span class="line">5、登录到20.200.21.4的root用户，cd /etc/keepalived的目录，执行sh stop.sh ,停止keepavlied的进程，</span><br><span class="line">6、再执行sh start.sh，启动keepalived的进程，使用ip a检查VIP 20.200.21.100是否已经漂移到其他机器，</span><br><span class="line">7、使用sh test.sh 检查redis的状态，查看主是否为 20.200.21.100</span><br></pre></td></tr></table></figure>
+
+<p>###场景二：物理主机宕机，启动后需要回复redis为备库</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">1.登录到chredis用户，cd redis/端口号/</span><br><span class="line">2.为使备库顺利加入集群移除源数据，mv dump.db dump.rdb.20190810（日期） mv appendonly_端口.aof appendonly_端口.aof.20190810</span><br><span class="line">3. 启动 redis; cd bin; sh start.sh</span><br><span class="line">4. 登录到root用户，cd /etc/keepalived/,sh start.sh</span><br><span class="line">5. 检查redis的状态，sh test.sh 显示如下为正确状态，否启动不正常。</span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">Replication</span></span><br><span class="line">role:slave</span><br><span class="line">master_host:20.200.21.100</span><br><span class="line">master_port</span><br><span class="line">master_link_status:up</span><br><span class="line">master_last_io_seconds_ago:1</span><br><span class="line">repl_backlog_active:1</span><br><span class="line">6. 再不正常 的情况下，重新启动keepalived ;sh stop.sh ;sh start.sh</span><br><span class="line"><span class="meta prompt_">#</span><span class="language-bash"><span class="comment">#  由于客户端是读写分离会有部分交易找不数据。主要表现在柜员无权限</span></span></span><br></pre></td></tr></table></figure>
+
+<p>###场景三：redis的主备库已经不存在</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br></pre></td><td class="code"><pre><span class="line">1. 如果是这样，首先启动的为主，以分片一为例，登录|20.200.21.3chredis用户||</span><br><span class="line">cd bin;sh start.sh启动redis（停机redis的数据会存在dump.rdb中，一般不会出现数据丢失）</span><br><span class="line">登录root用户</span><br><span class="line">cd /etc/keepalived; sh start.sh 启动 keepalived</span><br><span class="line"></span><br><span class="line">====================注意事项===================================</span><br><span class="line">---- 再回复主的时间由于要重新读取dump.rdb的数据，会有一段时间的数据加载过程，这期间客户端会出现错误；</span><br><span class="line">主要体现在报错返回 r-&gt;str[LOADING Redis is loading the dataset in memory].</span><br><span class="line">测试 420万的数据需要3-4分钟完成。</span><br><span class="line">====================注意事项===================================</span><br><span class="line"></span><br><span class="line">2.登录到20.200.21.4 chredis用户，cd redis/6379/</span><br><span class="line">为使备库顺利加入集群移除源数据，mv dump.db dump.rdb.20190810（日期） mv appendonly_6379.aof appendonly_6379.aof.20190810</span><br><span class="line">启动 redis; cd bin; sh start.sh</span><br><span class="line">登录到root用户，cd /etc/keepalived/,sh start.sh</span><br><span class="line">检查redis的状态，sh test.sh 显示如下为正确状态，否启动不正常。</span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">Replication</span></span><br><span class="line">role:slave</span><br><span class="line">master_host:20.200.21.100</span><br><span class="line">master_port</span><br><span class="line">master_link_status:up</span><br><span class="line">master_last_io_seconds_ago:1</span><br><span class="line">repl_backlog_active:1</span><br><span class="line">再不正常 的情况下，重新启动keepalived ;sh stop.sh ;sh start.sh</span><br><span class="line"></span><br><span class="line">3.登录到20.200.21.5 chredis用户，cd redis/6379/</span><br><span class="line">为使备库顺利加入集群移除源数据，mv dump.db dump.rdb.20190810（日期） mv appendonly_6379.aof appendonly_6379.aof.20190810</span><br><span class="line">启动 redis; cd bin; sh start.sh</span><br><span class="line">登录到root用户，cd /etc/keepalived/,sh start.sh</span><br><span class="line">检查redis的状态，sh test.sh 显示如下为正确状态，否启动不正常。</span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">Replication</span></span><br><span class="line">role:slave</span><br><span class="line">master_host:20.200.21.100</span><br><span class="line">master_port</span><br><span class="line">master_link_status:up</span><br><span class="line">master_last_io_seconds_ago:1</span><br><span class="line">repl_backlog_active:1</span><br><span class="line">再不正常 的情况下，重新启动keepalived ;sh stop.sh ;sh start.sh</span><br><span class="line"></span><br><span class="line">4.登录到20.200.21.6 chredis用户，cd redis/6379/</span><br><span class="line">为使备库顺利加入集群移除源数据，mv dump.db dump.rdb.20190810（日期） mv appendonly_6379.aof appendonly_6379.aof.20190810</span><br><span class="line">启动 redis; cd bin; sh start.sh</span><br><span class="line">登录到root用户，cd /etc/keepalived/,sh start.sh</span><br><span class="line">检查redis的状态，sh test.sh 显示如下为正确状态，否启动不正常。</span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">Replication</span></span><br><span class="line">role:slave</span><br><span class="line">master_host:20.200.21.100</span><br><span class="line">master_port</span><br><span class="line">master_link_status:up</span><br><span class="line">master_last_io_seconds_ago:1</span><br><span class="line">repl_backlog_active:1</span><br><span class="line">再不正常 的情况下，重新启动keepalived ;sh stop.sh ;sh start.sh</span><br><span class="line"></span><br><span class="line">5.最后在到主库上查询redis的状态</span><br><span class="line">登录到20.200.21.3 root用户，cd /etc/keepalived 执行 sh test.sh</span><br><span class="line">查看状态</span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">Replication</span></span><br><span class="line">role:master</span><br><span class="line">connected_slaves:1</span><br><span class="line">slave0:ip=20.200.21.4,port=6379,state=online,offset=88688496,lag=0</span><br></pre></td></tr></table></figure>
+
+
+
+
+
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/knowledge-base/tags/redis/" rel="tag"># redis</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/knowledge-base/2019/10/20/linux7/" rel="prev" title="linux 日常维护">
+                  <i class="fa fa-chevron-left"></i> linux 日常维护
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/knowledge-base/2019/10/22/redis-cluster/" rel="next" title="Redis5 集群搭建 版本5.0以上">
+                  Redis5 集群搭建 版本5.0以上 <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  &copy; 
+  <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">ZHD</span>
+</div>
+<div class="wordcount">
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-chart-line"></i>
+    </span>
+    <span title="站点总字数">220k</span>
+  </span>
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+    <span title="站点阅读时长">3:20</span>
+  </span>
+</div>
+<div class="busuanzi-count">
+    <span class="post-meta-item" id="busuanzi_container_site_uv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div><script color="0,0,255" opacity="0.5" zIndex="-1" count="99" src="https://lib.baomitu.com/canvas-nest.js/1.0.1/canvas-nest.js"></script>
+
+
+    </div>
+  </footer>
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.1/jquery.min.js" integrity="sha256-o88AwQnZB+VDvE9tvIXrMQaPlFFSUTR+nldQm1LuPXQ=" crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/fancybox/3.5.7/jquery.fancybox.min.js" integrity="sha256-yt2kYMy0w8AbtF89WXb2P1rfjcP/HTHLT7097U8Y5b8=" crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pangu/4.0.7/pangu.min.js" integrity="sha256-j+yj56cdEY2CwkVtGyz18fNybFGpMGJ8JxG3GSyO2+I=" crossorigin="anonymous"></script>
+<script src="/knowledge-base/js/comments.js"></script><script src="/knowledge-base/js/utils.js"></script><script src="/knowledge-base/js/motion.js"></script><script src="/knowledge-base/js/next-boot.js"></script>
+
+  
+<script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-generator-searchdb/1.4.0/search.js" integrity="sha256-vXZMYLEqsROAXkEw93GGIvaB2ab+QW6w3+1ahD9nXXA=" crossorigin="anonymous"></script>
+<script src="/knowledge-base/js/third-party/search/local-search.js"></script>
+
+
+
+  <script src="/knowledge-base/js/third-party/fancybox.js"></script>
+
+  <script src="/knowledge-base/js/third-party/pace.js"></script>
+
+  
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+
+
+
+<script src="/knowledge-base/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"pluginModelPath":"assets/","model":{"jsonPath":"/knowledge-base/live2dw/assets/shizuku.model.json"},"display":{"position":"left","width":200,"height":400},"mobile":{"show":false},"rect":"opacity:0.7","log":false,"pluginJsPath":"lib/","pluginRootPath":"live2dw/","tagMode":false});</script></body>
+</html>

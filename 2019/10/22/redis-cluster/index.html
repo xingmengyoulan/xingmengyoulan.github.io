@@ -1,0 +1,557 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222"><meta name="generator" content="Hexo 6.3.0">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/knowledge-base/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/knowledge-base/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/knowledge-base/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/knowledge-base/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/knowledge-base/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css" integrity="sha256-AbA177XfpSnFEvgpYu1jMygiLabzPCJCRIBtR5jGc0k=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fancybox/3.5.7/jquery.fancybox.min.css" integrity="sha256-Vzbj7sDDS/woiFS3uNKo8eIuni59rjyNGtXfstRzStA=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/pace/1.2.4/themes/blue/pace-theme-minimal.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pace/1.2.4/pace.min.js" integrity="sha256-gqd7YTjg/BtfqWSwsJOvndl0Bxc8gFImLEkXQT8+qj0=" crossorigin="anonymous"></script>
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"zhd_snow.gitee.io","root":"/knowledge-base/","images":"/knowledge-base/images","scheme":"Gemini","darkmode":false,"version":"8.13.0","exturl":false,"sidebar":{"position":"left","display":"always","padding":18,"offset":12,"b2t":false,"scrollpercent":true},"copycode":{"enable":true,"style":"mac"},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":true,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":true,"motion":{"enable":true,"async":true,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/knowledge-base/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false}}</script><script src="/knowledge-base/js/config.js"></script>
+
+    <meta name="description" content="搭建Redis集群">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Redis5 集群搭建 版本5.0以上">
+<meta property="og:url" content="https://zhd_snow.gitee.io/knowledge-base/2019/10/22/redis-cluster/index.html">
+<meta property="og:site_name" content="雪兰度">
+<meta property="og:description" content="搭建Redis集群">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2019-10-22T07:27:58.000Z">
+<meta property="article:modified_time" content="2022-09-17T07:37:52.505Z">
+<meta property="article:author" content="ZHD">
+<meta property="article:tag" content="redis">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="canonical" href="https://zhd_snow.gitee.io/knowledge-base/2019/10/22/redis-cluster/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://zhd_snow.gitee.io/knowledge-base/2019/10/22/redis-cluster/","path":"2019/10/22/redis-cluster/","title":"Redis5 集群搭建 版本5.0以上"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>Redis5 集群搭建 版本5.0以上 | 雪兰度</title>
+  
+
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/knowledge-base/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/knowledge-base/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">雪兰度</p>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">ZHD's Notes</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/knowledge-base/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-about"><a href="/knowledge-base/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a></li><li class="menu-item menu-item-tags"><a href="/knowledge-base/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签<span class="badge">14</span></a></li><li class="menu-item menu-item-categories"><a href="/knowledge-base/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类<span class="badge">15</span></a></li><li class="menu-item menu-item-archives"><a href="/knowledge-base/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档<span class="badge">33</span></a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup"><div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off" maxlength="80"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close" role="button">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div class="search-result-container no-result">
+  <div class="search-result-icon">
+    <i class="fa fa-spinner fa-pulse fa-5x"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#1-%E5%88%9B%E5%BB%BA%E9%9B%86%E7%BE%A4%E6%AD%A5%E9%AA%A4"><span class="nav-number">1.</span> <span class="nav-text">1. 创建集群步骤</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-%E9%9B%86%E7%BE%A4%E4%B8%ADMaster%E7%9A%84%E4%B8%8B%E7%BA%BF%E5%8F%8A%E6%81%A2%E5%A4%8D"><span class="nav-number">2.</span> <span class="nav-text">2. 集群中Master的下线及恢复</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-%E6%B7%BB%E5%8A%A0%E8%8A%82%E7%82%B9"><span class="nav-number">3.</span> <span class="nav-text">3. 添加节点</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="ZHD"
+      src="/knowledge-base/images/header.jpg">
+  <p class="site-author-name" itemprop="name">ZHD</p>
+  <div class="site-description" itemprop="description">盛年不重来，一日难再晨;及时当勉励，岁月不待人。</div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/knowledge-base/archives/">
+          <span class="site-state-item-count">33</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/knowledge-base/categories/">
+        <span class="site-state-item-count">15</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/knowledge-base/tags/">
+        <span class="site-state-item-count">14</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author site-overview-item animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/xingmengyoulan" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;xingmengyoulan" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:xingmengyoulan@163.com" title="E-Mail → mailto:xingmengyoulan@163.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+
+
+
+        </div>
+      </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://zhd_snow.gitee.io/knowledge-base/2019/10/22/redis-cluster/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/knowledge-base/images/header.jpg">
+      <meta itemprop="name" content="ZHD">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="雪兰度">
+      <meta itemprop="description" content="盛年不重来，一日难再晨;及时当勉励，岁月不待人。">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="Redis5 集群搭建 版本5.0以上 | 雪兰度">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Redis5 集群搭建 版本5.0以上
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2019-10-22 15:27:58" itemprop="dateCreated datePublished" datetime="2019-10-22T15:27:58+08:00">2019-10-22</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新于</span>
+      <time title="修改时间：2022-09-17 15:37:52" itemprop="dateModified" datetime="2022-09-17T15:37:52+08:00">2022-09-17</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/knowledge-base/categories/redis/" itemprop="url" rel="index"><span itemprop="name">redis</span></a>
+        </span>
+    </span>
+
+  
+    <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv">
+      <span class="post-meta-item-icon">
+        <i class="far fa-eye"></i>
+      </span>
+      <span class="post-meta-item-text">阅读次数：</span>
+      <span id="busuanzi_value_page_pv"></span>
+    </span>
+    <span class="post-meta-break"></span>
+    <span class="post-meta-item" title="本文字数">
+      <span class="post-meta-item-icon">
+        <i class="far fa-file-word"></i>
+      </span>
+      <span class="post-meta-item-text">本文字数：</span>
+      <span>18k</span>
+    </span>
+    <span class="post-meta-item" title="阅读时长">
+      <span class="post-meta-item-icon">
+        <i class="far fa-clock"></i>
+      </span>
+      <span class="post-meta-item-text">阅读时长 &asymp;</span>
+      <span>16 分钟</span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <div class="note primary"><p>搭建Redis集群</p>
+</div>
+<span id="more"></span>
+
+<h2 id="1-创建集群步骤"><a href="#1-创建集群步骤" class="headerlink" title="1. 创建集群步骤"></a>1. 创建集群步骤</h2><p>IP地址：</p>
+<table>
+<thead>
+<tr>
+<th align="center">分组</th>
+<th align="center">IP地址</th>
+<th align="center">端口</th>
+<th align="center">主备</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center">分片一</td>
+<td align="center">172.16.214.142</td>
+<td align="center">7000</td>
+<td align="center">主</td>
+</tr>
+<tr>
+<td align="center">分片一</td>
+<td align="center">172.16.214.142</td>
+<td align="center">7001</td>
+<td align="center">主</td>
+</tr>
+<tr>
+<td align="center">分片一</td>
+<td align="center">172.16.214.142</td>
+<td align="center">7002</td>
+<td align="center">主</td>
+</tr>
+<tr>
+<td align="center">分片二</td>
+<td align="center">172.16.214.143</td>
+<td align="center">7000</td>
+<td align="center">备</td>
+</tr>
+<tr>
+<td align="center">分片二</td>
+<td align="center">172.16.214.143</td>
+<td align="center">7001</td>
+<td align="center">备</td>
+</tr>
+<tr>
+<td align="center">分片二</td>
+<td align="center">172.16.214.143</td>
+<td align="center">7002</td>
+<td align="center">备</td>
+</tr>
+</tbody></table>
+<ol>
+<li>下载源码并解压编译</li>
+</ol>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">tar xzf redis-5.0.0.tar.gz</span><br><span class="line">cd redis-5.0.0</span><br><span class="line">make</span><br></pre></td></tr></table></figure>
+
+<ol start="2">
+<li>创建9个Redis配置文件</li>
+</ol>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">在172.16.213.142创建文件</span><br><span class="line">redis/7000/redis.conf	</span><br><span class="line">redis/7001/redis.conf</span><br><span class="line">redis/7002/redis.conf</span><br><span class="line"></span><br><span class="line">在172.16.213.143创建文件</span><br><span class="line">redis/7000/redis.conf</span><br><span class="line">redis/7001/redis.conf</span><br><span class="line">redis/7002/redis.conf</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p>配置文件内容：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">bind 0.0.0.0</span><br><span class="line">port 7001  #端口</span><br><span class="line">cluster-enabled yes #启用集群模式</span><br><span class="line">cluster-config-file nodes.conf</span><br><span class="line">cluster-node-timeout 10000 #超时时间</span><br><span class="line">appendonly yes</span><br><span class="line">daemonize yes #后台运行</span><br><span class="line"># 数据存放目录 </span><br><span class="line">dir /usr/local/redis-cluster/data/redis-$&#123;自定义&#125; </span><br><span class="line"># 进程文件 </span><br><span class="line">pidfile /var/run/redis-cluster/$&#123;自定义&#125;.pid </span><br><span class="line"># 日志文件 </span><br><span class="line">logfile /usr/local/redis-cluster/log/$&#123;自定义&#125;.log </span><br><span class="line"></span><br><span class="line">其中 port 和 pidfile 需要随着 文件夹的不同调增。</span><br></pre></td></tr></table></figure>
+
+<ol start="3">
+<li>启动节点</li>
+</ol>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">redis-server $HOME/redis/7000/redis.conf</span><br><span class="line">redis-server $HOME/redis/7001/redis.conf</span><br><span class="line">redis-server $HOME/redis/7002/redis.conf</span><br></pre></td></tr></table></figure>
+
+<ol start="4">
+<li>新建集群（如果需要手动指定人工指定主从关系 redis cluster 请参考<a target="_blank" rel="noopener" href="https://blog.csdn.net/tianshi_rain/article/details/86612193%EF%BC%89">https://blog.csdn.net/tianshi_rain/article/details/86612193）</a></li>
+</ol>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br></pre></td><td class="code"><pre><span class="line">--replicas 1 1其实代表的是一个比例，就是主节点数/从节点数的比例。那么想一想，在创建集群的时候，哪些节点是主节点呢？哪些节点是从节点呢？答案是将按照命令中IP:PORT的顺序，先是3个主节点，然后是3个从节点。</span><br><span class="line">其次，注意到图中slot的概念。slot对于Redis集群而言，就是一个存放数据的地方，就是一个槽。对于每一个Master而言，会存在一个slot的范围，而Slave则没有。在Redis集群中，依然是Master可以读、写，而Slave只读。</span><br><span class="line">数据的写入，实际上是分布的存储在slot中，这和以前1.X的主从模式是不一样的（主从模式下Master/Slave数据存储是完全一致的），因为Redis集群中3台Master的数据存储并不一样。</span><br><span class="line"></span><br><span class="line">redis-cli --cluster create 172.16.214.142:7000 172.16.214.142:7001 172.16.214.142:7002 172.16.214.143:7000 172.16.214.143:7001 172.16.214.143:7002  172.16.214.142:8000 172.16.214.142:8001 172.16.214.142:8002  --cluster-replicas 2	</span><br><span class="line"></span><br><span class="line">&gt;&gt;&gt; Performing hash slots allocation on 9 nodes...</span><br><span class="line">Master[0] -&gt; Slots 0 - 5460</span><br><span class="line">Master[1] -&gt; Slots 5461 - 10922</span><br><span class="line">Master[2] -&gt; Slots 10923 - 16383</span><br><span class="line">Adding replica 172.16.214.143:7002 to 172.16.214.142:7000</span><br><span class="line">Adding replica 172.16.214.143:7001 to 172.16.214.142:7000</span><br><span class="line">Adding replica 172.16.214.142:7002 to 172.16.214.143:7000</span><br><span class="line">Adding replica 172.16.214.142:8000 to 172.16.214.143:7000</span><br><span class="line">Adding replica 172.16.214.142:8001 to 172.16.214.142:7001</span><br><span class="line">Adding replica 172.16.214.142:8002 to 172.16.214.142:7001</span><br><span class="line">&gt;&gt;&gt; Trying to optimize slaves allocation for anti-affinity</span><br><span class="line">[WARNING] Some slaves are in the same host as their master</span><br><span class="line">M: 7a1bfc2662ac52e5f38ead84e1dc4984761b92ee 172.16.214.142:7000</span><br><span class="line">   slots:[0-5460] (5461 slots) master</span><br><span class="line">M: 3e15ea6a5e5624c4d49e3c042430a5816148beb2 172.16.214.142:7001</span><br><span class="line">   slots:[10923-16383] (5461 slots) master</span><br><span class="line">S: f1b4992c8529356b8469ac48e9e03c1bbca54170 172.16.214.142:7002</span><br><span class="line">   replicates 7a1bfc2662ac52e5f38ead84e1dc4984761b92ee</span><br><span class="line">M: 20eb5f35e0ce5968932e0c8b9a3bc94294344c93 172.16.214.143:7000</span><br><span class="line">   slots:[5461-10922] (5462 slots) master</span><br><span class="line">S: 8890a21d264622ff752fb7ae9cf679389f4f1ebe 172.16.214.143:7001</span><br><span class="line">   replicates 3e15ea6a5e5624c4d49e3c042430a5816148beb2</span><br><span class="line">S: 7c00a2f323812a2838220c9ace4f2d387289f647 172.16.214.143:7002</span><br><span class="line">   replicates 7a1bfc2662ac52e5f38ead84e1dc4984761b92ee</span><br><span class="line">S: de6efb3058580e787a0ca7e543cf7ec2fe71f7c5 172.16.214.142:8000</span><br><span class="line">   replicates 3e15ea6a5e5624c4d49e3c042430a5816148beb2</span><br><span class="line">S: 55fdb07650b7fb8f43c19bc7ffbe25378ff2e775 172.16.214.142:8001</span><br><span class="line">   replicates 20eb5f35e0ce5968932e0c8b9a3bc94294344c93</span><br><span class="line">S: 46cd3b6e687d6e4f3391d675e724e2393bd37974 172.16.214.142:8002</span><br><span class="line">   replicates 20eb5f35e0ce5968932e0c8b9a3bc94294344c93</span><br><span class="line">Can I set the above configuration? (type &#x27;yes&#x27; to accept): yes</span><br><span class="line">&gt;&gt;&gt; Nodes configuration updated</span><br><span class="line">&gt;&gt;&gt; Assign a different config epoch to each node</span><br><span class="line">&gt;&gt;&gt; Sending CLUSTER MEET messages to join the cluster</span><br><span class="line">Waiting for the cluster to join</span><br><span class="line">...</span><br><span class="line">&gt;&gt;&gt; Performing Cluster Check (using node 172.16.214.142:7000)</span><br><span class="line">M: 7a1bfc2662ac52e5f38ead84e1dc4984761b92ee 172.16.214.142:7000</span><br><span class="line">   slots:[0-5460] (5461 slots) master</span><br><span class="line">   2 additional replica(s)</span><br><span class="line">M: 3e15ea6a5e5624c4d49e3c042430a5816148beb2 172.16.214.142:7001</span><br><span class="line">   slots:[10923-16383] (5461 slots) master</span><br><span class="line">   2 additional replica(s)</span><br><span class="line">S: 55fdb07650b7fb8f43c19bc7ffbe25378ff2e775 172.16.214.142:8001</span><br><span class="line">   slots: (0 slots) slave</span><br><span class="line">   replicates 20eb5f35e0ce5968932e0c8b9a3bc94294344c93</span><br><span class="line">M: 20eb5f35e0ce5968932e0c8b9a3bc94294344c93 172.16.214.143:7000</span><br><span class="line">   slots:[5461-10922] (5462 slots) master</span><br><span class="line">   2 additional replica(s)</span><br><span class="line">S: 8890a21d264622ff752fb7ae9cf679389f4f1ebe 172.16.214.143:7001</span><br><span class="line">   slots: (0 slots) slave</span><br><span class="line">   replicates 3e15ea6a5e5624c4d49e3c042430a5816148beb2</span><br><span class="line">S: f1b4992c8529356b8469ac48e9e03c1bbca54170 172.16.214.142:7002</span><br><span class="line">   slots: (0 slots) slave</span><br><span class="line">   replicates 7a1bfc2662ac52e5f38ead84e1dc4984761b92ee</span><br><span class="line">S: de6efb3058580e787a0ca7e543cf7ec2fe71f7c5 172.16.214.142:8000</span><br><span class="line">   slots: (0 slots) slave</span><br><span class="line">   replicates 3e15ea6a5e5624c4d49e3c042430a5816148beb2</span><br><span class="line">S: 7c00a2f323812a2838220c9ace4f2d387289f647 172.16.214.143:7002</span><br><span class="line">   slots: (0 slots) slave</span><br><span class="line">   replicates 7a1bfc2662ac52e5f38ead84e1dc4984761b92ee</span><br><span class="line">S: 46cd3b6e687d6e4f3391d675e724e2393bd37974 172.16.214.142:8002</span><br><span class="line">   slots: (0 slots) slave</span><br><span class="line">   replicates 20eb5f35e0ce5968932e0c8b9a3bc94294344c93</span><br><span class="line">[OK] All nodes agree about slots configuration.</span><br><span class="line">&gt;&gt;&gt; Check for open slots...</span><br><span class="line">&gt;&gt;&gt; Check slots coverage...</span><br><span class="line">[OK] All 16384 slots covered.</span><br></pre></td></tr></table></figure>
+
+<ol start="5">
+<li>集群操作命令</li>
+</ol>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line">集群</span><br><span class="line">cluster info ：打印集群的信息</span><br><span class="line">cluster nodes ：列出集群当前已知的所有节点（ node），以及这些节点的相关信息。</span><br><span class="line">节点</span><br><span class="line">cluster meet &lt;ip&gt; &lt;port&gt; ：将 ip 和 port 所指定的节点添加到集群当中，让它成为集群的一份子。</span><br><span class="line">cluster forget &lt;node_id&gt; ：从集群中移除 node_id 指定的节点。</span><br><span class="line">cluster replicate &lt;master_node_id&gt; ：将当前从节点设置为 node_id 指定的master节点的slave节点。只能针对slave节点操作。</span><br><span class="line">cluster saveconfig ：将节点的配置文件保存到硬盘里面。</span><br><span class="line">槽(slot)</span><br><span class="line">cluster addslots &lt;slot&gt; [slot ...] ：将一个或多个槽（ slot）指派（ assign）给当前节点。</span><br><span class="line">cluster delslots &lt;slot&gt; [slot ...] ：移除一个或多个槽对当前节点的指派。</span><br><span class="line">cluster flushslots ：移除指派给当前节点的所有槽，让当前节点变成一个没有指派任何槽的节点。</span><br><span class="line">cluster setslot &lt;slot&gt; node &lt;node_id&gt; ：将槽 slot 指派给 node_id 指定的节点，如果槽已经指派给</span><br><span class="line">另一个节点，那么先让另一个节点删除该槽&gt;，然后再进行指派。</span><br><span class="line">cluster setslot &lt;slot&gt; migrating &lt;node_id&gt; ：将本节点的槽 slot 迁移到 node_id 指定的节点中。</span><br><span class="line">cluster setslot &lt;slot&gt; importing &lt;node_id&gt; ：从 node_id 指定的节点中导入槽 slot 到本节点。</span><br><span class="line">cluster setslot &lt;slot&gt; stable ：取消对槽 slot 的导入（ import）或者迁移（ migrate）。</span><br><span class="line">键</span><br><span class="line">cluster keyslot &lt;key&gt; ：计算键 key 应该被放置在哪个槽上。</span><br><span class="line">cluster countkeysinslot &lt;slot&gt; ：返回槽 slot 目前包含的键值对数量。</span><br><span class="line">cluster getkeysinslot &lt;slot&gt; &lt;count&gt; ：返回 count 个 slot 槽中的键 。</span><br><span class="line">----------</span><br><span class="line">使用redis-trib.rb工具 需要先安装 ruby</span><br><span class="line">yum install ruby</span><br></pre></td></tr></table></figure>
+
+<h2 id="2-集群中Master的下线及恢复"><a href="#2-集群中Master的下线及恢复" class="headerlink" title="2. 集群中Master的下线及恢复"></a>2. 集群中Master的下线及恢复</h2><ol>
+<li>Master下线后，其对应的Slaver节点会自动变为Master节点，如下</li>
+</ol>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">127.0.0.1:7000&gt; cluster nodes</span><br><span class="line">3e15ea6a5e5624c4d49e3c042430a5816148beb2 172.16.214.142:7001@17001 master - 0 1571799879731 2 connected 10923-16383</span><br><span class="line">55fdb07650b7fb8f43c19bc7ffbe25378ff2e775 172.16.214.142:8001@18001 slave 20eb5f35e0ce5968932e0c8b9a3bc94294344c93 0 1571799878510 13 connected</span><br><span class="line">20eb5f35e0ce5968932e0c8b9a3bc94294344c93 172.16.214.143:7000@17000 master - 0 1571799879116 13 connected 5461-10922</span><br><span class="line">8890a21d264622ff752fb7ae9cf679389f4f1ebe 172.16.214.143:7001@17001 slave 3e15ea6a5e5624c4d49e3c042430a5816148beb2 0 1571799878000 5 connected</span><br><span class="line">7a1bfc2662ac52e5f38ead84e1dc4984761b92ee 172.16.214.142:7000@17000 myself,slave 7c00a2f323812a2838220c9ace4f2d387289f647 0 1571799877000 1 connected ---  主节点</span><br><span class="line">f1b4992c8529356b8469ac48e9e03c1bbca54170 172.16.214.142:7002@17002 slave 7c00a2f323812a2838220c9ace4f2d387289f647 0 1571799878510 10 connected</span><br><span class="line">de6efb3058580e787a0ca7e543cf7ec2fe71f7c5 172.16.214.142:8000@18000 slave 3e15ea6a5e5624c4d49e3c042430a5816148beb2 0 1571799877600 7 connected</span><br><span class="line">7c00a2f323812a2838220c9ace4f2d387289f647 172.16.214.143:7002@17002 master - 0 1571799878000 10 connected 0-5460</span><br><span class="line">46cd3b6e687d6e4f3391d675e724e2393bd37974 172.16.214.142:8002@18002 slave 20eb5f35e0ce5968932e0c8b9a3bc94294344c93 0 1571799878712 13 connected</span><br></pre></td></tr></table></figure>
+
+<ol start="2">
+<li>原来的Master重启后变成Slaver节点，并是原来Master节点的Slaver节点</li>
+</ol>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">46cd3b6e687d6e4f3391d675e724e2393bd37974 172.16.214.142:8002@18002 slave 20eb5f35e0ce5968932e0c8b9a3bc94294344c93 0 1571799898000 13 connected</span><br><span class="line">3e15ea6a5e5624c4d49e3c042430a5816148beb2 172.16.214.142:7001@17001 myself,master - 0 1571799898000 2 connected 10923-16383</span><br><span class="line">f1b4992c8529356b8469ac48e9e03c1bbca54170 172.16.214.142:7002@17002 slave 7c00a2f323812a2838220c9ace4f2d387289f647 0 1571799899502 10 connected</span><br><span class="line">8890a21d264622ff752fb7ae9cf679389f4f1ebe 172.16.214.143:7001@17001 slave 3e15ea6a5e5624c4d49e3c042430a5816148beb2 0 1571799898493 5 connected</span><br><span class="line">7c00a2f323812a2838220c9ace4f2d387289f647 172.16.214.143:7002@17002 master - 0 1571799898597 10 connected 0-5460</span><br><span class="line">55fdb07650b7fb8f43c19bc7ffbe25378ff2e775 172.16.214.142:8001@18001 slave 20eb5f35e0ce5968932e0c8b9a3bc94294344c93 0 1571799898000 13 connected</span><br><span class="line">7a1bfc2662ac52e5f38ead84e1dc4984761b92ee 172.16.214.142:7000@17000 slave,fail  -7c00a2f323812a2838220c9ace4f2d387289f647 1571799888388 1571799886000 10 disconnected ---节点故障</span><br><span class="line">20eb5f35e0ce5968932e0c8b9a3bc94294344c93 172.16.214.143:7000@17000 master - 0 1571799899505 13 connected 5461-10922  --- 有备库升级为主库</span><br><span class="line">de6efb3058580e787a0ca7e543cf7ec2fe71f7c5 172.16.214.142:8000@18000 slave 3e15ea6a5e5624c4d49e3c042430a5816148beb2 0 1571799898596 7 connected</span><br></pre></td></tr></table></figure>
+
+<h2 id="3-添加节点"><a href="#3-添加节点" class="headerlink" title="3. 添加节点"></a>3. 添加节点</h2><ol>
+<li>添加节点</li>
+</ol>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">cd redis/</span><br><span class="line">mkdir 9000</span><br><span class="line">cp 7000/redis.conf 9000/redis.conf &amp;&amp; sed -i &quot;s/7000/9000/g&quot; 9000/redis.conf  </span><br><span class="line">cp 7000/redis.conf 9001/redis.conf &amp;&amp; sed -i &quot;s/7000/9001/g&quot; 9001/redis.conf</span><br><span class="line">cp 7000/redis.conf 9002/redis.conf &amp;&amp; sed -i &quot;s/7000/9002/g&quot; 9002/redis.conf</span><br><span class="line">redis-server $HOME/redis/9000/redis.conf</span><br><span class="line">redis-server $HOME/redis/9001/redis.conf</span><br><span class="line">redis-server $HOME/redis/9002/redis.conf</span><br></pre></td></tr></table></figure>
+
+<ol start="2">
+<li>添加主节点</li>
+</ol>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_"># </span><span class="language-bash">redis-cli --cluster add-node 172.16.214.142:9000 172.16.214.142:8002</span></span><br><span class="line">注释：</span><br><span class="line">172.16.214.142:9000是新增的节点</span><br><span class="line">172.16.214.142:8002集群任一个旧节点</span><br></pre></td></tr></table></figure>
+
+<ol start="3">
+<li>添加备节点</li>
+</ol>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">master-id 需要cluster nodes 查询</span><br><span class="line"><span class="meta prompt_">#</span><span class="language-bash">redis-cli --cluster add-node 172.16.214.142:9001 172.16.214.142:8002 --cluster-slave --cluster-master-id  d8fbb406875cff2432dc2e2fdf7a13863da34496</span></span><br><span class="line"><span class="meta prompt_">#</span><span class="language-bash">redis-cli --cluster add-node --cluster-slave --cluster-master-id  d8fbb406875cff2432dc2e2fdf7a13863da34496 172.16.214.142:9002 172.16.214.142:8002</span></span><br><span class="line">注释：</span><br><span class="line">--slave，表示添加的是从节点</span><br><span class="line">--master-id d8fbb406875cff2432dc2e2fdf7a13863da34496,主节点的node id，在这里是前面新添加的9000的node id</span><br><span class="line">172.16.214.142:9002,新节点</span><br><span class="line">172.16.214.142:8002集群任一个旧节点</span><br></pre></td></tr></table></figure>
+
+<ol start="4">
+<li>重新分配slot</li>
+</ol>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br></pre></td><td class="code"><pre><span class="line">redis-cli  --cluster reshard 172.16.214.142:9000</span><br><span class="line"><span class="meta prompt_">&gt;</span><span class="language-bash">&gt;&gt; Performing Cluster Check (using node 172.16.214.142:9000)</span></span><br><span class="line">M: d8fbb406875cff2432dc2e2fdf7a13863da34496 172.16.214.142:9000</span><br><span class="line">   slots:[0-999],[5461-6461],[10923-11923] (3002 slots) master</span><br><span class="line">   2 additional replica(s)</span><br><span class="line">M: 8890a21d264622ff752fb7ae9cf679389f4f1ebe 172.16.214.143:7001</span><br><span class="line">   slots:[11924-16383] (4460 slots) master</span><br><span class="line">   2 additional replica(s)</span><br><span class="line">M: 7c00a2f323812a2838220c9ace4f2d387289f647 172.16.214.143:7002</span><br><span class="line">   slots:[1000-5460] (4461 slots) master</span><br><span class="line">   2 additional replica(s)</span><br><span class="line">M: 20eb5f35e0ce5968932e0c8b9a3bc94294344c93 172.16.214.143:7000</span><br><span class="line">   slots:[6462-10922] (4461 slots) master</span><br><span class="line">   2 additional replica(s)</span><br><span class="line">S: de6efb3058580e787a0ca7e543cf7ec2fe71f7c5 172.16.214.142:8000</span><br><span class="line">   slots: (0 slots) slave</span><br><span class="line">   replicates 8890a21d264622ff752fb7ae9cf679389f4f1ebe</span><br><span class="line">S: 3e15ea6a5e5624c4d49e3c042430a5816148beb2 172.16.214.142:7001</span><br><span class="line">   slots: (0 slots) slave</span><br><span class="line">   replicates 8890a21d264622ff752fb7ae9cf679389f4f1ebe</span><br><span class="line">S: 10132b71a3b4820c870e63328d499d0aeac4bfbf 172.16.214.142:9002</span><br><span class="line">   slots: (0 slots) slave</span><br><span class="line">   replicates d8fbb406875cff2432dc2e2fdf7a13863da34496</span><br><span class="line">S: f1b4992c8529356b8469ac48e9e03c1bbca54170 172.16.214.142:7002</span><br><span class="line">   slots: (0 slots) slave</span><br><span class="line">   replicates 7c00a2f323812a2838220c9ace4f2d387289f647</span><br><span class="line">S: 72b738f820fb9547d3679dc7484fa8b1e192034c 172.16.214.142:9001</span><br><span class="line">   slots: (0 slots) slave</span><br><span class="line">   replicates d8fbb406875cff2432dc2e2fdf7a13863da34496</span><br><span class="line">S: 7a1bfc2662ac52e5f38ead84e1dc4984761b92ee 172.16.214.142:7000</span><br><span class="line">   slots: (0 slots) slave</span><br><span class="line">   replicates 7c00a2f323812a2838220c9ace4f2d387289f647</span><br><span class="line">S: 46cd3b6e687d6e4f3391d675e724e2393bd37974 172.16.214.142:8002</span><br><span class="line">   slots: (0 slots) slave</span><br><span class="line">   replicates 20eb5f35e0ce5968932e0c8b9a3bc94294344c93</span><br><span class="line">S: 55fdb07650b7fb8f43c19bc7ffbe25378ff2e775 172.16.214.142:8001</span><br><span class="line">   slots: (0 slots) slave</span><br><span class="line">   replicates 20eb5f35e0ce5968932e0c8b9a3bc94294344c93</span><br><span class="line">[OK] All nodes agree about slots configuration.</span><br><span class="line"><span class="meta prompt_">&gt;</span><span class="language-bash">&gt;&gt; Check <span class="keyword">for</span> open slots...</span></span><br><span class="line"><span class="meta prompt_">&gt;</span><span class="language-bash">&gt;&gt; Check slots coverage...</span></span><br><span class="line">[OK] All 16384 slots covered.</span><br><span class="line">How many slots do you want to move (from 1 to 16384)?  200 --- 从分片中移除多少槽位</span><br><span class="line">What is the receiving node ID? d8fbb406875cff2432dc2e2fdf7a13863da34496 --移动的目的主机的ID</span><br><span class="line">Please enter all the source node IDs.</span><br><span class="line">  Type &#x27;all&#x27; to use all the nodes as source nodes for the hash slots.</span><br><span class="line">  Type &#x27;done&#x27; once you entered all the source nodes IDs.</span><br><span class="line">Source node #1: 8890a21d264622ff752fb7ae9cf679389f4f1ebe  --- 移动的第一台机器</span><br><span class="line">Source node #2: 7c00a2f323812a2838220c9ace4f2d387289f647  --- 移动的第二台机器</span><br><span class="line">Source node #3: done  --结束</span><br></pre></td></tr></table></figure>
+
+<ol start="5">
+<li>平衡（rebalance）<strong>slot</strong> ：</li>
+</ol>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"> redis-cli  --cluster rebalance 172.16.214.142:9000     </span><br><span class="line"><span class="meta prompt_">&gt;</span><span class="language-bash">&gt;&gt; Performing Cluster Check (using node 172.16.214.142:9000)</span></span><br><span class="line">[OK] All nodes agree about slots configuration.</span><br><span class="line"><span class="meta prompt_">&gt;</span><span class="language-bash">&gt;&gt; Check <span class="keyword">for</span> open slots...</span></span><br><span class="line"><span class="meta prompt_">&gt;</span><span class="language-bash">&gt;&gt; Check slots coverage...</span></span><br><span class="line">[OK] All 16384 slots covered.</span><br><span class="line"><span class="meta prompt_">&gt;</span><span class="language-bash">&gt;&gt; Rebalancing across 4 nodes. Total weight = 4.00</span></span><br><span class="line">Moving 365 slots from 172.16.214.143:7000 to 172.16.214.142:9000</span><br><span class="line"><span class="meta prompt_">#</span><span class="language-bash"><span class="comment">############################################################################################################################################################################################################################################################################################################################################################################</span></span></span><br><span class="line">Moving 265 slots from 172.16.214.143:7001 to 172.16.214.142:9000</span><br><span class="line"><span class="meta prompt_">#</span><span class="language-bash"><span class="comment">########################################################################################################################################################################################################################################################################</span></span></span><br><span class="line">Moving 264 slots from 172.16.214.143:7002 to 172.16.214.142:9000</span><br><span class="line"><span class="meta prompt_">#</span><span class="language-bash"><span class="comment">#######################################################################################################################################################################################################################################################################</span></span></span><br></pre></td></tr></table></figure>
+
+<ol start="6">
+<li><p>删除节点</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">redis-cli --cluster del-node 172.16.214.142:9000 f6a6957421b80409106cb36be3c7ba41f3b603ff</span><br><span class="line">说明：指定IP、端口和node_id 来删除一个节点，从节点可以直接删除，主节点不能直接删除，删除之后，该节点会被shutdown</span><br><span class="line"></span><br><span class="line">注意：当被删除掉的节点重新起来之后不能自动加入集群，但其和主的复制还是正常的，也可以通过该节点看到集群信息（通过其他正常节点已经看不到该被del-node节点的信息）。</span><br><span class="line">如果想要再次加入集群，则需要先在该节点执行cluster reset，再用add-node进行添加，进行增量同步复制。</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>检查集群</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line">redis-cli --cluster check 172.16.214.142:9000 --cluster-search-multiple-owners</span><br><span class="line">说明：任意连接一个集群节点，进行集群状态检查</span><br><span class="line">172.16.214.142:9000 (d8fbb406...) -&gt; 0 keys | 4096 slots | 2 slaves.</span><br><span class="line">172.16.214.143:7001 (8890a21d...) -&gt; 0 keys | 4096 slots | 2 slaves.</span><br><span class="line">172.16.214.143:7002 (7c00a2f3...) -&gt; 0 keys | 4096 slots | 2 slaves.</span><br><span class="line">172.16.214.143:7000 (20eb5f35...) -&gt; 0 keys | 4096 slots | 2 slaves.</span><br><span class="line">[OK] 0 keys in 4 masters.</span><br><span class="line">0.00 keys per slot on average.</span><br><span class="line">&gt;&gt;&gt; Performing Cluster Check (using node 172.16.214.142:9000)</span><br><span class="line">M: d8fbb406875cff2432dc2e2fdf7a13863da34496 172.16.214.142:9000</span><br><span class="line">   slots:[0-1364],[5461-6826],[10923-12287] (4096 slots) master</span><br><span class="line">   2 additional replica(s)</span><br><span class="line">M: 8890a21d264622ff752fb7ae9cf679389f4f1ebe 172.16.214.143:7001</span><br><span class="line">   slots:[12288-16383] (4096 slots) master</span><br><span class="line">   2 additional replica(s)</span><br><span class="line">M: 7c00a2f323812a2838220c9ace4f2d387289f647 172.16.214.143:7002</span><br><span class="line">   slots:[1365-5460] (4096 slots) master</span><br><span class="line">   2 additional replica(s)</span><br><span class="line">M: 20eb5f35e0ce5968932e0c8b9a3bc94294344c93 172.16.214.143:7000</span><br><span class="line">   slots:[6827-10922] (4096 slots) master</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>集群信息查看</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">redis-cli --cluster info 172.16.214.143:7000</span><br><span class="line">说明：检查key、slots、从节点个数的分配情况</span><br><span class="line">172.16.214.143:7000 (20eb5f35...) -&gt; 0 keys | 4096 slots | 2 slaves.</span><br><span class="line">172.16.214.142:9000 (d8fbb406...) -&gt; 0 keys | 4096 slots | 2 slaves.</span><br><span class="line">172.16.214.143:7001 (8890a21d...) -&gt; 0 keys | 4096 slots | 2 slaves.</span><br><span class="line">172.16.214.143:7002 (7c00a2f3...) -&gt; 0 keys | 4096 slots | 2 slaves.</span><br><span class="line">[OK] 0 keys in 4 masters.</span><br><span class="line">0.00 keys per slot on average.</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>修复集群</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br></pre></td><td class="code"><pre><span class="line">redis-cli --cluster fix 172.16.214.143:9000 --cluster-search-multiple-owners</span><br><span class="line">说明：修复集群和槽的重复分配问题</span><br><span class="line">172.16.214.142:9000 (d8fbb406...) -&gt; 0 keys | 4096 slots | 2 slaves.</span><br><span class="line">172.16.214.143:7001 (8890a21d...) -&gt; 0 keys | 4096 slots | 2 slaves.</span><br><span class="line">172.16.214.143:7002 (7c00a2f3...) -&gt; 0 keys | 4096 slots | 2 slaves.</span><br><span class="line">172.16.214.143:7000 (20eb5f35...) -&gt; 0 keys | 4096 slots | 2 slaves.</span><br><span class="line">[OK] 0 keys in 4 masters.</span><br><span class="line">0.00 keys per slot on average.</span><br><span class="line">&gt;&gt;&gt; Performing Cluster Check (using node 172.16.214.142:9000)</span><br><span class="line">M: d8fbb406875cff2432dc2e2fdf7a13863da34496 172.16.214.142:9000</span><br><span class="line">   slots:[0-1364],[5461-6826],[10923-12287] (4096 slots) master</span><br><span class="line">   2 additional replica(s)</span><br><span class="line">M: 8890a21d264622ff752fb7ae9cf679389f4f1ebe 172.16.214.143:7001</span><br><span class="line">   slots:[12288-16383] (4096 slots) master</span><br><span class="line">   2 additional replica(s)</span><br><span class="line">M: 7c00a2f323812a2838220c9ace4f2d387289f647 172.16.214.143:7002</span><br><span class="line">   slots:[1365-5460] (4096 slots) master</span><br><span class="line">   2 additional replica(s)</span><br><span class="line">M: 20eb5f35e0ce5968932e0c8b9a3bc94294344c93 172.16.214.143:7000</span><br><span class="line">   slots:[6827-10922] (4096 slots) master</span><br><span class="line">   2 additional replica(s)</span><br><span class="line">S: de6efb3058580e787a0ca7e543cf7ec2fe71f7c5 172.16.214.142:8000</span><br><span class="line">   slots: (0 slots) slave</span><br><span class="line">   replicates 8890a21d264622ff752fb7ae9cf679389f4f1ebe</span><br><span class="line">S: 3e15ea6a5e5624c4d49e3c042430a5816148beb2 172.16.214.142:7001</span><br><span class="line">   slots: (0 slots) slave</span><br><span class="line">   replicates 8890a21d264622ff752fb7ae9cf679389f4f1ebe</span><br><span class="line">S: 10132b71a3b4820c870e63328d499d0aeac4bfbf 172.16.214.142:9002</span><br><span class="line">   slots: (0 slots) slave</span><br><span class="line">   replicates d8fbb406875cff2432dc2e2fdf7a13863da34496</span><br><span class="line">S: f1b4992c8529356b8469ac48e9e03c1bbca54170 172.16.214.142:7002</span><br><span class="line">   slots: (0 slots) slave</span><br><span class="line">   replicates 7c00a2f323812a2838220c9ace4f2d387289f647</span><br><span class="line">S: 72b738f820fb9547d3679dc7484fa8b1e192034c 172.16.214.142:9001</span><br><span class="line">   slots: (0 slots) slave</span><br><span class="line">   replicates d8fbb406875cff2432dc2e2fdf7a13863da34496</span><br><span class="line">S: 7a1bfc2662ac52e5f38ead84e1dc4984761b92ee 172.16.214.142:7000</span><br><span class="line">   slots: (0 slots) slave</span><br><span class="line">   replicates 7c00a2f323812a2838220c9ace4f2d387289f647</span><br><span class="line">S: 46cd3b6e687d6e4f3391d675e724e2393bd37974 172.16.214.142:8002</span><br><span class="line">   slots: (0 slots) slave</span><br><span class="line">   replicates 20eb5f35e0ce5968932e0c8b9a3bc94294344c93</span><br><span class="line">S: 55fdb07650b7fb8f43c19bc7ffbe25378ff2e775 172.16.214.142:8001</span><br><span class="line">   slots: (0 slots) slave</span><br><span class="line">   replicates 20eb5f35e0ce5968932e0c8b9a3bc94294344c93</span><br><span class="line">[OK] All nodes agree about slots configuration.</span><br><span class="line">&gt;&gt;&gt; Check for open slots...</span><br><span class="line">&gt;&gt;&gt; Check slots coverage...</span><br><span class="line">[OK] All 16384 slots covered.</span><br><span class="line">&gt;&gt;&gt; Check for multiple slot owners...</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>设置集群的超时时间 </p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">redis-cli --cluster set-timeout 172.16.214.142:8001 10000</span><br><span class="line">说明：连接到集群的任意一节点来设置集群的超时时间参数cluster-node-timeout</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>集群中执行相关命令</p>
+<figure class="highlight plaintext"><figcaption><span>l</span></figcaption><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">redis-cli --cluster call 192.168.163.132:6381 config set requirepass cc  -- 设置请求密码</span><br><span class="line">redis-cli -a cc --cluster call 192.168.163.132:6381 config set masterauth cc --master配置了密码进行主从同步</span><br><span class="line">redis-cli -a cc --cluster call 192.168.163.132:6381 config rewrite-- 命令对启动 Redis 服务器时所指定的 redis.conf 配置文件进行改写。</span><br></pre></td></tr></table></figure>
+</li>
+<li><pre><code>redis-cli --cluster create 172.16.214.143:6379 172.16.214.142:6380 172.16.214.144:6381 --cluster-replicas 0
+                                                                    从                    主
+redis-cli --cluster add-node  172.16.214.142:6379 172.16.214.143:6379  --cluster-slave --cluster-master-id 248697cc36b13bd5987f6aef43f2255a47348163
+redis-cli --cluster add-node  172.16.214.144:6380 172.16.214.142:6380 --cluster-slave --cluster-master-id 844463de071e31da1107f8260892334bb61dc979
+redis-cli --cluster add-node  172.16.214.143:6381 172.16.214.144:6381 --cluster-slave --cluster-master-id 900b5cfc908c64d8b6889cd7447522dea2337233
+</code></pre>
+</li>
+</ol>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/knowledge-base/tags/redis/" rel="tag"># redis</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/knowledge-base/2019/10/22/redis-keepalived/" rel="prev" title="Redis keepalived 集群搭建">
+                  <i class="fa fa-chevron-left"></i> Redis keepalived 集群搭建
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/knowledge-base/2019/10/23/pathman-install/" rel="next" title="pathman安装使用">
+                  pathman安装使用 <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  &copy; 
+  <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">ZHD</span>
+</div>
+<div class="wordcount">
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-chart-line"></i>
+    </span>
+    <span title="站点总字数">220k</span>
+  </span>
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+    <span title="站点阅读时长">3:20</span>
+  </span>
+</div>
+<div class="busuanzi-count">
+    <span class="post-meta-item" id="busuanzi_container_site_uv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div><script color="0,0,255" opacity="0.5" zIndex="-1" count="99" src="https://lib.baomitu.com/canvas-nest.js/1.0.1/canvas-nest.js"></script>
+
+
+    </div>
+  </footer>
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.1/jquery.min.js" integrity="sha256-o88AwQnZB+VDvE9tvIXrMQaPlFFSUTR+nldQm1LuPXQ=" crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/fancybox/3.5.7/jquery.fancybox.min.js" integrity="sha256-yt2kYMy0w8AbtF89WXb2P1rfjcP/HTHLT7097U8Y5b8=" crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pangu/4.0.7/pangu.min.js" integrity="sha256-j+yj56cdEY2CwkVtGyz18fNybFGpMGJ8JxG3GSyO2+I=" crossorigin="anonymous"></script>
+<script src="/knowledge-base/js/comments.js"></script><script src="/knowledge-base/js/utils.js"></script><script src="/knowledge-base/js/motion.js"></script><script src="/knowledge-base/js/next-boot.js"></script>
+
+  
+<script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-generator-searchdb/1.4.0/search.js" integrity="sha256-vXZMYLEqsROAXkEw93GGIvaB2ab+QW6w3+1ahD9nXXA=" crossorigin="anonymous"></script>
+<script src="/knowledge-base/js/third-party/search/local-search.js"></script>
+
+
+
+  <script src="/knowledge-base/js/third-party/fancybox.js"></script>
+
+  <script src="/knowledge-base/js/third-party/pace.js"></script>
+
+  
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+
+
+
+<script src="/knowledge-base/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"pluginModelPath":"assets/","model":{"jsonPath":"/knowledge-base/live2dw/assets/shizuku.model.json"},"display":{"position":"left","width":200,"height":400},"mobile":{"show":false},"rect":"opacity:0.7","log":false,"pluginJsPath":"lib/","pluginRootPath":"live2dw/","tagMode":false});</script></body>
+</html>
