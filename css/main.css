@@ -1668,10 +1668,6 @@ header.header {
   position: fixed;
   z-index: 30;
   right: 30px;
-  width: 24px;
-}
-.back-to-top span {
-  display: none;
 }
 @media (max-width: 991px) {
   .back-to-top {
@@ -2825,4 +2821,13 @@ mark.search-keyword {
   .comments {
     padding: 10px 12px;
   }
+}
+.main {
+  margin-top: 10px;
+}
+* {
+  cursor: url("/images/default.cur"), auto !important;
+}
+:link {
+  cursor: url("/images/pointer.cur"), auto !important;
 }
